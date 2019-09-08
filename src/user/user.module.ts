@@ -1,18 +1,19 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { UserValidator } from './user.validator';
-import { AuthService } from './auth.service';
 import { SessionEntity } from './entities/session.entity';
 import { FtsAccountEntity } from './entities/ftsAccount.entity';
-import { DateHelper } from '../common/date.helper';
+import { DateHelper } from '../helpers/date.helper';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [ TypeOrmModule.forFeature([ UserEntity, SessionEntity, FtsAccountEntity ]) ],
+  imports: [ TypeOrmModule.forFeature([ UserEntity, SessionEntity, FtsAccountEntity ]), forwardRef(() => AuthModule) ],
   controllers: [ UserController ],
-  providers: [ UserService, AuthService, UserValidator, DateHelper ],
+  providers: [ UserService, UserValidator, DateHelper ],
+  exports: [ UserService ],
 })
 export class UserModule {
 }

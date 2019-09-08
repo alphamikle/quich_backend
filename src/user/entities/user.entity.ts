@@ -5,20 +5,20 @@ import { SessionEntity } from './session.entity';
 @Entity()
 export class UserEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column()
-  email: string;
+  email!: string;
 
   @Column()
-  password: string;
+  password!: string;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @OneToMany(() => FtsAccountEntity, account => account.user)
-  ftsAccounts: FtsAccountEntity[];
+  ftsAccounts?: FtsAccountEntity[];
 
   @OneToMany(() => SessionEntity, session => session.user)
-  sessions: SessionEntity[];
+  sessions?: SessionEntity[];
 }

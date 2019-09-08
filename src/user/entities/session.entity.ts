@@ -4,22 +4,22 @@ import { UserEntity } from './user.entity';
 @Entity()
 export class SessionEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column()
-  token: string;
+  token!: string;
 
   @Column({ default: false })
-  isExpired: boolean;
+  isExpired!: boolean;
 
   @Column()
-  expiredAt: Date;
+  expiredAt!: Date;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @Column('integer')
-  userId: number;
+  userId!: number;
   @ManyToOne(() => UserEntity, user => user.sessions, { onDelete: 'CASCADE' })
-  user: UserEntity;
+  user?: UserEntity;
 }

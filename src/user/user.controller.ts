@@ -1,10 +1,15 @@
-import { BadRequestException, Body, Controller, ForbiddenException, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, ForbiddenException, forwardRef, Get, Inject, Post, Request, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserCredentialsDTO } from './dto/userCredentials.dto';
 import { UserValidator } from './user.validator';
 import { UserEntity } from './entities/user.entity';
-import { ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
-import { SIGN_UP_SUCCESS, REG_ERROR, SIGN_IN_BAD_PASSWORD, SIGN_IN_NO_USER } from '../text/text';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
+import { SIGN_UP_SUCCESS, REG_ERROR, SIGN_IN_BAD_PASSWORD, SIGN_IN_NO_USER } from '../helpers/text';
+import { FtsAccountEntity } from './entities/ftsAccount.entity';
+import { AuthService } from '../auth/auth.service';
+import { AuthValidator } from '../auth/auth.validator';
+import { Guards } from '../helpers/guards';
+import { RequestUser } from './user.decorator';
 
 @ApiUseTags('user')
 @Controller({ path: 'user' })
@@ -12,6 +17,10 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly userValidator: UserValidator,
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
+    @Inject(forwardRef(() => AuthValidator))
+    private readonly authValidator: AuthValidator,
   ) {
   }
 
@@ -26,7 +35,7 @@ export class UserController {
     if (isUserExits) {
       throw new BadRequestException({ email: REG_ERROR });
     }
-    await this.userService.signUp({ email, password });
+    await this.authService.signUp({ email, password });
     return SIGN_UP_SUCCESS;
   }
 
@@ -42,10 +51,24 @@ export class UserController {
       throw new BadRequestException({ email: SIGN_IN_NO_USER });
     }
     const user: UserEntity = await this.userService.getUserByEmail(email);
-    const isPasswordValid: boolean = await this.userValidator.isPasswordValid({ user, password });
+    const isPasswordValid: boolean = await this.authValidator.isPasswordValid({ user, password });
     if (!isPasswordValid) {
       throw new ForbiddenException({ password: SIGN_IN_BAD_PASSWORD });
     }
-    return await this.userService.signIn(user);
+    return await this.authService.signIn(user);
   }
+
+  @UseGuards(Guards)
+  @ApiBearerAuth()
+  @Get('fts-accounts')
+  @ApiOperation({ title: 'Получение списка аккаунтов ФНС' })
+  @ApiResponse({
+    status: 200,
+    type: FtsAccountEntity,
+    isArray: true,
+  })
+  async getFtsAccountsList(@RequestUser() user: UserEntity): Promise<FtsAccountEntity[]> {
+    return await this.userService.getFtsAccountsByUserId(user.id);
+  }
+
 }

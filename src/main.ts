@@ -15,6 +15,7 @@ async function bootstrap() {
     .setDescription(pack.description)
     .setVersion(pack.version)
     .addTag('user')
+    .addBearerAuth('Authorization', 'header')
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('open-api', app, document);

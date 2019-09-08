@@ -4,21 +4,21 @@ import { UserEntity } from './user.entity';
 @Entity()
 export class FtsAccountEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column()
-  phone: string;
+  phone!: string;
 
   @Column()
-  password: string;
+  password!: string;
 
   @Column({ default: false })
-  isMain: boolean;
+  isMain!: boolean;
 
   @Column({ type: 'integer' })
-  userId: number;
+  userId!: number;
   @ManyToOne(() => UserEntity, user => user.ftsAccounts, { onDelete: 'CASCADE' })
-  user: UserEntity;
+  user?: UserEntity;
 
   @BeforeInsert()
   @BeforeUpdate()

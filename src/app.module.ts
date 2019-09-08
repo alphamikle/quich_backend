@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DateHelper } from './common/date.helper';
-import { UserModule } from './user.module/user.module';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
+import { PassportModule } from '@nestjs/passport';
 
 const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNC } = process.env;
 
@@ -18,6 +19,8 @@ const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNC } = process.env;
       synchronize: DB_SYNC === 'true',
     }),
     UserModule,
+    AuthModule,
+    PassportModule,
   ],
   controllers: [],
   providers: [],
