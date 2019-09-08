@@ -1,11 +1,5 @@
-export class ResponseWrapper<T> {
-  private response = {
-    payload: {},
-    message: '',
+export function wrapErrors(errors: { [ field: string ]: string }): { errors: { [ field: string ]: string } } {
+  return {
+    errors,
   };
-
-  constructor(payload: T, message: string = '') {
-    this.response.payload = payload;
-    this.response.message = message;
-  }
 }

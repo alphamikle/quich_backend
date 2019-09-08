@@ -18,8 +18,8 @@ export class SessionEntity {
   @CreateDateColumn()
   createdAt!: Date;
 
-  @Column('integer')
-  userId!: number;
+  @Column('string')
+  userId!: string;
   @ManyToOne(() => UserEntity, user => user.sessions, { onDelete: 'CASCADE' })
   user?: UserEntity;
 }

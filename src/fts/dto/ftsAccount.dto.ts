@@ -1,9 +1,9 @@
 import { ApiModelProperty } from '@nestjs/swagger';
 
-export class UserCredentialsDto {
+export class FtsAccountDto {
   @ApiModelProperty()
-  email: string;
+  phone!: string;
 
   @ApiModelProperty()
-  password: string;
+  password!: string;
 }

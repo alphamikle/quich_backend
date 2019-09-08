@@ -15,14 +15,18 @@ export class FtsAccountEntity {
   @Column({ default: false })
   isMain!: boolean;
 
-  @Column({ type: 'integer' })
-  userId!: number;
+  @Column({ type: 'string' })
+  userId!: string;
   @ManyToOne(() => UserEntity, user => user.ftsAccounts, { onDelete: 'CASCADE' })
   user?: UserEntity;
 
   @BeforeInsert()
   @BeforeUpdate()
   makePhoneCorrect() {
-    this.phone = this.phone.replace(/\D/g, '').replace(/^8/, '+7');
+    this.phone = this.phone
+      .replace(/\D/g, '')
+      .replace(/^8/, '7')
+      .replace(/^7/, '+7')
+    ;
   }
 }

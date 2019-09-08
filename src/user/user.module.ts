@@ -8,9 +8,10 @@ import { SessionEntity } from './entities/session.entity';
 import { FtsAccountEntity } from './entities/ftsAccount.entity';
 import { DateHelper } from '../helpers/date.helper';
 import { AuthModule } from '../auth/auth.module';
+import { FtsModule } from '../fts/fts.module';
 
 @Module({
-  imports: [ TypeOrmModule.forFeature([ UserEntity, SessionEntity, FtsAccountEntity ]), forwardRef(() => AuthModule) ],
+  imports: [ TypeOrmModule.forFeature([ UserEntity, SessionEntity, FtsAccountEntity ]), forwardRef(() => AuthModule), FtsModule ],
   controllers: [ UserController ],
   providers: [ UserService, UserValidator, DateHelper ],
   exports: [ UserService ],

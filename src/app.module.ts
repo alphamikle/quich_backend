@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
+import { FtsModule } from './fts/fts.module';
 
 const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNC } = process.env;
 
@@ -18,9 +19,10 @@ const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNC } = process.env;
       entities: [ __dirname + '/**/*.entity{.ts,.js}' ],
       synchronize: DB_SYNC === 'true',
     }),
+    PassportModule,
     UserModule,
     AuthModule,
-    PassportModule,
+    FtsModule,
   ],
   controllers: [],
   providers: [],

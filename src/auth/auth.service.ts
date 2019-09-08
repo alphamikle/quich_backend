@@ -1,6 +1,6 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { compare, hash } from 'bcrypt';
-import { UserCredentialsDTO } from '../user/dto/userCredentials.dto';
+import { UserCredentialsDto } from '../user/dto/userCredentials.dto';
 import { UserEntity } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
 import { SessionEntity } from '../user/entities/session.entity';
@@ -17,7 +17,7 @@ export class AuthService {
     @InjectRepository(SessionEntity) private readonly sessionEntityRepository: Repository<SessionEntity>,
   ) {}
 
-  async signUp({ email, password }: UserCredentialsDTO): Promise<UserEntity> {
+  async signUp({ email, password }: UserCredentialsDto): Promise<UserEntity> {
     const passwordHash: string = await this.getHashOf(password);
     return this.userService.createUser({ email, passwordHash });
   }

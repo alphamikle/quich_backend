@@ -1,5 +1,10 @@
+export const OK = 'Успешно!';
 export const REG_ERROR = 'Данный пользователь уже зарегистрирован';
 export const SIGN_UP_SUCCESS = 'Вы успешно зарегистрировались!';
 export const SIGN_IN_NO_USER = 'Пользователя с данным email не существует';
 export const SIGN_IN_BAD_PASSWORD = 'Неверный пароль';
 export const UNAUTHORIZED = 'Ошибка авторизации';
+export const BAD_FTS_SIGN_IN_DATA = 'Неверный логин/пароль ФНС';
+export const DUPLICATE_FTS_PHONE = 'У вас уже есть аккаунт с данным номером';
+export const NOT_EXIST_FTS_PHONE = 'У вас нет аккаунта с данным номером';
+export const FTS_PHONE_DELETION_COMPLETE = 'Аккаунт ФНС успешно удален';

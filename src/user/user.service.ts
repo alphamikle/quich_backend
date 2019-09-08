@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { SessionEntity } from './entities/session.entity';
 import { DateHelper } from '../helpers/date.helper';
 import { FtsAccountEntity } from './entities/ftsAccount.entity';
+import { FtsAccountDto } from '../fts/dto/ftsAccount.dto';
 
 const { TOKEN_DURATION } = process.env;
 
@@ -55,5 +56,24 @@ export class UserService {
 
   async getFtsAccountsByUserId(userId: string): Promise<FtsAccountEntity[]> {
     return this.ftsAccountEntityRepository.find({ where: { userId } });
+  }
+
+  async addFtsAccountToUser({ user, ftsAccountData }: { user: UserEntity, ftsAccountData: FtsAccountDto }): Promise<FtsAccountEntity> {
+    const ftsAccount = new FtsAccountEntity();
+    ftsAccount.phone = ftsAccountData.phone;
+    ftsAccount.password = ftsAccountData.password;
+    ftsAccount.userId = user.id;
+    const otherAccounts = await this.getFtsAccountsByUserId(user.id);
+    ftsAccount.isMain = otherAccounts.length === 0;
+    return await this.ftsAccountEntityRepository.save(ftsAccount);
+  }
+
+  async deleteFtsAccountFromUser({ user, phone }: { user: UserEntity, phone: string }): Promise<void> {
+    await this.ftsAccountEntityRepository.delete({ user, phone });
+  }
+
+  async makeFtsAccountMain({ user, phone }: { user: UserEntity, phone: string }): Promise<void> {
+    await this.ftsAccountEntityRepository.update({ user }, { isMain: false });
+    await this.ftsAccountEntityRepository.update({ user, phone }, { isMain: true });
   }
 }
