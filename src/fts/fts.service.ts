@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { AxiosInstance, default as axios } from 'axios';
+import { AxiosInstance, AxiosResponse, default as axios } from 'axios';
 import * as https from 'https';
 import { FtsAccountDto } from './dto/ftsAccount.dto';
 import { FtsRegistrationDto } from './dto/ftsRegistration.dto';
+import { FTS_USER_EXIST_ERROR, FTS_USER_NOT_EXIST_ERROR, INVALID_PHONE_ERROR, UNKNOWN_ERROR } from '../helpers/text';
+import { FtsRemindDto } from './dto/ftsRemind.dto';
 
 interface FtsHeaders {
   'Device-Id': string;
@@ -39,16 +41,31 @@ export class FtsService {
     }
   }
 
-  async signUp(signUpCredentials: FtsRegistrationDto) {
+  async signUp(signUpCredentials: FtsRegistrationDto): Promise<string | true> {
     try {
-      const response = await this.api.post('mobile/users/signup', signUpCredentials);
-      console.log(response);
+      await this.api.post('mobile/users/signup', signUpCredentials);
+      return true;
     } catch (err) {
-      console.error(err);
+      const response: AxiosResponse = err.response;
+      if (response.status === 409) {
+        return FTS_USER_EXIST_ERROR;
+      } else if (response.status === 500) {
+        return INVALID_PHONE_ERROR;
+      }
+      return err.message || UNKNOWN_ERROR;
     }
   }
 
-  private getHeader(userCredentials?: FtsAccountDto) {
+  async remindPassword({ phone }: FtsRemindDto): Promise<string | true> {
+    try {
+      await this.api.post('mobile/users/restore', { phone });
+      return true;
+    } catch (err) {
+      return FTS_USER_NOT_EXIST_ERROR;
+    }
+  }
+
+  private getHeader(userCredentials?: FtsAccountDto): FtsHeaders {
     const headers: FtsHeaders = {
       'Device-Id': '748036d688ec41c6',
       'User-Agent': 'okhttp/3.0.1',
