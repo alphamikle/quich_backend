@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { FtsService } from './fts.service';
-import { FtsAccountDto } from './dto/ftsAccount.dto';
-import { FtsRegistrationDto } from './dto/ftsRegistration.dto';
+import { FtsAccountDto } from './dto/fts-account.dto';
+import { FtsRegistrationDto } from './dto/fts-registration.dto';
 import { CommonValidator } from '../helpers/common.validator';
 import { INVALID_EMAIL_ERROR, INVALID_PHONE_ERROR, NOT_EMPTY_ERROR } from '../helpers/text';
-import { FtsRemindDto } from './dto/ftsRemind.dto';
+import { FtsRemindDto } from './dto/fts-remind.dto';
 
 @Injectable()
 export class FtsValidator {

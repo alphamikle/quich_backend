@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { UserValidator } from './user.validator';
 import { SessionEntity } from './entities/session.entity';
-import { FtsAccountEntity } from './entities/ftsAccount.entity';
+import { FtsAccountEntity } from './entities/fts-account.entity';
 import { DateHelper } from '../helpers/date.helper';
 import { AuthModule } from '../auth/auth.module';
 import { FtsModule } from '../fts/fts.module';

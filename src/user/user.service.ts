@@ -4,8 +4,8 @@ import { UserEntity } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { SessionEntity } from './entities/session.entity';
 import { DateHelper } from '../helpers/date.helper';
-import { FtsAccountEntity } from './entities/ftsAccount.entity';
-import { FtsAccountDto } from '../fts/dto/ftsAccount.dto';
+import { FtsAccountEntity } from './entities/fts-account.entity';
+import { FtsAccountDto } from '../fts/dto/fts-account.dto';
 
 const { TOKEN_DURATION } = process.env;
 

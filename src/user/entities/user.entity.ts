@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { FtsAccountEntity } from './ftsAccount.entity';
+import { FtsAccountEntity } from './fts-account.entity';
 import { SessionEntity } from './session.entity';
 
 @Entity()

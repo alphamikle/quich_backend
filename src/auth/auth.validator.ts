@@ -8,7 +8,8 @@ export class AuthValidator {
   constructor(
     private readonly authService: AuthService,
     private readonly dateHelper: DateHelper,
-  ) {}
+  ) {
+  }
 
   async isPasswordValid({ user, password }: { user: UserEntity, password: string }): Promise<boolean> {
     return await this.authService.isHashValid(password, user.password);

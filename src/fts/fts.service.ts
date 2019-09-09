@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { AxiosInstance, AxiosResponse, default as axios } from 'axios';
 import * as https from 'https';
-import { FtsAccountDto } from './dto/ftsAccount.dto';
-import { FtsRegistrationDto } from './dto/ftsRegistration.dto';
+import { FtsAccountDto } from './dto/fts-account.dto';
+import { FtsRegistrationDto } from './dto/fts-registration.dto';
 import { FTS_USER_EXIST_ERROR, FTS_USER_NOT_EXIST_ERROR, INVALID_PHONE_ERROR, UNKNOWN_ERROR } from '../helpers/text';
-import { FtsRemindDto } from './dto/ftsRemind.dto';
+import { FtsRemindDto } from './dto/fts-remind.dto';
 
 interface FtsHeaders {
   'Device-Id': string;
@@ -65,6 +65,10 @@ export class FtsService {
     }
   }
 
+  generateAuthorizationValue(userCredentials: FtsAccountDto): string {
+    return `Basic ${ Buffer.from(`${ userCredentials.phone }:${ userCredentials.password }`).toString('base64') }`;
+  }
+
   private getHeader(userCredentials?: FtsAccountDto): FtsHeaders {
     const headers: FtsHeaders = {
       'Device-Id': '748036d688ec41c6',
@@ -80,9 +84,5 @@ export class FtsService {
       headers.Authorization = this.generateAuthorizationValue(userCredentials);
     }
     return headers;
-  }
-
-  generateAuthorizationValue(userCredentials: FtsAccountDto): string {
-    return `Basic ${Buffer.from(`${userCredentials.phone}:${userCredentials.password}`).toString('base64')}`;
   }
 }

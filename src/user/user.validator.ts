@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { Repository } from 'typeorm';
-import { SessionEntity } from './entities/session.entity';
-import { FtsAccountEntity } from './entities/ftsAccount.entity';
+import { FtsAccountEntity } from './entities/fts-account.entity';
 
 @Injectable()
 export class UserValidator {

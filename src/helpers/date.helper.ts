@@ -6,6 +6,7 @@ export class DateHelper {
   addDays(date: Date, amount: number): Date {
     return ad(date, amount);
   }
+
   isPast(date: Date): boolean {
     return past(date);
   }

@@ -7,31 +7,33 @@ import {
   forwardRef,
   Get,
   Inject,
-  Param, Patch,
-  Post, Put, Query,
-  Request,
+  Patch,
+  Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UserCredentialsDto } from './dto/userCredentials.dto';
+import { UserCredentialsDto } from './dto/user-credentials.dto';
 import { UserValidator } from './user.validator';
 import { UserEntity } from './entities/user.entity';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import {
-  SIGN_UP_SUCCESS,
+  BAD_FTS_SIGN_IN_DATA,
+  DUPLICATE_FTS_PHONE,
+  FTS_PHONE_DELETION_COMPLETE,
+  NOT_EXIST_FTS_PHONE,
+  OK,
   REG_ERROR,
   SIGN_IN_BAD_PASSWORD,
   SIGN_IN_NO_USER,
-  BAD_FTS_SIGN_IN_DATA,
-  DUPLICATE_FTS_PHONE,
-  NOT_EXIST_FTS_PHONE, FTS_PHONE_DELETION_COMPLETE, OK,
+  SIGN_UP_SUCCESS,
 } from '../helpers/text';
-import { FtsAccountEntity } from './entities/ftsAccount.entity';
+import { FtsAccountEntity } from './entities/fts-account.entity';
 import { AuthService } from '../auth/auth.service';
 import { AuthValidator } from '../auth/auth.validator';
 import { Guards } from '../helpers/guards';
 import { RequestUser } from './user.decorator';
-import { FtsAccountDto } from '../fts/dto/ftsAccount.dto';
+import { FtsAccountDto } from '../fts/dto/fts-account.dto';
 import { FtsValidator } from '../fts/fts.validator';
 import { wrapErrors } from '../helpers/response.helper';
 

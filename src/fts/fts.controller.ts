@@ -1,14 +1,11 @@
-import { BadRequestException, Body, Controller, ForbiddenException, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
-import { UserCredentialsDto } from '../user/dto/userCredentials.dto';
 import { wrapErrors } from '../helpers/response.helper';
-import { OK, SIGN_IN_BAD_PASSWORD, SIGN_IN_NO_USER } from '../helpers/text';
-import { UserEntity } from '../user/entities/user.entity';
-import { FtsRegistrationDto } from './dto/ftsRegistration.dto';
+import { OK } from '../helpers/text';
+import { FtsRegistrationDto } from './dto/fts-registration.dto';
 import { FtsService } from './fts.service';
 import { FtsValidator } from './fts.validator';
-import { CommonValidator } from '../helpers/common.validator';
-import { FtsRemindDto } from './dto/ftsRemind.dto';
+import { FtsRemindDto } from './dto/fts-remind.dto';
 
 @ApiUseTags('fts')
 @Controller('fts')
@@ -16,7 +13,8 @@ export class FtsController {
   constructor(
     private readonly ftsService: FtsService,
     private readonly ftsValidator: FtsValidator,
-  ) {}
+  ) {
+  }
 
   @Post('sign-up')
   @ApiOperation({ title: 'Создание аккаунта ФНС' })

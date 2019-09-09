@@ -16,7 +16,7 @@ export class CommonValidator {
     return /((^\+7)|(^8)|(^7))9[0-9]{9}$/.test(phone);
   }
 
-  isErrorsEmpty(errors: { [field: string]: string }): boolean {
+  isErrorsEmpty(errors: { [ field: string ]: string }): boolean {
     return Object.values(errors).filter(value => !this.isEmpty(value)).length === 0;
   }
 }
