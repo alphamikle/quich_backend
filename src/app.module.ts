@@ -10,6 +10,7 @@ import { PurchaseModule } from './purchase/purchase.module';
 import { ProductModule } from './product/product.module';
 import { BillRequestModule } from './bill-request/bill-request.module';
 import { CategoryModule } from './category/category.module';
+import { BillProviderModule } from './bill-provider/bill-provider.module';
 
 const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNC } = process.env;
 
@@ -35,6 +36,7 @@ const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNC } = process.env;
     ProductModule,
     BillRequestModule,
     CategoryModule,
+    BillProviderModule,
   ],
   controllers: [],
   providers: [],

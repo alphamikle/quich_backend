@@ -1,0 +1,17 @@
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { PurchaseEntity } from '../../purchase/purchase/purchase.entity';
+
+@Entity()
+export class ProductEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
+
+  @Column()
+  title!: string;
+
+  @OneToMany(() => PurchaseEntity, purchase => purchase.product)
+  purchases?: PurchaseEntity[];
+
+  @CreateDateColumn()
+  createdAt!: Date;
+}
