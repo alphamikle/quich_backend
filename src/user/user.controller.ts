@@ -22,7 +22,6 @@ import {
   DUPLICATE_FTS_PHONE,
   FTS_PHONE_DELETION_COMPLETE,
   NOT_EXIST_FTS_PHONE,
-  OK,
   REG_ERROR,
   SIGN_IN_BAD_PASSWORD,
   SIGN_IN_NO_USER,
@@ -36,6 +35,8 @@ import { RequestUser } from './user.decorator';
 import { FtsAccountDto } from '../fts/dto/fts-account.dto';
 import { FtsValidator } from '../fts/fts.validator';
 import { wrapErrors } from '../helpers/response.helper';
+import { FtsAccountModifyDto } from './dto/fts-account-modify.dto';
+import { FtsService } from '../fts/fts.service';
 
 @ApiUseTags('user')
 @Controller({ path: 'user' })
@@ -48,6 +49,7 @@ export class UserController {
     @Inject(forwardRef(() => AuthValidator))
     private readonly authValidator: AuthValidator,
     private readonly ftsValidator: FtsValidator,
+    private readonly ftsService: FtsService,
   ) {
   }
 
@@ -138,17 +140,23 @@ export class UserController {
   @UseGuards(Guards)
   @ApiBearerAuth()
   @Patch('fts-accounts')
-  @ApiOperation({ title: 'Модификация аккаунта ФНС в главный' })
+  @ApiOperation({ title: 'Изменение данных аккаунта ФНС' })
   @ApiResponse({
     status: 200,
-    type: String,
+    type: FtsAccountEntity,
   })
-  async makeFtsAccountMain(@RequestUser() user: UserEntity, @Query('phone') phone: string): Promise<string> {
+  async modifyFtsAccount(@RequestUser() user: UserEntity, @Body() { isMain, password, phone }: FtsAccountModifyDto): Promise<FtsAccountEntity> {
     const isAccountExist = await this.userValidator.isFtsAccountExistOnUser({ user, phone });
     if (!isAccountExist) {
       throw new BadRequestException(wrapErrors({ phone: NOT_EXIST_FTS_PHONE }));
     }
-    await this.userService.makeFtsAccountMain({ user, phone });
-    return OK;
+    const ftsAccountValidation = await this.ftsValidator.validateFtsAccountDto({ phone, password });
+    if (ftsAccountValidation !== true) {
+      throw new BadRequestException(wrapErrors(ftsAccountValidation));
+    }
+    if (isMain) {
+      await this.userService.makeFtsAccountMain({ user, phone });
+    }
+    return await this.ftsService.changeFtsAccountPassword({ password, phone });
   }
 }

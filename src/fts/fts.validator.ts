@@ -3,7 +3,7 @@ import { FtsService } from './fts.service';
 import { FtsAccountDto } from './dto/fts-account.dto';
 import { FtsRegistrationDto } from './dto/fts-registration.dto';
 import { CommonValidator } from '../helpers/common.validator';
-import { INVALID_EMAIL_ERROR, INVALID_PHONE_ERROR, NOT_EMPTY_ERROR } from '../helpers/text';
+import { BAD_FTS_SIGN_IN_DATA, INVALID_EMAIL_ERROR, INVALID_PHONE_ERROR, NOT_EMPTY_ERROR } from '../helpers/text';
 import { FtsRemindDto } from './dto/fts-remind.dto';
 
 @Injectable()
@@ -24,15 +24,13 @@ export class FtsValidator {
       name: '',
       email: '',
     };
-    if (this.commonValidator.isEmpty(phone)) {
-      errors.phone = NOT_EMPTY_ERROR;
-    } else if (!this.commonValidator.isPhone(phone)) {
-      errors.phone = INVALID_PHONE_ERROR;
+    const phoneValidation = this.commonValidator.validatePhone(phone);
+    if (phoneValidation !== true) {
+      errors.phone = phoneValidation;
     }
-    if (this.commonValidator.isEmpty(email)) {
-      errors.email = NOT_EMPTY_ERROR;
-    } else if (!this.commonValidator.isEmail(email)) {
-      errors.email = INVALID_EMAIL_ERROR;
+    const emailValidation = this.commonValidator.validateEmail(email);
+    if (emailValidation !== true) {
+      errors.email = emailValidation;
     }
     if (this.commonValidator.isEmpty(name)) {
       errors.name = NOT_EMPTY_ERROR;
@@ -43,16 +41,34 @@ export class FtsValidator {
     return true;
   }
 
+  async validateFtsAccountDto({ phone, password }: FtsAccountDto): Promise<true | { password: string; phone: string }> {
+    const errors = {
+      phone: '',
+      password: '',
+    };
+    const phoneValidation = this.commonValidator.validatePhone(phone);
+    if (phoneValidation !== true) {
+      errors.phone = phoneValidation;
+      return errors;
+    }
+    const isSignInDataValid = await this.isSignInDataValid({ phone, password });
+    if (!isSignInDataValid) {
+      errors.password = BAD_FTS_SIGN_IN_DATA;
+      errors.phone = BAD_FTS_SIGN_IN_DATA;
+    }
+    if (this.commonValidator.isErrorsEmpty(errors)) {
+      return true;
+    }
+    return errors;
+  }
+
   validateRemindDto({ phone }: FtsRemindDto): true | { phone: string } {
     const errors = {
       phone: '',
     };
-    if (this.commonValidator.isEmpty(phone)) {
-      errors.phone = NOT_EMPTY_ERROR;
-    } else if (!this.commonValidator.isPhone(phone)) {
-      errors.phone = INVALID_PHONE_ERROR;
-    }
-    if (!this.commonValidator.isErrorsEmpty(errors)) {
+    const validationResult = this.commonValidator.validatePhone(phone);
+    if (validationResult !== true) {
+      errors.phone = validationResult;
       return errors;
     }
     return true;

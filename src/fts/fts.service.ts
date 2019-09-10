@@ -5,6 +5,10 @@ import { FtsAccountDto } from './dto/fts-account.dto';
 import { FtsRegistrationDto } from './dto/fts-registration.dto';
 import { FTS_USER_EXIST_ERROR, FTS_USER_NOT_EXIST_ERROR, INVALID_PHONE_ERROR, UNKNOWN_ERROR } from '../helpers/text';
 import { FtsRemindDto } from './dto/fts-remind.dto';
+import { FtsAccountModifyDto } from '../user/dto/fts-account-modify.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { FtsAccountEntity } from '../user/entities/fts-account.entity';
+import { Repository } from 'typeorm';
 
 interface FtsHeaders {
   'Device-Id': string;
@@ -22,7 +26,9 @@ interface FtsHeaders {
 export class FtsService {
   private readonly api: AxiosInstance;
 
-  constructor() {
+  constructor(
+    @InjectRepository(FtsAccountEntity) private readonly ftsAccountEntityRepository: Repository<FtsAccountEntity>,
+  ) {
     this.api = axios.create({
       httpsAgent: new https.Agent({
         rejectUnauthorized: false,
@@ -63,6 +69,12 @@ export class FtsService {
     } catch (err) {
       return FTS_USER_NOT_EXIST_ERROR;
     }
+  }
+
+  async changeFtsAccountPassword({ password, phone }: { password: string, phone: string }): Promise<FtsAccountEntity> {
+    const ftsAccount: FtsAccountEntity = await this.ftsAccountEntityRepository.findOne({ where: { phone } });
+    ftsAccount.password = password;
+    return await this.ftsAccountEntityRepository.save(ftsAccount);
   }
 
   generateAuthorizationValue(userCredentials: FtsAccountDto): string {

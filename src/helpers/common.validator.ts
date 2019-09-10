@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { INVALID_EMAIL_ERROR, INVALID_PHONE_ERROR, NOT_EMPTY_ERROR } from './text';
 
 @Injectable()
 export class CommonValidator {
@@ -14,6 +15,24 @@ export class CommonValidator {
 
   isPhone(phone: string) {
     return /((^\+7)|(^8)|(^7))9[0-9]{9}$/.test(phone);
+  }
+
+  validatePhone(phone: string): string | true {
+    if (this.isEmpty(phone)) {
+      return NOT_EMPTY_ERROR;
+    } else if (!this.isPhone(phone)) {
+      return INVALID_PHONE_ERROR;
+    }
+    return true;
+  }
+
+  validateEmail(email: string) {
+    if (this.isEmpty(email)) {
+      return NOT_EMPTY_ERROR;
+    } else if (!this.isEmail(email)) {
+      return INVALID_EMAIL_ERROR;
+    }
+    return true;
   }
 
   isErrorsEmpty(errors: { [ field: string ]: string }): boolean {
