@@ -9,6 +9,7 @@ import { BillProviderEntity } from '../bill-provider/entities/bill-provider.enti
 @Module({
   imports: [ TypeOrmModule.forFeature([ BillRequestEntity, BillEntity, UserEntity, BillProviderEntity ]) ],
   providers: [ BillRequestService ],
+  exports: [ BillRequestService ],
 })
 export class BillRequestModule {
 }

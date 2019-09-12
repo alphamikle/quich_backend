@@ -23,7 +23,7 @@ export class BillRequestEntity {
   @Column()
   billDate!: Date;
 
-  @Column()
+  @Column({ type: 'real' })
   totalSum!: number;
 
   @Column({ type: 'jsonb', nullable: true })
@@ -43,8 +43,8 @@ export class BillRequestEntity {
   @ManyToOne(() => UserEntity, user => user.billRequests)
   user?: UserEntity;
 
-  @Column()
-  billId!: string;
+  @Column({ nullable: true })
+  billId?: string;
   @ManyToOne(() => BillEntity, bill => bill.billRequests)
   bill?: BillEntity;
 

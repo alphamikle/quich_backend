@@ -16,7 +16,6 @@ export class BearerStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(token: string, done: (error: any, user?: UserEntity, options?: IVerifyOptions | string) => void): Promise<void> {
-    console.log(token);
     const isTokenValid = await this.authValidator.isTokenValid(token);
     if (!isTokenValid) {
       await this.userService.makeSessionInvalid(token);

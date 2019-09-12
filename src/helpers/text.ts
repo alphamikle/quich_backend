@@ -14,3 +14,4 @@ export const INVALID_PHONE_ERROR = 'Неверный формат телефон
 export const INVALID_EMAIL_ERROR = 'Неверный формат email';
 export const FTS_USER_EXIST_ERROR = 'Пользователь с данным телефоном уже зарегистрирован в ФНС';
 export const FTS_USER_NOT_EXIST_ERROR = 'Пользователь с данным телефоном не найден в ФНС';
+export const FTS_ACCOUNTS_ALL_BUSY_ERROR = 'Нет свободных аккаунтов ФНС, добавьте новый аккаунт или попробуйте позднее';

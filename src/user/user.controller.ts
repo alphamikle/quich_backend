@@ -48,7 +48,9 @@ export class UserController {
     private readonly authService: AuthService,
     @Inject(forwardRef(() => AuthValidator))
     private readonly authValidator: AuthValidator,
+    @Inject(forwardRef(() => FtsValidator))
     private readonly ftsValidator: FtsValidator,
+    @Inject(forwardRef(() => FtsService))
     private readonly ftsService: FtsService,
   ) {
   }
