@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { In, Repository } from 'typeorm';
@@ -7,6 +7,8 @@ import { DateHelper } from '../helpers/date.helper';
 import { FtsAccountEntity } from './entities/fts-account.entity';
 import { FtsAccountDto } from '../fts/dto/fts-account.dto';
 import { FtsAccountQueueEntity } from './entities/fts-account-queue.entity';
+import { wrapErrors } from '../helpers/response.helper';
+import { FTS_ACCOUNTS_ALL_BUSY_ERROR } from '../helpers/text';
 
 const { TOKEN_DURATION } = process.env;
 
@@ -19,6 +21,10 @@ export class UserService {
     @InjectRepository(FtsAccountQueueEntity) private readonly ftsAccountQueueEntityRepository: Repository<FtsAccountQueueEntity>,
     private readonly dateHelper: DateHelper,
   ) {
+  }
+
+  async getFtsAccountById(ftsAccountId: string): Promise<FtsAccountEntity | undefined> {
+    return await this.ftsAccountEntityRepository.findOne(ftsAccountId);
   }
 
   async createUser({ email, passwordHash }: { email: string, passwordHash: string }): Promise<UserEntity> {
@@ -140,5 +146,20 @@ export class UserService {
       return userFtsAccounts[ 0 ];
     }
     return mostUnusedAccounts[ 0 ];
+  }
+
+  async getFtsAccountForUser(userId: string): Promise<FtsAccountEntity> {
+    const hasUserFtsAccount = await this.hasUserFtsAccount(userId);
+    let ftsAccount: FtsAccountEntity;
+    if (hasUserFtsAccount) {
+      ftsAccount = await this.getNextFtsAccountByUserId(userId);
+    } else {
+      ftsAccount = await this.getRandomFtsAccount();
+    }
+    if (!ftsAccount) {
+      throw new BadRequestException(wrapErrors({ push: FTS_ACCOUNTS_ALL_BUSY_ERROR }));
+    }
+    await this.addFtsAccountIdToQueue(ftsAccount.id);
+    return ftsAccount;
   }
 }

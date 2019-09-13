@@ -1,4 +1,5 @@
 import { ApiModelProperty } from '@nestjs/swagger';
+import { FtsFetchResponseBill } from '../../fts/dto/fts-fetch-response/bill.dto';
 
 export class BillRequestCreatingDto {
   @ApiModelProperty()
@@ -17,7 +18,7 @@ export class BillRequestCreatingDto {
   totalSum!: number;
 
   @ApiModelProperty()
-  rawData?: JSON;
+  rawData?: FtsFetchResponseBill;
 
   @ApiModelProperty()
   isFetched?: boolean;

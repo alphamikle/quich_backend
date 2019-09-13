@@ -17,7 +17,7 @@ export class FtsQrDto {
   @Type(() => Date)
   dateTime?: Date;
 
-  @ApiModelProperty({ type: 'float' })
+  @ApiModelProperty()
   totalSum?: number; // ? Используется не для всех запросов
 
   @ApiModelProperty({ type: 'integer' })

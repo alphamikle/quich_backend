@@ -2,6 +2,7 @@ import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, Up
 import { UserEntity } from '../../user/entities/user.entity';
 import { BillEntity } from '../../bill/entities/bill.entity';
 import { BillProviderEntity } from '../../bill-provider/entities/bill-provider.entity';
+import { FtsFetchResponseBill } from '../../fts/dto/fts-fetch-response/bill.dto';
 
 @Entity()
 export class BillRequestEntity {
@@ -27,7 +28,7 @@ export class BillRequestEntity {
   totalSum!: number;
 
   @Column({ type: 'jsonb', nullable: true })
-  rawData?: JSON;
+  rawData?: FtsFetchResponseBill;
 
   @Column({ default: false })
   isFetched!: boolean;

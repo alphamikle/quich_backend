@@ -1,7 +1,7 @@
-import { BadRequestException, Body, Controller, forwardRef, Inject, Post, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, forwardRef, Inject, NotFoundException, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import { wrapErrors } from '../helpers/response.helper';
-import { FTS_ACCOUNTS_ALL_BUSY_ERROR, OK } from '../helpers/text';
+import { FTS_CHECKING_BILL_ERROR, FTS_NOT_CHECKED_BILL_ERROR, OK } from '../helpers/text';
 import { FtsRegistrationDto } from './dto/fts-registration.dto';
 import { FtsService } from './fts.service';
 import { FtsValidator } from './fts.validator';
@@ -13,6 +13,8 @@ import { UserEntity } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
 import { FtsAccountEntity } from '../user/entities/fts-account.entity';
 import { BillRequestService } from '../bill-request/bill-request.service';
+import { BillRequestEntity } from '../bill-request/entities/bill-request.entity';
+import { FtsFetchResponseBill } from './dto/fts-fetch-response/bill.dto';
 
 @ApiUseTags('fts')
 @Controller('fts')
@@ -71,34 +73,45 @@ export class FtsController {
     type: String,
   })
   async checkBillExistence(@RequestUser() user: UserEntity, @Body() ftsQrDto: FtsQrDto): Promise<string> {
-    const hasUserFtsAccount = await this.userService.hasUserFtsAccount(user.id);
-    let ftsAccount: FtsAccountEntity;
-    if (hasUserFtsAccount) {
-      ftsAccount = await this.userService.getNextFtsAccountByUserId(user.id);
-    } else {
-      ftsAccount = await this.userService.getRandomFtsAccount();
-    }
-    if (!ftsAccount) {
-      throw new BadRequestException(wrapErrors({ push: FTS_ACCOUNTS_ALL_BUSY_ERROR }));
-    }
-    await this.userService.addFtsAccountIdToQueue(ftsAccount.id);
-    let billRequest = await this.billRequestService.getBillRequestByProps({
-      fiscalNumber: ftsQrDto.fiscalNumber,
-      fiscalDocument: ftsQrDto.fiscalDocument,
-      fiscalProp: ftsQrDto.fiscalProp,
-    });
-    if (!billRequest) {
-      billRequest = await this.billRequestService.createBillRequest({
-        userId: user.id,
-        billDate: ftsQrDto.dateTime,
-        totalSum: ftsQrDto.totalSum,
-        fiscalProp: ftsQrDto.fiscalProp,
-        fiscalNumber: ftsQrDto.fiscalNumber,
-        fiscalDocument: ftsQrDto.fiscalDocument,
-      });
-    }
+    const { ftsAccount, billRequest } = await this.getFtsAccountAndBillRequest({ userId: user.id, ftsQrDto });
     await this.ftsService.assignBillRequestWithFtsAccount({ ftsAccountId: ftsAccount.id, billRequestId: billRequest.id });
     const response = await this.ftsService.checkBillExistence(ftsQrDto, { password: ftsAccount.password, phone: ftsAccount.phone });
+    if (!response) {
+      throw new NotFoundException(wrapErrors({ push: FTS_CHECKING_BILL_ERROR }));
+    }
     return OK;
+  }
+
+  @UseGuards(Guards)
+  @ApiBearerAuth()
+  @Post('bill/data')
+  @ApiOperation({ title: 'Получение информации о чеке' })
+  @ApiResponse({
+    status: 201,
+    type: FtsFetchResponseBill,
+  })
+  async fetchBillData(@RequestUser() user: UserEntity, @Body() ftsQrDto: FtsQrDto): Promise<FtsFetchResponseBill> {
+    const { fiscalProp, fiscalDocument, fiscalNumber } = ftsQrDto;
+    const billRequest = await this.billRequestService.getBillRequestByProps({ fiscalProp, fiscalDocument, fiscalNumber });
+    if (!billRequest) {
+      throw new BadRequestException(wrapErrors({ push: FTS_NOT_CHECKED_BILL_ERROR }));
+    }
+    if (billRequest.isFetched) {
+      return billRequest.rawData;
+    }
+    const ftsAccountFromBillRequest = await this.ftsService.getBillRequestToFtsAccountEntityByBillRequestId(billRequest.id);
+    const ftsAccount = await this.userService.getFtsAccountById(ftsAccountFromBillRequest.ftsAccountId);
+    await this.ftsService.assignBillRequestWithFtsAccount({ ftsAccountId: ftsAccount.id, billRequestId: billRequest.id });
+    return await this.ftsService.fetchBillData(ftsQrDto, { password: ftsAccount.password, phone: ftsAccount.phone });
+  }
+
+  private async getFtsAccountAndBillRequest({ userId, ftsQrDto }:
+                                              { userId: string, ftsQrDto: FtsQrDto }):
+    Promise<{ ftsAccount: FtsAccountEntity; billRequest: BillRequestEntity }> {
+    const [ ftsAccount, billRequest ] = await Promise.all([
+      this.userService.getFtsAccountForUser(userId),
+      this.billRequestService.findOrCreateBillRequest({ userId, ftsQrDto }),
+    ]);
+    return { ftsAccount, billRequest };
   }
 }

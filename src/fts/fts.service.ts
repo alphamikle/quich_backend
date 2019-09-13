@@ -5,17 +5,16 @@ import { FtsAccountDto } from './dto/fts-account.dto';
 import { FtsRegistrationDto } from './dto/fts-registration.dto';
 import { FTS_USER_EXIST_ERROR, FTS_USER_NOT_EXIST_ERROR, INVALID_PHONE_ERROR, UNKNOWN_ERROR } from '../helpers/text';
 import { FtsRemindDto } from './dto/fts-remind.dto';
-import { FtsAccountModifyDto } from '../user/dto/fts-account-modify.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FtsAccountEntity } from '../user/entities/fts-account.entity';
 import { Repository } from 'typeorm';
 import { FtsQrDto } from './dto/fts-qr.dto';
-import { UserEntity } from '../user/entities/user.entity';
-import { BillRequestEntity } from '../bill-request/entities/bill-request.entity';
 import { FtsAccountToBillRequestEntity } from './entities/fts-account-to-bill-request.entity';
 import { DateHelper } from '../helpers/date.helper';
+import { FtsFetchResponse } from './dto/fts-fetch-response/response.dto';
+import { FtsFetchResponseBill } from './dto/fts-fetch-response/bill.dto';
 
-interface FtsHeaders {
+export interface FtsHeaders {
   'Device-Id': string;
   'Device-OS': string;
   'User-Agent'?: 'okhttp/3.0.1';
@@ -47,14 +46,19 @@ export class FtsService {
     });
   }
 
-  async assignBillRequestWithFtsAccount({ ftsAccountId, billRequestId }: { ftsAccountId: string, billRequestId: string }) {
+  async assignBillRequestWithFtsAccount({ ftsAccountId, billRequestId }: { ftsAccountId: string, billRequestId: string }):
+    Promise<FtsAccountToBillRequestEntity> {
     const ftsAccountToBillRequest = new FtsAccountToBillRequestEntity();
     ftsAccountToBillRequest.billRequestId = billRequestId;
     ftsAccountToBillRequest.ftsAccountId = ftsAccountId;
     return await this.ftsAccountToBillRequestEntityRepository.save(ftsAccountToBillRequest);
   }
 
-  setFtsUrl(baseUrl: string = 'https://proverkacheka.nalog.ru:9999') {
+  async getBillRequestToFtsAccountEntityByBillRequestId(billRequestId: string): Promise<FtsAccountToBillRequestEntity | undefined> {
+    return await this.ftsAccountToBillRequestEntityRepository.findOne({ where: { billRequestId } });
+  }
+
+  setFtsUrl(baseUrl: string = 'https://proverkacheka.nalog.ru:9999'): void {
     this.baseUrl = baseUrl;
   }
 
@@ -99,15 +103,26 @@ export class FtsService {
   }
 
   async checkBillExistence({ fiscalNumber: fn, checkType: ct = 1, fiscalDocument: fd, fiscalProp: fp, dateTime, totalSum: ts }: FtsQrDto,
-                           userCredentials: FtsAccountDto) {
+                           userCredentials: FtsAccountDto): Promise<boolean> {
     const formattedDate = this.formatDateToFtsDate(dateTime);
-    const url = encodeURI(`/v1/ofds/*/inns/*/fss/${fn}/operations/${ct}/tickets/${fd}?fiscalSign=${fp}&date=${formattedDate}&sum=${ts}`);
+    const url = encodeURI(`/v1/ofds/*/inns/*/fss/${ fn }/operations/${ ct }/tickets/${ fd }?fiscalSign=${ fp }&date=${ formattedDate }&sum=${ ts }`);
     try {
-      const response = await this.api.get(url, { headers: this.getHeaders(userCredentials) });
-      return response.data;
+      await this.api.get(url, { headers: this.getHeaders(userCredentials) });
+      return true;
     } catch (err) {
       console.error(err);
       return false;
+    }
+  }
+
+  async fetchBillData({ fiscalNumber, fiscalDocument, fiscalProp }: FtsQrDto, ftsAccountDto: FtsAccountDto): Promise<FtsFetchResponseBill> {
+    const url = `/v1/inns/*/kkts/*/fss/${ fiscalNumber }/tickets/${ fiscalDocument }?fiscalSign=${ fiscalProp }&sendToEmail=no`;
+    try {
+      const response: FtsFetchResponse = await this.api.get(url, { headers: this.getHeaders(ftsAccountDto) });
+      return response.data.document.receipt;
+    } catch (err) {
+      console.error(err);
+      return null;
     }
   }
 
