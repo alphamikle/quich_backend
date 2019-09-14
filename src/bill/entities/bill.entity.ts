@@ -1,7 +1,7 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ShopEntity } from '../../shop/entities/shop.entity';
 import { UserEntity } from '../../user/entities/user.entity';
-import { PurchaseEntity } from '../../purchase/purchase/purchase.entity';
+import { PurchaseEntity } from '../../purchase/entities/purchase.entity';
 import { BillRequestEntity } from '../../bill-request/entities/bill-request.entity';
 
 @Entity()

@@ -105,7 +105,9 @@ export class FtsService {
   async checkBillExistence({ fiscalNumber: fn, checkType: ct = 1, fiscalDocument: fd, fiscalProp: fp, dateTime, totalSum: ts }: FtsQrDto,
                            userCredentials: FtsAccountDto): Promise<boolean> {
     const formattedDate = this.formatDateToFtsDate(dateTime);
-    const url = encodeURI(`/v1/ofds/*/inns/*/fss/${ fn }/operations/${ ct }/tickets/${ fd }?fiscalSign=${ fp }&date=${ formattedDate }&sum=${ ts }`);
+    const penny = ts * 100;
+    const preUrl = '/v1/ofds/*/inns/*/fss/';
+    const url = encodeURI(`${preUrl}${ fn }/operations/${ ct }/tickets/${ fd }?fiscalSign=${ fp }&date=${ formattedDate }&sum=${ penny }`);
     try {
       await this.api.get(url, { headers: this.getHeaders(userCredentials) });
       return true;
@@ -126,9 +128,10 @@ export class FtsService {
     }
   }
 
-  private formatDateToFtsDate(date: Date): string {
-    const isoDate = this.dateHelper.format(date, 'yyyy-MM-dd HH:mm');
-    return isoDate.replace(/(-)|(:)/g, '').replace(' ', 'T');
+  private formatDateToFtsDate(date: string): string {
+    return date;
+    // const isoDate = this.dateHelper.format(date, 'yyyy-MM-dd HH:mm');
+    // return isoDate.replace(/(-)|(:)/g, '').replace(' ', 'T');
   }
 
   private generateAuthorizationValue(userCredentials: FtsAccountDto): string {

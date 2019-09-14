@@ -33,6 +33,9 @@ export class BillRequestEntity {
   @Column({ default: false })
   isFetched!: boolean;
 
+  @Column({ default: false })
+  isChecked!: boolean;
+
   @CreateDateColumn()
   createdAt!: Date;
 

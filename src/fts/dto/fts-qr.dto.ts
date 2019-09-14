@@ -1,6 +1,4 @@
 import { ApiModelProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsDate } from 'class-validator';
 
 export class FtsQrDto {
   @ApiModelProperty()
@@ -12,14 +10,12 @@ export class FtsQrDto {
   @ApiModelProperty()
   fiscalDocument!: string;
 
-  @ApiModelProperty({ type: Date })
-  @IsDate()
-  @Type(() => Date)
-  dateTime?: Date;
+  @ApiModelProperty()
+  dateTime?: string;
 
   @ApiModelProperty()
   totalSum?: number; // ? Используется не для всех запросов
 
-  @ApiModelProperty({ type: 'integer' })
+  @ApiModelProperty({ type: 'integer', example: 1 })
   checkType?: number;
 }

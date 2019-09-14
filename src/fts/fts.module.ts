@@ -10,6 +10,7 @@ import { FtsAccountToBillRequestEntity } from './entities/fts-account-to-bill-re
 import { BillRequestEntity } from '../bill-request/entities/bill-request.entity';
 import { BillRequestModule } from '../bill-request/bill-request.module';
 import { DateHelper } from '../helpers/date.helper';
+import { FtsTransformer } from './fts.transformer';
 
 @Module({
   imports: [
@@ -18,8 +19,8 @@ import { DateHelper } from '../helpers/date.helper';
     BillRequestModule,
   ],
   controllers: [ FtsController ],
-  providers: [ FtsService, FtsValidator, CommonValidator, DateHelper ],
-  exports: [ FtsValidator, FtsService ],
+  providers: [ FtsService, FtsValidator, FtsTransformer, CommonValidator, DateHelper ],
+  exports: [ FtsValidator, FtsService, FtsTransformer ],
 })
 export class FtsModule {
 }

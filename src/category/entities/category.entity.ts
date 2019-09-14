@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { PurchaseEntity } from '../../purchase/purchase/purchase.entity';
+import { PurchaseEntity } from '../../purchase/entities/purchase.entity';
 import { CategoryToUserEntity } from './category-to-user.entity';
 
 @Entity()

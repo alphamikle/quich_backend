@@ -74,18 +74,22 @@ export class FtsController {
   })
   async checkBillExistence(@RequestUser() user: UserEntity, @Body() ftsQrDto: FtsQrDto): Promise<string> {
     const { ftsAccount, billRequest } = await this.getFtsAccountAndBillRequest({ userId: user.id, ftsQrDto });
+    // if (billRequest.isChecked) {
+    //   return OK;
+    // }
     await this.ftsService.assignBillRequestWithFtsAccount({ ftsAccountId: ftsAccount.id, billRequestId: billRequest.id });
     const response = await this.ftsService.checkBillExistence(ftsQrDto, { password: ftsAccount.password, phone: ftsAccount.phone });
     if (!response) {
       throw new NotFoundException(wrapErrors({ push: FTS_CHECKING_BILL_ERROR }));
     }
+    await this.billRequestService.makeBillRequestChecked(billRequest.id);
     return OK;
   }
 
   @UseGuards(Guards)
   @ApiBearerAuth()
   @Post('bill/data')
-  @ApiOperation({ title: 'Получение информации о чеке' })
+  @ApiOperation({ title: 'Получение информации о чеке из ФНС' })
   @ApiResponse({
     status: 201,
     type: FtsFetchResponseBill,
@@ -102,7 +106,13 @@ export class FtsController {
     const ftsAccountFromBillRequest = await this.ftsService.getBillRequestToFtsAccountEntityByBillRequestId(billRequest.id);
     const ftsAccount = await this.userService.getFtsAccountById(ftsAccountFromBillRequest.ftsAccountId);
     await this.ftsService.assignBillRequestWithFtsAccount({ ftsAccountId: ftsAccount.id, billRequestId: billRequest.id });
-    return await this.ftsService.fetchBillData(ftsQrDto, { password: ftsAccount.password, phone: ftsAccount.phone });
+    const billData = await this.ftsService.fetchBillData(ftsQrDto, { password: ftsAccount.password, phone: ftsAccount.phone });
+    if (billData) {
+      await this.billRequestService.makeBillRequestFetched(billRequest.id);
+      await this.billRequestService.addRawDataToBillRequest({ billRequestId: billRequest.id, rawData: billData });
+      return billData;
+    }
+    throw new NotFoundException(wrapErrors({ push: '' })); // TODO: Коды ошибок от фнс и их проброс тут
   }
 
   private async getFtsAccountAndBillRequest({ userId, ftsQrDto }:

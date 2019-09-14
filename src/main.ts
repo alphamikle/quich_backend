@@ -4,14 +4,13 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as pack from '../package.json';
-import { NextFunction, Request, Response } from 'express';
-import { ValidationPipe } from '@nestjs/common';
 
 const { APP_PORT } = process.env;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe({ forbidUnknownValues: true }));
+  // ! Если использовать этот pipe без декораторов валидации - возникает ошибка в рантайме
+  // app.useGlobalPipes(new ValidationPipe({ forbidUnknownValues: true }));
 
   const options = new DocumentBuilder()
     .setTitle(pack.name)

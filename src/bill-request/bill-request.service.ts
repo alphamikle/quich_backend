@@ -4,12 +4,15 @@ import { BillRequestEntity } from './entities/bill-request.entity';
 import { Repository } from 'typeorm';
 import { BillRequestCreatingDto } from './dto/bill-request-creating.dto';
 import { FtsQrDto } from '../fts/dto/fts-qr.dto';
+import { FtsFetchResponseBill } from '../fts/dto/fts-fetch-response/bill.dto';
+import { DateHelper } from '../helpers/date.helper';
 
 @Injectable()
 export class BillRequestService {
   constructor(
     @InjectRepository(BillRequestEntity)
     private readonly billRequestEntityRepository: Repository<BillRequestEntity>,
+    private readonly dateHelper: DateHelper,
   ) {}
 
   async getBillRequestByProps({ fiscalDocument, fiscalNumber, fiscalProp }:
@@ -39,7 +42,7 @@ export class BillRequestService {
     if (!billRequest) {
       billRequest = await this.createBillRequest({
         userId,
-        billDate: ftsQrDto.dateTime,
+        billDate: this.dateHelper.transformFtsDateToDate(ftsQrDto.dateTime),
         totalSum: ftsQrDto.totalSum,
         fiscalProp: ftsQrDto.fiscalProp,
         fiscalNumber: ftsQrDto.fiscalNumber,
@@ -47,5 +50,17 @@ export class BillRequestService {
       });
     }
     return billRequest;
+  }
+
+  async makeBillRequestChecked(billRequestId: string): Promise<void> {
+    await this.billRequestEntityRepository.update({ id: billRequestId }, { isChecked: true });
+  }
+
+  async makeBillRequestFetched(billRequestId: string): Promise<void> {
+    await this.billRequestEntityRepository.update({ id: billRequestId }, { isFetched: true });
+  }
+
+  async addRawDataToBillRequest({ billRequestId, rawData }: { billRequestId: string, rawData: FtsFetchResponseBill }): Promise<void> {
+    await this.billRequestEntityRepository.update({ id: billRequestId }, { rawData });
   }
 }
