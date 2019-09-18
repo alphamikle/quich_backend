@@ -1,55 +1,57 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
 import { FtsFetchResponsePurchase } from './purchase.dto';
 
 export class FtsFetchResponseBill {
-  @ApiModelProperty()
+  @ApiModelPropertyOptional()
   senderAddress?: string;
   @ApiModelProperty()
   dateTime: string;
-  @ApiModelProperty()
+  @ApiModelPropertyOptional()
   requestNumber?: number;
-  @ApiModelProperty()
+  @ApiModelPropertyOptional()
   rawData?: string;
-  @ApiModelProperty()
+  @ApiModelPropertyOptional()
   fiscalDocumentNumber?: number;
   @ApiModelProperty()
   items: FtsFetchResponsePurchase[];
-  @ApiModelProperty()
+  @ApiModelPropertyOptional()
   receiptCode?: number;
-  @ApiModelProperty()
+  @ApiModelPropertyOptional()
   kktRegId?: string;
-  @ApiModelProperty()
+  @ApiModelPropertyOptional()
   shiftNumber?: number;
-  @ApiModelProperty()
+  @ApiModelPropertyOptional()
   taxationType?: number;
   @ApiModelProperty()
   user: string;
-  @ApiModelProperty()
+  @ApiModelPropertyOptional()
   fiscalSign?: number;
-  @ApiModelProperty()
+  @ApiModelPropertyOptional()
   operator?: string;
-  @ApiModelProperty()
+  @ApiModelPropertyOptional()
   nds18?: number;
-  @ApiModelProperty()
-  retailPlaceAddress: string;
-  @ApiModelProperty()
+  @ApiModelPropertyOptional()
+  retailPlaceAddress?: string;
+  @ApiModelPropertyOptional()
+  retailAddress?: string;
+  @ApiModelPropertyOptional()
   addressToCheckFiscalSign?: string;
   @ApiModelProperty()
   totalSum: number;
   @ApiModelProperty()
   userInn: string;
-  @ApiModelProperty()
+  @ApiModelPropertyOptional()
   nds10?: number;
   @ApiModelProperty()
   operationType?: number;
-  @ApiModelProperty()
+  @ApiModelPropertyOptional()
   cashTotalSum?: number;
-  @ApiModelProperty()
+  @ApiModelPropertyOptional()
   buyerAddress?: string;
-  @ApiModelProperty()
+  @ApiModelPropertyOptional()
   ecashTotalSum?: number;
-  @ApiModelProperty()
+  @ApiModelPropertyOptional()
   fiscalDriveNumber?: string;
-  @ApiModelProperty()
+  @ApiModelPropertyOptional()
   retailPlace?: string;
 }

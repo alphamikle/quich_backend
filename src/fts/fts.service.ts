@@ -1,9 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, RequestTimeoutException } from '@nestjs/common';
 import { AxiosInstance, AxiosResponse, default as axios } from 'axios';
 import * as https from 'https';
 import { FtsAccountDto } from './dto/fts-account.dto';
 import { FtsRegistrationDto } from './dto/fts-registration.dto';
-import { FTS_USER_EXIST_ERROR, FTS_USER_NOT_EXIST_ERROR, INVALID_PHONE_ERROR, UNKNOWN_ERROR } from '../helpers/text';
+import {
+  FTS_USER_EXIST_ERROR,
+  FTS_USER_NOT_EXIST_ERROR,
+  INVALID_PHONE_ERROR,
+  UNKNOWN_ERROR,
+  FTS_UNKNOWN_FETCHING_ERROR,
+  FTS_BILL_NOT_SEND_ERROR, FTS_TRY_MORE_ERROR,
+} from '../helpers/text';
 import { FtsRemindDto } from './dto/fts-remind.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FtsAccountEntity } from '../user/entities/fts-account.entity';
@@ -13,6 +20,8 @@ import { FtsAccountToBillRequestEntity } from './entities/fts-account-to-bill-re
 import { DateHelper } from '../helpers/date.helper';
 import { FtsFetchResponse } from './dto/fts-fetch-response/response.dto';
 import { FtsFetchResponseBill } from './dto/fts-fetch-response/bill.dto';
+import { wrapErrors } from '../helpers/response.helper';
+import { wait } from '../helpers/common.helper';
 
 export interface FtsHeaders {
   'Device-Id': string;
@@ -117,14 +126,41 @@ export class FtsService {
     }
   }
 
-  async fetchBillData({ fiscalNumber, fiscalDocument, fiscalProp }: FtsQrDto, ftsAccountDto: FtsAccountDto): Promise<FtsFetchResponseBill> {
+  async fetchBillData({ fiscalNumber, fiscalDocument, fiscalProp }: FtsQrDto, ftsAccountDto: FtsAccountDto, count = 0, limit = 2):
+    Promise<FtsFetchResponseBill | string> {
+    if (count >= limit) {
+      throw new RequestTimeoutException();
+    }
+    if (count > 0) {
+      await wait(500 * count);
+    }
     const url = `/v1/inns/*/kkts/*/fss/${ fiscalNumber }/tickets/${ fiscalDocument }?fiscalSign=${ fiscalProp }&sendToEmail=no`;
     try {
       const response: FtsFetchResponse = await this.api.get(url, { headers: this.getHeaders(ftsAccountDto) });
+      if (response.status !== 200) {
+        return await this.fetchBillData({ fiscalNumber, fiscalDocument, fiscalProp }, ftsAccountDto, count + 1);
+      }
       return response.data.document.receipt;
     } catch (err) {
-      console.error(err);
-      return null;
+      console.error('FETCHING ERROR', err);
+      if (count < limit) {
+        return await this.fetchBillData({ fiscalNumber, fiscalDocument, fiscalProp }, ftsAccountDto, count + 1);
+      }
+      let error = FTS_TRY_MORE_ERROR;
+      if (err.response && err.response.status) {
+        const status: number = err.response.status;
+        switch (status) {
+          case 406: {
+            error = FTS_BILL_NOT_SEND_ERROR;
+            break;
+          }
+          default: {
+            error = FTS_UNKNOWN_FETCHING_ERROR;
+            break;
+          }
+        }
+      }
+      return error;
     }
   }
 

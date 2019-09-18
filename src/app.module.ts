@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
@@ -11,6 +11,7 @@ import { ProductModule } from './product/product.module';
 import { BillRequestModule } from './bill-request/bill-request.module';
 import { CategoryModule } from './category/category.module';
 import { BillProviderModule } from './bill-provider/bill-provider.module';
+import { OfdModule } from './ofd/ofd.module';
 
 const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNC } = process.env;
 
@@ -37,6 +38,7 @@ const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNC } = process.env;
     BillRequestModule,
     CategoryModule,
     BillProviderModule,
+    OfdModule,
   ],
   controllers: [],
   providers: [],

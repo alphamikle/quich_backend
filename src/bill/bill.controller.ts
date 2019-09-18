@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, ConflictException, Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import { Guards } from '../helpers/guards';
 import { RequestUser } from '../user/user.decorator';
@@ -10,6 +10,8 @@ import { UserService } from '../user/user.service';
 import { FtsAccountDto } from '../fts/dto/fts-account.dto';
 import { FtsTransformer } from '../fts/fts.transformer';
 import { BillDto } from './dto/bill.dto';
+import { wrapErrors } from '../helpers/response.helper';
+import { OfdService } from '../ofd/ofd.service';
 
 @ApiUseTags('bill')
 @Controller('bill')
@@ -19,6 +21,7 @@ export class BillController {
     private readonly ftsService: FtsService,
     private readonly ftsTransformer: FtsTransformer,
     private readonly userService: UserService,
+    private readonly ofdService: OfdService,
   ) {
   }
 
@@ -31,11 +34,26 @@ export class BillController {
     type: BillDto,
   })
   async getBillData(@RequestUser() user: UserEntity, @Body() ftsQrDto: FtsQrDto) {
-    const ftsBillData = await this.getBillDataFromFts(user, ftsQrDto);
-    return ftsBillData;
+    const ftsPromise = this.getBillDataFromFts(user, ftsQrDto);
+    const ofdPromise = this.ofdService.fetchBillData(ftsQrDto);
+    const promiseArr = [
+      ftsPromise,
+      ofdPromise,
+    ];
+    const result = await Promise.race(promiseArr);
+    if (result !== null && typeof result !== 'string') {
+      return result;
+    }
+    const [ billFromFts, billFromOfd ] = await Promise.all(promiseArr);
+    if (billFromOfd === null && typeof billFromFts === 'string') {
+      throw new BadRequestException(wrapErrors({ push: billFromFts }));
+    } else if (billFromOfd !== null) {
+      return billFromOfd;
+    }
+    return billFromFts;
   }
 
-  private async getBillDataFromFts(user: UserEntity, ftsQrDto: FtsQrDto): Promise<BillDto> {
+  private async getBillDataFromFts(user: UserEntity, ftsQrDto: FtsQrDto): Promise<BillDto | string> {
     const billRequest = await this.billRequestService.findOrCreateBillRequest({ userId: user.id, ftsQrDto });
     let ftsAccount = await this.userService.getNextFtsAccountByUserId(user.id);
     if (!ftsAccount) {
@@ -54,15 +72,16 @@ export class BillController {
       const billRequestId = billRequest.id;
       await this.billRequestService.makeBillRequestChecked(billRequestId);
       const billDataFromFts = await this.ftsService.fetchBillData(ftsQrDto, ftsAccountDto);
-      if (billDataFromFts) {
+      if (typeof billDataFromFts !== 'string') {
         await Promise.all([
           this.billRequestService.makeBillRequestFetched(billRequestId),
           this.billRequestService.addRawDataToBillRequest({ billRequestId, rawData: billDataFromFts }),
         ]);
         return this.ftsTransformer.transformFtsBillToBillDto(billDataFromFts);
+      } else {
+        return billDataFromFts;
       }
     }
-    return null;
   }
 
 }

@@ -9,8 +9,8 @@ import { PurchaseEntity } from '../purchase/entities/purchase.entity';
 import { BillRequestEntity } from '../bill-request/entities/bill-request.entity';
 import { BillRequestModule } from '../bill-request/bill-request.module';
 import { FtsModule } from '../fts/fts.module';
-import { UserService } from '../user/user.service';
 import { UserModule } from '../user/user.module';
+import { OfdModule } from '../ofd/ofd.module';
 
 @Module({
   controllers: [ BillController ],
@@ -25,6 +25,7 @@ import { UserModule } from '../user/user.module';
     BillRequestModule,
     FtsModule,
     UserModule,
+    OfdModule,
   ],
   providers: [ BillService ],
 })

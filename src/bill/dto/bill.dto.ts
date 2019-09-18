@@ -13,4 +13,5 @@ export class BillDto {
   totalSum!: number;
   @ApiModelProperty()
   purchases!: PurchaseDto[];
+  providerCode?: string;
 }

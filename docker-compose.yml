@@ -1,0 +1,22 @@
+version: "3.1"
+
+services:
+  postgres:
+    container_name: postgres
+    build:
+      context: .
+      dockerfile: ./docker/postgres.Dockerfile
+    restart: always
+    volumes:
+      - pgdata:/var/lib/postgresql/data/pgdata
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: 11335768AxDv
+      POSTGRES_USER: alphamikle
+      POSTGRES_DB: quich
+      PGDATA: /var/lib/postgresql/data/pgdata
+
+volumes:
+  pgdata:
+    driver: local

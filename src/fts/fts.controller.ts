@@ -74,9 +74,9 @@ export class FtsController {
   })
   async checkBillExistence(@RequestUser() user: UserEntity, @Body() ftsQrDto: FtsQrDto): Promise<string> {
     const { ftsAccount, billRequest } = await this.getFtsAccountAndBillRequest({ userId: user.id, ftsQrDto });
-    // if (billRequest.isChecked) {
-    //   return OK;
-    // }
+    if (billRequest.isChecked) {
+      return OK;
+    }
     await this.ftsService.assignBillRequestWithFtsAccount({ ftsAccountId: ftsAccount.id, billRequestId: billRequest.id });
     const response = await this.ftsService.checkBillExistence(ftsQrDto, { password: ftsAccount.password, phone: ftsAccount.phone });
     if (!response) {
@@ -107,12 +107,12 @@ export class FtsController {
     const ftsAccount = await this.userService.getFtsAccountById(ftsAccountFromBillRequest.ftsAccountId);
     await this.ftsService.assignBillRequestWithFtsAccount({ ftsAccountId: ftsAccount.id, billRequestId: billRequest.id });
     const billData = await this.ftsService.fetchBillData(ftsQrDto, { password: ftsAccount.password, phone: ftsAccount.phone });
-    if (billData) {
+    if (typeof billData !== 'string') {
       await this.billRequestService.makeBillRequestFetched(billRequest.id);
       await this.billRequestService.addRawDataToBillRequest({ billRequestId: billRequest.id, rawData: billData });
       return billData;
     }
-    throw new NotFoundException(wrapErrors({ push: '' })); // TODO: Коды ошибок от фнс и их проброс тут
+    throw new NotFoundException(wrapErrors({ push: billData })); // TODO: Коды ошибок от фнс и их проброс тут
   }
 
   private async getFtsAccountAndBillRequest({ userId, ftsQrDto }:

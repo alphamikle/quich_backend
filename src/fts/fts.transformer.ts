@@ -23,7 +23,7 @@ export class FtsTransformer {
   }
   private extractShopFromFtsBill(ftsBill: FtsFetchResponseBill): ShopDto {
     const shopDto = new ShopDto();
-    shopDto.address = ftsBill.retailPlaceAddress;
+    shopDto.address = ftsBill.retailPlaceAddress || ftsBill.retailAddress;
     shopDto.tin = ftsBill.userInn;
     shopDto.title = ftsBill.retailPlace || ftsBill.user;
     return shopDto;
