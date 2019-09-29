@@ -12,5 +12,5 @@ export class PurchaseDto {
   @ApiModelProperty()
   rate?: number;
   @ApiModelProperty()
-  categoryId?: number;
+  categoryId?: string;
 }

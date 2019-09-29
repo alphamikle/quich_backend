@@ -7,6 +7,7 @@ import { PurchaseEntity } from '../purchase/entities/purchase.entity';
 @Module({
   imports: [ TypeOrmModule.forFeature([ ProductEntity, PurchaseEntity ]) ],
   providers: [ ProductService ],
+  exports: [ ProductService ],
 })
 export class ProductModule {
 }

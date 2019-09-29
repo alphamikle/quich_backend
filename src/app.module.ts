@@ -12,6 +12,8 @@ import { BillRequestModule } from './bill-request/bill-request.module';
 import { CategoryModule } from './category/category.module';
 import { BillProviderModule } from './bill-provider/bill-provider.module';
 import { OfdModule } from './ofd/ofd.module';
+import { DadataModule } from './dadata/dadata.module';
+import { MapsModule } from './maps/maps.module';
 
 const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNC } = process.env;
 
@@ -39,6 +41,8 @@ const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNC } = process.env;
     CategoryModule,
     BillProviderModule,
     OfdModule,
+    DadataModule,
+    MapsModule,
   ],
   controllers: [],
   providers: [],

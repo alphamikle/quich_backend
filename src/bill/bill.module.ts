@@ -11,6 +11,8 @@ import { BillRequestModule } from '../bill-request/bill-request.module';
 import { FtsModule } from '../fts/fts.module';
 import { UserModule } from '../user/user.module';
 import { OfdModule } from '../ofd/ofd.module';
+import { ShopModule } from '../shop/shop.module';
+import { PurchaseModule } from '../purchase/purchase.module';
 
 @Module({
   controllers: [ BillController ],
@@ -26,6 +28,8 @@ import { OfdModule } from '../ofd/ofd.module';
     FtsModule,
     UserModule,
     OfdModule,
+    ShopModule,
+    PurchaseModule,
   ],
   providers: [ BillService ],
 })

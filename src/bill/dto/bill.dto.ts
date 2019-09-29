@@ -4,6 +4,8 @@ import { PurchaseDto } from '../../purchase/dto/purchase.dto';
 
 export class BillDto {
   @ApiModelProperty()
+  id?: string;
+  @ApiModelProperty()
   shop!: ShopDto;
   @ApiModelProperty()
   billDate!: Date;

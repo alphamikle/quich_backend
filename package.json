@@ -41,7 +41,8 @@
     "swagger-ui-express": "^4.0.7",
     "typeorm": "^0.2.18",
     "node-html-parser": "^1.1.16",
-    "html-entities": "^1.2.1"
+    "html-entities": "^1.2.1",
+    "leven": "^3.1.0"
   },
   "devDependencies": {
     "@nestjs/testing": "^6.6.7",
@@ -57,12 +58,12 @@
     "prettier": "1.17.0",
     "supertest": "4.0.2",
     "ts-jest": "24.0.2",
-    "ts-node": "8.1.0",
-    "ts-node-dev": "^1.0.0-pre.42",
+    "ts-node": "^8.4.1",
+    "ts-node-dev": "^1.0.0-pre.43",
     "tsc-watch": "2.2.1",
     "tsconfig-paths": "3.8.0",
     "tslint": "5.16.0",
-    "typescript": "3.4.3"
+    "typescript": "^3.6.3"
   },
   "jest": {
     "moduleFileExtensions": [

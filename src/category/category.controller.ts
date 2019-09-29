@@ -1,5 +1,5 @@
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
-import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { Guards } from '../helpers/guards';
 import { RequestUser } from '../user/user.decorator';
@@ -8,12 +8,14 @@ import { CategoryDto } from './dto/category.dto';
 import { wrapErrors } from '../helpers/response.helper';
 import { CATEGORY_NOT_EXIST_ERROR, CATEGORY_TITLE_DOUBLE_ERROR, OK } from '../helpers/text';
 import { strict } from 'assert';
+import { PurchaseService } from '../purchase/purchase.service';
 
 @ApiUseTags('category')
 @Controller('category')
 export class CategoryController {
   constructor(
     private readonly categoryService: CategoryService,
+    private readonly purchaseService: PurchaseService,
   ) {
   }
 
@@ -87,6 +89,24 @@ export class CategoryController {
       throw new BadRequestException(wrapErrors({ push: CATEGORY_NOT_EXIST_ERROR }));
     }
     await this.categoryService.deleteCategoryFromUser({ categoryId, userId: user.id });
+    return OK;
+  }
+
+  @UseGuards(Guards)
+  @ApiBearerAuth()
+  @Put(':recipientId/:donorId')
+  @ApiOperation({ title: 'Объединение категорий' })
+  @ApiResponse({
+    status: 200,
+    type: String,
+  })
+  async mergeCategories(
+    @RequestUser() user: UserEntity,
+    @Param('recipientId') recipientId: string,
+    @Param('donorId') donorId: string,
+  ): Promise<string> {
+    await this.purchaseService.updateUserPurchasesCategoryId({ oldCategoryId: donorId, newCategoryId: recipientId, userId: user.id });
+    await this.categoryService.deleteCategoryFromUser({ categoryId: donorId, userId: user.id });
     return OK;
   }
 }

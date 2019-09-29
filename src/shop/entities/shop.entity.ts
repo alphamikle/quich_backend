@@ -9,7 +9,7 @@ export class ShopEntity {
   @Column()
   title!: string;
 
-  @Column()
+  @Column({ nullable: true })
   address!: string;
 
   @Column({ type: 'float', nullable: true })
