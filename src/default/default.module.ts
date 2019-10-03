@@ -23,6 +23,11 @@ import { ShopEntity } from '../shop/entities/shop.entity';
 import { FtsAccountEntity } from '../user/entities/fts-account.entity';
 import { UserEntity } from '../user/entities/user.entity';
 import { ShopModule } from '../shop/shop.module';
+import { BillModule } from '../bill/bill.module';
+import { UserModule } from '../user/user.module';
+import { CategoryModule } from '../category/category.module';
+import { ProductModule } from '../product/product.module';
+import { PurchaseModule } from '../purchase/purchase.module';
 
 @Module({
   controllers: [ DefaultController ],
@@ -52,6 +57,11 @@ import { ShopModule } from '../shop/shop.module';
       UserEntity,
     ]),
     ShopModule,
+    BillModule,
+    UserModule,
+    CategoryModule,
+    ProductModule,
+    PurchaseModule,
   ],
   providers: [ DefaultService ],
 })

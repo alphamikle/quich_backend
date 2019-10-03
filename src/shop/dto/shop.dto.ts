@@ -1,7 +1,7 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
 
 export class ShopDto {
-  @ApiModelProperty()
+  @ApiModelPropertyOptional()
   id?: string;
   @ApiModelProperty()
   title!: string;

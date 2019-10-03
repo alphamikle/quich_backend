@@ -12,6 +12,17 @@ export class ProductService {
   ) {
   }
 
+  async getUserProducts(userId: string): Promise<ProductEntity[]> {
+    const products: ProductEntity[] = await this.productEntityRepository.query(`
+        SELECT * FROM product_entity pe WHERE pe.id IN (
+            SELECT pue."productId" FROM purchase_entity pue
+            LEFT JOIN bill_entity be on pue."billId" = be.id
+            WHERE be."userId" = '${ userId }'
+        )
+    `);
+    return products;
+  }
+
   async createProduct(title: string): Promise<ProductEntity> {
     const product = new ProductEntity();
     product.title = title;

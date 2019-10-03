@@ -1,4 +1,4 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
 import { FtsFetchResponseBill } from '../../fts/dto/fts-fetch-response/bill.dto';
 
 export class BillRequestCreatingDto {
@@ -11,13 +11,13 @@ export class BillRequestCreatingDto {
   @ApiModelProperty()
   fiscalDocument!: string;
 
-  @ApiModelProperty({ type: Date })
+  @ApiModelProperty({ type: String, format: 'date-time' })
   billDate!: Date;
 
-  @ApiModelProperty()
+  @ApiModelProperty({ format: 'double' })
   totalSum!: number;
 
-  @ApiModelProperty()
+  @ApiModelPropertyOptional()
   rawData?: FtsFetchResponseBill;
 
   @ApiModelProperty()

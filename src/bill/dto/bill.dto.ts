@@ -1,19 +1,19 @@
 import { ShopDto } from '../../shop/dto/shop.dto';
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
 import { PurchaseDto } from '../../purchase/dto/purchase.dto';
 
 export class BillDto {
-  @ApiModelProperty()
+  @ApiModelPropertyOptional()
   id?: string;
   @ApiModelProperty()
   shop!: ShopDto;
-  @ApiModelProperty()
+  @ApiModelProperty({ type: String, format: 'date-time' })
   billDate!: Date;
   @ApiModelProperty()
   comment?: string;
-  @ApiModelProperty()
+  @ApiModelProperty({ format: 'double' })
   totalSum!: number;
-  @ApiModelProperty()
+  @ApiModelProperty({ type: [PurchaseDto] })
   purchases!: PurchaseDto[];
   providerCode?: string;
 }

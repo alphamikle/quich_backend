@@ -1,4 +1,4 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
 
 export class FtsQrDto {
   @ApiModelProperty()
@@ -13,7 +13,7 @@ export class FtsQrDto {
   @ApiModelProperty()
   dateTime?: string;
 
-  @ApiModelProperty()
+  @ApiModelPropertyOptional({ format: 'double' })
   totalSum?: number; // ? Используется не для всех запросов
 
   @ApiModelProperty({ type: 'integer', example: 1 })

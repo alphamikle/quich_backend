@@ -42,7 +42,7 @@ export class BillController {
     type: BillEntity,
     isArray: true,
   })
-  async getUserBills(@RequestUser() user: UserEntity) {
+  async getUserBills(@RequestUser() user: UserEntity): Promise<BillEntity[]> {
     return await this.billService.getUserBills(user.id);
   }
 

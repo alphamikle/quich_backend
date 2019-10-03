@@ -1,16 +1,16 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
 
 export class PurchaseDto {
-  @ApiModelProperty()
+  @ApiModelPropertyOptional()
   id?: string;
   @ApiModelProperty()
   title!: string;
-  @ApiModelProperty()
+  @ApiModelProperty({ format: 'double' })
   price!: number;
-  @ApiModelProperty()
+  @ApiModelProperty({ format: 'double' })
   quantity!: number;
-  @ApiModelProperty()
+  @ApiModelPropertyOptional({ format: 'double' })
   rate?: number;
-  @ApiModelProperty()
+  @ApiModelPropertyOptional()
   categoryId?: string;
 }

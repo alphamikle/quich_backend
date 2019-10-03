@@ -6,7 +6,7 @@ export class FtsFetchResponseBill {
   senderAddress?: string;
   @ApiModelProperty()
   dateTime: string;
-  @ApiModelPropertyOptional()
+  @ApiModelPropertyOptional({ type: 'integer' })
   requestNumber?: number;
   @ApiModelPropertyOptional()
   rawData?: string;
@@ -14,21 +14,21 @@ export class FtsFetchResponseBill {
   fiscalDocumentNumber?: number;
   @ApiModelProperty()
   items: FtsFetchResponsePurchase[];
-  @ApiModelPropertyOptional()
+  @ApiModelPropertyOptional({ type: 'integer' })
   receiptCode?: number;
   @ApiModelPropertyOptional()
   kktRegId?: string;
-  @ApiModelPropertyOptional()
+  @ApiModelPropertyOptional({ type: 'integer' })
   shiftNumber?: number;
-  @ApiModelPropertyOptional()
+  @ApiModelPropertyOptional({ type: 'integer' })
   taxationType?: number;
   @ApiModelProperty()
   user: string;
-  @ApiModelPropertyOptional()
+  @ApiModelPropertyOptional({ type: 'integer' })
   fiscalSign?: number;
   @ApiModelPropertyOptional()
   operator?: string;
-  @ApiModelPropertyOptional()
+  @ApiModelPropertyOptional({ format: 'double' })
   nds18?: number;
   @ApiModelPropertyOptional()
   retailPlaceAddress?: string;
@@ -36,19 +36,19 @@ export class FtsFetchResponseBill {
   retailAddress?: string;
   @ApiModelPropertyOptional()
   addressToCheckFiscalSign?: string;
-  @ApiModelProperty()
+  @ApiModelProperty({ format: 'double' })
   totalSum: number;
   @ApiModelProperty()
   userInn: string;
-  @ApiModelPropertyOptional()
+  @ApiModelPropertyOptional({ format: 'double' })
   nds10?: number;
-  @ApiModelProperty()
+  @ApiModelProperty({ type: 'integer' })
   operationType?: number;
-  @ApiModelPropertyOptional()
+  @ApiModelPropertyOptional({ format: 'double' })
   cashTotalSum?: number;
   @ApiModelPropertyOptional()
   buyerAddress?: string;
-  @ApiModelPropertyOptional()
+  @ApiModelPropertyOptional({ format: 'double' })
   ecashTotalSum?: number;
   @ApiModelPropertyOptional()
   fiscalDriveNumber?: string;

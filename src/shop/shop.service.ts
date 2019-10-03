@@ -16,6 +16,15 @@ export class ShopService {
   ) {
   }
 
+  async getUserShops(userId: string): Promise<ShopEntity[]> {
+    const shops: ShopEntity[] = await this.shopEntityRepository.query(`
+      SELECT distinct(se.id), se.title, se.address, se.tin, se.latitude, se.longitude FROM shop_entity se
+        LEFT OUTER JOIN bill_entity be on se.id = be."shopId"
+        WHERE be."userId" = '${userId}'
+    `);
+    return shops;
+  }
+
   async createShopEntity(shopDto: ShopDto): Promise<ShopEntity> {
     const shop = new ShopEntity();
     shop.address = shopDto.address;

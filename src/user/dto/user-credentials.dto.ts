@@ -4,6 +4,6 @@ export class UserCredentialsDto {
   @ApiModelProperty()
   email: string;
 
-  @ApiModelProperty()
+  @ApiModelProperty({ format: 'password' })
   password: string;
 }

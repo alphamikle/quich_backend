@@ -32,6 +32,7 @@ import { PurchaseModule } from '../purchase/purchase.module';
     PurchaseModule,
   ],
   providers: [ BillService ],
+  exports: [ BillService ],
 })
 export class BillModule {
 }

@@ -23,6 +23,12 @@ import { UserEntity } from '../user/entities/user.entity';
 import { ShopService } from '../shop/shop.service';
 import { ShopDto } from '../shop/dto/shop.dto';
 import { UNDEFINED_CATEGORY_TITLE } from '../helpers/text';
+import { BillService } from '../bill/bill.service';
+import { CategoryService } from '../category/category.service';
+import { PurchaseService } from '../purchase/purchase.service';
+import { ProductService } from '../product/product.service';
+import { UserService } from '../user/user.service';
+import { AllUserDataDto } from './dto/AllUserData.dto';
 
 @Injectable()
 export class DefaultService {
@@ -66,7 +72,22 @@ export class DefaultService {
     @InjectRepository(UserEntity)
     private readonly userEntityRepository: Repository<UserEntity>,
     private readonly shopService: ShopService,
+    private readonly billService: BillService,
+    private readonly categoryService: CategoryService,
+    private readonly purchaseService: PurchaseService,
+    private readonly productService: ProductService,
+    private readonly userService: UserService,
   ) {
+  }
+
+  async getAllUserData(userId: string): Promise<AllUserDataDto> {
+    const bills = await this.billService.getUserBills(userId);
+    const categories = await this.categoryService.getUserCategories(userId);
+    const shops = await this.shopService.getUserShops(userId);
+    const purchases = await this.purchaseService.getUserPurchases(userId);
+    const products = await this.productService.getUserProducts(userId);
+    const accounts = await this.userService.getFtsAccountsByUserId(userId);
+    return { bills, categories, shops, purchases, products, accounts };
   }
 
   async importOldData() {

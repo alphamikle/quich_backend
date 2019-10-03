@@ -1,10 +1,10 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
 
 export class CategoryDto {
-  @ApiModelProperty()
+  @ApiModelPropertyOptional()
   id?: string;
   @ApiModelProperty()
   title!: string;
-  @ApiModelProperty()
+  @ApiModelProperty({ type: 'integer' })
   color!: number;
 }
