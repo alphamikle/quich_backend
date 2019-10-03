@@ -1,4 +1,3 @@
-import { Injectable } from '@nestjs/common';
 import { HTMLElement, NodeType, parse } from 'node-html-parser';
 import { AllHtmlEntities } from 'html-entities';
 import axios from 'axios';
@@ -26,7 +25,7 @@ export class OfdFetcher extends BaseOfdFetcher {
   }
 
   private async getRawData(): Promise<string> {
-    const url = `https://check.ofd.ru/rec/${this.fiscalNumber}/${this.fiscalDocument}/${this.fiscalProp}`;
+    const url = `https://check.ofd.ru/rec/${ this.fiscalNumber }/${ this.fiscalDocument }/${ this.fiscalProp }`;
     const rawResponse = await axios.get(url);
     return rawResponse.data;
   }
@@ -63,7 +62,7 @@ export class OfdFetcher extends BaseOfdFetcher {
   }
 
   private getNthBlock(val: number = 0): HTMLElement {
-    return this.body.querySelectorAll('.margin-top-10')[val];
+    return this.body.querySelectorAll('.margin-top-10')[ val ];
   }
 
   private getRightBlockOf(val: number = 0): string {
@@ -72,7 +71,7 @@ export class OfdFetcher extends BaseOfdFetcher {
   }
 
   private getShopTitle(): string {
-    return this.decodeEntities(this.getNthBlock(0).querySelector('.text-align-center').firstChild.childNodes[0].rawText);
+    return this.decodeEntities(this.getNthBlock(0).querySelector('.text-align-center').firstChild.childNodes[ 0 ].rawText);
   }
 
   private getCartDateTime(): Date {
@@ -80,7 +79,7 @@ export class OfdFetcher extends BaseOfdFetcher {
     const [ date, time ] = stringDate.split(' ');
     const [ day, month, year ] = date.split('.');
     const [ hours, minutes ] = time.split(':');
-    return new Date(Number(`20${year}`), Number(month) - 1, Number(day), Number(hours), Number(minutes));
+    return new Date(Number(`20${ year }`), Number(month) - 1, Number(day), Number(hours), Number(minutes));
   }
 
   private getShopAddress(): string {
@@ -97,10 +96,10 @@ export class OfdFetcher extends BaseOfdFetcher {
 
   private async getPurchases(): Promise<PurchaseDto[]> {
     const allBlocks = this.body.querySelectorAll('.margin-top-10');
-    const blocksLength = [...allBlocks].length;
+    const blocksLength = [ ...allBlocks ].length;
     const productsBlock = this.getNthBlock(blocksLength - 1);
     const productsSubBlocks = productsBlock.querySelectorAll('.ifw-bill-item');
-    const productsWithoutQR = [...productsSubBlocks].slice(0, productsSubBlocks.length - 1);
+    const productsWithoutQR = [ ...productsSubBlocks ].slice(0, productsSubBlocks.length - 1);
     const products: PurchaseDto[] = [];
     for (const productBlock of productsWithoutQR) {
       products.push(await this.getProductData(productBlock));
@@ -111,8 +110,8 @@ export class OfdFetcher extends BaseOfdFetcher {
   private async getProductData(productNode: HTMLElement): Promise<PurchaseDto> {
     const productTitle = productNode.querySelector('.text-left').rawText;
     const productPriceBlock = productNode.querySelector('.text-right');
-    const productQuantity = productPriceBlock.querySelector('div').querySelectorAll('span')[0].rawText;
-    const productPrice = productPriceBlock.querySelector('div').querySelectorAll('span')[2].rawText;
+    const productQuantity = productPriceBlock.querySelector('div').querySelectorAll('span')[ 0 ].rawText;
+    const productPrice = productPriceBlock.querySelector('div').querySelectorAll('span')[ 2 ].rawText;
     const quantity = Math.trunc(Number(productQuantity.replace(',', '.')) * 100) / 100;
     const price = Math.trunc(Number(productPrice.replace(',', '.')) * 100) / 100;
     const sum = quantity * price;

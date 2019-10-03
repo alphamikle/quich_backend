@@ -9,7 +9,8 @@ export class ProductService {
   constructor(
     @InjectRepository(ProductEntity)
     private readonly productEntityRepository: Repository<ProductEntity>,
-  ) {}
+  ) {
+  }
 
   async createProduct(title: string): Promise<ProductEntity> {
     const product = new ProductEntity();
@@ -40,7 +41,7 @@ export class ProductService {
     let target: ProductEntity = null;
     const products = await this.getAllProducts();
     for (let i = 0, l = products.length; i < l; i++) {
-      const product = products[i];
+      const product = products[ i ];
       const distance = getWordsDistance(title, product.title);
       if (min > distance && distance < (title.length + product.title.length) / 3) {
         min = distance;

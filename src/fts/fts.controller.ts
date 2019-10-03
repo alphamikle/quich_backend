@@ -1,6 +1,5 @@
 import { BadRequestException, Body, Controller, forwardRef, Inject, NotFoundException, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
-import { wrapErrors } from '../helpers/response.helper';
 import { FTS_CHECKING_BILL_ERROR, FTS_NOT_CHECKED_BILL_ERROR, OK } from '../helpers/text';
 import { FtsRegistrationDto } from './dto/fts-registration.dto';
 import { FtsService } from './fts.service';
@@ -37,11 +36,11 @@ export class FtsController {
   async signUp(@Body() regDto: FtsRegistrationDto): Promise<string> {
     const validationInfo = this.ftsValidator.validateRegistrationDto(regDto);
     if (validationInfo !== true) {
-      throw new BadRequestException(wrapErrors(validationInfo));
+      throw new BadRequestException(validationInfo);
     }
     const response = await this.ftsService.signUp(regDto);
     if (response !== true) {
-      throw new BadRequestException(wrapErrors({ push: response }));
+      throw new BadRequestException({ push: response });
     }
     return OK;
   }
@@ -55,11 +54,11 @@ export class FtsController {
   async remindPassword(@Body() remindDto: FtsRemindDto): Promise<string> {
     const validationInfo = this.ftsValidator.validateRemindDto(remindDto);
     if (validationInfo !== true) {
-      throw new BadRequestException(wrapErrors(validationInfo));
+      throw new BadRequestException(validationInfo);
     }
     const response = await this.ftsService.remindPassword(remindDto);
     if (response !== true) {
-      throw new BadRequestException(wrapErrors({ push: response }));
+      throw new BadRequestException({ push: response });
     }
     return OK;
   }
@@ -80,7 +79,7 @@ export class FtsController {
     await this.ftsService.assignBillRequestWithFtsAccount({ ftsAccountId: ftsAccount.id, billRequestId: billRequest.id });
     const response = await this.ftsService.checkBillExistence(ftsQrDto, { password: ftsAccount.password, phone: ftsAccount.phone });
     if (!response) {
-      throw new NotFoundException(wrapErrors({ push: FTS_CHECKING_BILL_ERROR }));
+      throw new NotFoundException({ push: FTS_CHECKING_BILL_ERROR });
     }
     await this.billRequestService.makeBillRequestChecked(billRequest.id);
     return OK;
@@ -98,7 +97,7 @@ export class FtsController {
     const { fiscalProp, fiscalDocument, fiscalNumber } = ftsQrDto;
     const billRequest = await this.billRequestService.getBillRequestByProps({ fiscalProp, fiscalDocument, fiscalNumber });
     if (!billRequest) {
-      throw new BadRequestException(wrapErrors({ push: FTS_NOT_CHECKED_BILL_ERROR }));
+      throw new BadRequestException({ push: FTS_NOT_CHECKED_BILL_ERROR });
     }
     if (billRequest.isFetched) {
       return billRequest.rawData;
@@ -112,7 +111,7 @@ export class FtsController {
       await this.billRequestService.addRawDataToBillRequest({ billRequestId: billRequest.id, rawData: billData });
       return billData;
     }
-    throw new NotFoundException(wrapErrors({ push: billData })); // TODO: Коды ошибок от фнс и их проброс тут
+    throw new NotFoundException({ push: billData }); // TODO: Коды ошибок от фнс и их проброс тут
   }
 
   private async getFtsAccountAndBillRequest({ userId, ftsQrDto }:

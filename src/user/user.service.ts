@@ -7,7 +7,6 @@ import { DateHelper } from '../helpers/date.helper';
 import { FtsAccountEntity } from './entities/fts-account.entity';
 import { FtsAccountDto } from '../fts/dto/fts-account.dto';
 import { FtsAccountQueueEntity } from './entities/fts-account-queue.entity';
-import { wrapErrors } from '../helpers/response.helper';
 import { FTS_ACCOUNTS_ALL_BUSY_ERROR } from '../helpers/text';
 
 const { TOKEN_DURATION } = process.env;
@@ -157,7 +156,7 @@ export class UserService {
       ftsAccount = await this.getRandomFtsAccount();
     }
     if (!ftsAccount) {
-      throw new BadRequestException(wrapErrors({ push: FTS_ACCOUNTS_ALL_BUSY_ERROR }));
+      throw new BadRequestException({ push: FTS_ACCOUNTS_ALL_BUSY_ERROR });
     }
     await this.addFtsAccountIdToQueue(ftsAccount.id);
     return ftsAccount;

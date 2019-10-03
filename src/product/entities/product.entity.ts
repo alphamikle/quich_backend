@@ -6,7 +6,7 @@ export class ProductEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column()
+  @Column({ unique: true })
   title!: string;
 
   @OneToMany(() => PurchaseEntity, purchase => purchase.product)

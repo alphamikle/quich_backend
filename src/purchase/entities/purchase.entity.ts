@@ -24,12 +24,12 @@ export class PurchaseEntity {
 
   @Column()
   categoryId!: string;
-  @ManyToOne(() => CategoryEntity, category => category.purchases)
+  @ManyToOne(() => CategoryEntity, category => category.purchases, { onDelete: 'RESTRICT' })
   category?: CategoryEntity;
 
   @Column()
   billId!: string;
-  @ManyToOne(() => BillEntity, bill => bill.purchases)
+  @ManyToOne(() => BillEntity, bill => bill.purchases, { onDelete: 'CASCADE' })
   bill?: BillEntity;
 
   @CreateDateColumn()

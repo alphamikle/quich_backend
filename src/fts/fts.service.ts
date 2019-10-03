@@ -1,15 +1,16 @@
-import { BadRequestException, Injectable, RequestTimeoutException } from '@nestjs/common';
+import { Injectable, RequestTimeoutException } from '@nestjs/common';
 import { AxiosInstance, AxiosResponse, default as axios } from 'axios';
 import * as https from 'https';
 import { FtsAccountDto } from './dto/fts-account.dto';
 import { FtsRegistrationDto } from './dto/fts-registration.dto';
 import {
+  FTS_BILL_NOT_SEND_ERROR,
+  FTS_TRY_MORE_ERROR,
+  FTS_UNKNOWN_FETCHING_ERROR,
   FTS_USER_EXIST_ERROR,
   FTS_USER_NOT_EXIST_ERROR,
   INVALID_PHONE_ERROR,
   UNKNOWN_ERROR,
-  FTS_UNKNOWN_FETCHING_ERROR,
-  FTS_BILL_NOT_SEND_ERROR, FTS_TRY_MORE_ERROR,
 } from '../helpers/text';
 import { FtsRemindDto } from './dto/fts-remind.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -20,7 +21,6 @@ import { FtsAccountToBillRequestEntity } from './entities/fts-account-to-bill-re
 import { DateHelper } from '../helpers/date.helper';
 import { FtsFetchResponse } from './dto/fts-fetch-response/response.dto';
 import { FtsFetchResponseBill } from './dto/fts-fetch-response/bill.dto';
-import { wrapErrors } from '../helpers/response.helper';
 import { wait } from '../helpers/common.helper';
 
 export interface FtsHeaders {
@@ -116,7 +116,7 @@ export class FtsService {
     const formattedDate = this.formatDateToFtsDate(dateTime);
     const penny = ts * 100;
     const preUrl = '/v1/ofds/*/inns/*/fss/';
-    const url = encodeURI(`${preUrl}${ fn }/operations/${ ct }/tickets/${ fd }?fiscalSign=${ fp }&date=${ formattedDate }&sum=${ penny }`);
+    const url = encodeURI(`${ preUrl }${ fn }/operations/${ ct }/tickets/${ fd }?fiscalSign=${ fp }&date=${ formattedDate }&sum=${ penny }`);
     try {
       await this.api.get(url, { headers: this.getHeaders(userCredentials) });
       return true;

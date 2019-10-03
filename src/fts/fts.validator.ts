@@ -3,7 +3,7 @@ import { FtsService } from './fts.service';
 import { FtsAccountDto } from './dto/fts-account.dto';
 import { FtsRegistrationDto } from './dto/fts-registration.dto';
 import { CommonValidator } from '../helpers/common.validator';
-import { BAD_FTS_SIGN_IN_DATA, INVALID_EMAIL_ERROR, INVALID_PHONE_ERROR, NOT_EMPTY_ERROR } from '../helpers/text';
+import { BAD_FTS_SIGN_IN_DATA, NOT_EMPTY_ERROR } from '../helpers/text';
 import { FtsRemindDto } from './dto/fts-remind.dto';
 
 @Injectable()

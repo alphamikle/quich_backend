@@ -9,11 +9,13 @@ export class BillService {
   constructor(
     @InjectRepository(BillEntity)
     private readonly billEntityRepository: Repository<BillEntity>,
-  ) {}
+  ) {
+  }
 
   async getUserBills(userId: string) {
     const bills = await this.billEntityRepository.query(`
-      SELECT * FROM bill_entity
+        SELECT *
+        FROM bill_entity
     `);
   }
 

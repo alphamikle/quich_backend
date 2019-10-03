@@ -49,7 +49,7 @@ export class BillRequestEntity {
 
   @Column({ nullable: true })
   billId?: string;
-  @ManyToOne(() => BillEntity, bill => bill.billRequests)
+  @ManyToOne(() => BillEntity, bill => bill.billRequests, { onDelete: 'CASCADE' })
   bill?: BillEntity;
 
   @Column({ nullable: true })

@@ -14,8 +14,9 @@ import { BillProviderModule } from './bill-provider/bill-provider.module';
 import { OfdModule } from './ofd/ofd.module';
 import { DadataModule } from './dadata/dadata.module';
 import { MapsModule } from './maps/maps.module';
+import { DefaultModule } from './default/default.module';
 
-const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNC } = process.env;
+const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNC, DB_OLD_HOST, DB_OLD_USERNAME, DB_OLD_PASSWORD, DB_OLD_NAME } = process.env;
 
 @Module({
   imports: [
@@ -28,6 +29,17 @@ const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNC } = process.env;
       database: DB_NAME,
       entities: [ __dirname + '/**/*.entity{.ts,.js}' ],
       synchronize: DB_SYNC === 'true',
+    }),
+    TypeOrmModule.forRoot({
+      name: 'oldDb',
+      type: 'postgres',
+      host: DB_OLD_HOST,
+      port: 5432,
+      username: DB_OLD_USERNAME,
+      password: DB_OLD_PASSWORD,
+      database: DB_OLD_NAME,
+      entities: [ __dirname + '/default/models/*.model{.ts,.js}' ],
+      synchronize: false,
     }),
     PassportModule,
     UserModule,
@@ -43,6 +55,7 @@ const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNC } = process.env;
     OfdModule,
     DadataModule,
     MapsModule,
+    DefaultModule,
   ],
   controllers: [],
   providers: [],

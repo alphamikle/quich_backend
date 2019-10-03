@@ -4,6 +4,7 @@ import { UserEntity } from '../../user/entities/user.entity';
 
 @Entity()
 export class CategoryToUserEntity {
+  static BLACK_COLOR = 4278190080;
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
@@ -12,11 +13,11 @@ export class CategoryToUserEntity {
 
   @Column()
   categoryId!: string;
-  @ManyToOne(() => CategoryEntity, category => category.categoriesToUsers)
+  @ManyToOne(() => CategoryEntity, category => category.categoriesToUsers, { onDelete: 'RESTRICT' })
   category?: CategoryEntity;
 
   @Column()
   userId!: string;
-  @ManyToOne(() => UserEntity, user => user.categoriesToUsers)
+  @ManyToOne(() => UserEntity, user => user.categoriesToUsers, { onDelete: 'CASCADE' })
   user?: UserEntity;
 }

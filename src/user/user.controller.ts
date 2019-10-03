@@ -34,7 +34,6 @@ import { Guards } from '../helpers/guards';
 import { RequestUser } from './user.decorator';
 import { FtsAccountDto } from '../fts/dto/fts-account.dto';
 import { FtsValidator } from '../fts/fts.validator';
-import { wrapErrors } from '../helpers/response.helper';
 import { FtsAccountModifyDto } from './dto/fts-account-modify.dto';
 import { FtsService } from '../fts/fts.service';
 
@@ -64,7 +63,7 @@ export class UserController {
   async signUp(@Body() { email, password }: UserCredentialsDto): Promise<string> {
     const isUserExits = await this.userValidator.isUserExist(email);
     if (isUserExits) {
-      throw new BadRequestException(wrapErrors({ email: REG_ERROR }));
+      throw new BadRequestException({ email: REG_ERROR });
     }
     await this.authService.signUp({ email, password });
     return SIGN_UP_SUCCESS;
@@ -79,12 +78,12 @@ export class UserController {
   async signIn(@Body() { email, password }: UserCredentialsDto): Promise<string> {
     const isUserExits = await this.userValidator.isUserExist(email);
     if (!isUserExits) {
-      throw new BadRequestException(wrapErrors({ email: SIGN_IN_NO_USER }));
+      throw new BadRequestException({ email: SIGN_IN_NO_USER });
     }
     const user: UserEntity = await this.userService.getUserByEmail(email);
     const isPasswordValid: boolean = await this.authValidator.isPasswordValid({ user, password });
     if (!isPasswordValid) {
-      throw new ForbiddenException(wrapErrors({ password: SIGN_IN_BAD_PASSWORD }));
+      throw new ForbiddenException({ password: SIGN_IN_BAD_PASSWORD });
     }
     return await this.authService.signIn(user);
   }
@@ -113,11 +112,11 @@ export class UserController {
   async addFtsAccountToUser(@RequestUser() user: UserEntity, @Body() ftsAccountData: FtsAccountDto): Promise<FtsAccountEntity> {
     const isCredentialsValid = await this.ftsValidator.isSignInDataValid(ftsAccountData);
     if (!isCredentialsValid) {
-      throw new BadRequestException(wrapErrors({ push: BAD_FTS_SIGN_IN_DATA }));
+      throw new BadRequestException({ push: BAD_FTS_SIGN_IN_DATA });
     }
     const isAccountExist = await this.userValidator.isFtsAccountExistOnUser({ user, phone: ftsAccountData.phone });
     if (isAccountExist) {
-      throw new BadRequestException(wrapErrors({ phone: DUPLICATE_FTS_PHONE }));
+      throw new BadRequestException({ phone: DUPLICATE_FTS_PHONE });
     }
     return await this.userService.addFtsAccountToUser({ user, ftsAccountData });
   }
@@ -133,7 +132,7 @@ export class UserController {
   async deleteFtsAccountFromUser(@RequestUser() user: UserEntity, @Query('phone') phone: string): Promise<string> {
     const isAccountExist = await this.userValidator.isFtsAccountExistOnUser({ user, phone });
     if (!isAccountExist) {
-      throw new BadRequestException(wrapErrors({ phone: NOT_EXIST_FTS_PHONE }));
+      throw new BadRequestException({ phone: NOT_EXIST_FTS_PHONE });
     }
     await this.userService.deleteFtsAccountFromUser({ user, phone });
     return FTS_PHONE_DELETION_COMPLETE;
@@ -150,11 +149,11 @@ export class UserController {
   async modifyFtsAccount(@RequestUser() user: UserEntity, @Body() { isMain, password, phone }: FtsAccountModifyDto): Promise<FtsAccountEntity> {
     const isAccountExist = await this.userValidator.isFtsAccountExistOnUser({ user, phone });
     if (!isAccountExist) {
-      throw new BadRequestException(wrapErrors({ phone: NOT_EXIST_FTS_PHONE }));
+      throw new BadRequestException({ phone: NOT_EXIST_FTS_PHONE });
     }
     const ftsAccountValidation = await this.ftsValidator.validateFtsAccountDto({ phone, password });
     if (ftsAccountValidation !== true) {
-      throw new BadRequestException(wrapErrors(ftsAccountValidation));
+      throw new BadRequestException(ftsAccountValidation);
     }
     if (isMain) {
       await this.userService.makeFtsAccountMain({ user, phone });

@@ -13,7 +13,7 @@ export class OfdService {
     ]);
     const results = responses.filter(response => response !== null);
     if (results.length > 0) {
-      return results[0];
+      return results[ 0 ];
     }
     return null;
   }

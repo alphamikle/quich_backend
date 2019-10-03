@@ -25,7 +25,7 @@ export class MapsService {
           },
         },
       );
-      const coordsString = response.data.response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos;
+      const coordsString = response.data.response.GeoObjectCollection.featureMember[ 0 ].GeoObject.Point.pos;
       const [ latitude, longitude ] = coordsString.split(' ');
       return { latitude: Number(latitude), longitude: Number(longitude) };
     } catch (err) {

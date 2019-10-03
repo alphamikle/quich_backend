@@ -1,4 +1,4 @@
-import { BadRequestException, Body, ConflictException, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import { Guards } from '../helpers/guards';
 import { RequestUser } from '../user/user.decorator';
@@ -10,7 +10,6 @@ import { UserService } from '../user/user.service';
 import { FtsAccountDto } from '../fts/dto/fts-account.dto';
 import { FtsTransformer } from '../fts/fts.transformer';
 import { BillDto } from './dto/bill.dto';
-import { wrapErrors } from '../helpers/response.helper';
 import { OfdService } from '../ofd/ofd.service';
 import { ShopService } from '../shop/shop.service';
 import { PurchaseService } from '../purchase/purchase.service';
@@ -58,7 +57,7 @@ export class BillController {
   async getBillData(@RequestUser() user: UserEntity, @Body() ftsQrDto: FtsQrDto): Promise<BillDto> {
     const billData = await this.getBillDataFromFtsOrOfd(user, ftsQrDto);
     if (typeof billData === 'string') {
-      throw new BadRequestException(wrapErrors({ push: billData }));
+      throw new BadRequestException({ push: billData });
     }
     billData.shop = await this.extractShopDtoInfo(billData.shop);
     billData.purchases = await this.purchaseService.extractCategoriesIdsForPurchaseDtos(billData.purchases);

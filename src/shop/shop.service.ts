@@ -13,14 +13,15 @@ export class ShopService {
     private readonly shopEntityRepository: Repository<ShopEntity>,
     private readonly dadataService: DadataService,
     private readonly mapsService: MapsService,
-  ) {}
+  ) {
+  }
 
   async createShopEntity(shopDto: ShopDto): Promise<ShopEntity> {
     const shop = new ShopEntity();
     shop.address = shopDto.address;
     shop.title = shopDto.title;
     shop.tin = shopDto.tin;
-    if ((shop.title === undefined || !shop.title.trim()) && shop.tin) {
+    if ((shop.title === undefined || shop.title === null || !shop.title.trim()) && shop.tin) {
       const shopData = await this.dadataService.getShopInfoByTin(shop.tin);
       shop.title = shopData.value;
       if (!shop.address) {

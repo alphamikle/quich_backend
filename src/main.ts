@@ -1,11 +1,11 @@
-import { config } from 'dotenv';
-config();
+import { output } from './config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as pack from '../package.json';
 
 const { APP_PORT } = process.env;
+const configUser = output;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

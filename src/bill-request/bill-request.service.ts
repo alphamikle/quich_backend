@@ -13,7 +13,8 @@ export class BillRequestService {
     @InjectRepository(BillRequestEntity)
     private readonly billRequestEntityRepository: Repository<BillRequestEntity>,
     private readonly dateHelper: DateHelper,
-  ) {}
+  ) {
+  }
 
   async getBillRequestByProps({ fiscalDocument, fiscalNumber, fiscalProp }:
                                 { fiscalDocument: string, fiscalNumber: string, fiscalProp: string }): Promise<BillRequestEntity> {

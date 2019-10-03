@@ -7,11 +7,12 @@ const { DADATA_TOKEN } = process.env;
 @Injectable()
 export class DadataService {
   private readonly api: AxiosInstance;
+
   constructor() {
     this.api = axios.create({
       baseURL: 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/',
       headers: {
-        Authorization: `Token ${DADATA_TOKEN}`,
+        Authorization: `Token ${ DADATA_TOKEN }`,
       },
     });
   }
@@ -22,7 +23,7 @@ export class DadataService {
         query: tin,
         branch_type: 'MAIN',
       });
-      return response.data.suggestions[0];
+      return response.data.suggestions[ 0 ];
     } catch (err) {
       console.error(err);
       return null;
@@ -34,7 +35,7 @@ export class DadataService {
       const response: AxiosResponse<DadataResponse> = await this.api.post('suggest/party', {
         query,
       });
-      return response.data.suggestions[0];
+      return response.data.suggestions[ 0 ];
     } catch (err) {
       console.error(err);
       return null;

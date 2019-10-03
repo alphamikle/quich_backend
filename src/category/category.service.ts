@@ -31,7 +31,7 @@ export class CategoryService {
     `);
     let category: CategoryDto;
     if (categories.length > 0) {
-      category = categories[0];
+      category = categories[ 0 ];
     }
     return category;
   }
@@ -44,7 +44,7 @@ export class CategoryService {
     `);
     let category: CategoryDto;
     if (categories.length > 0) {
-      category = categories[0];
+      category = categories[ 0 ];
     }
     return category;
   }

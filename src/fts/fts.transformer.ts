@@ -21,6 +21,7 @@ export class FtsTransformer {
     billDto.purchases = this.extractPurchasesFromFtsBill(ftsBill);
     return billDto;
   }
+
   private extractShopFromFtsBill(ftsBill: FtsFetchResponseBill): ShopDto {
     const shopDto = new ShopDto();
     shopDto.address = ftsBill.retailPlaceAddress || ftsBill.retailAddress;
@@ -28,6 +29,7 @@ export class FtsTransformer {
     shopDto.title = ftsBill.retailPlace || ftsBill.user;
     return shopDto;
   }
+
   private extractPurchasesFromFtsBill(ftsBill: FtsFetchResponseBill): PurchaseDto[] {
     const ftsPurchases = ftsBill.items;
     const purchaseDtoS: PurchaseDto[] = [];
@@ -36,6 +38,7 @@ export class FtsTransformer {
     }
     return purchaseDtoS;
   }
+
   private transformFtsPurchaseToPurchaseDto(ftsPurchase: FtsFetchResponsePurchase) {
     const purchaseDto = new PurchaseDto();
     purchaseDto.price = ftsPurchase.price / 100;
