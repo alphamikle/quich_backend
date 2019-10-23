@@ -1,2 +1,4 @@
 import { config } from 'dotenv';
-export const output = config();
+
+const { IS_IN_DOCKER } = process.env;
+export const output = IS_IN_DOCKER === 'true' ? {} : config();

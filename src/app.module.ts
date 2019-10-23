@@ -16,14 +16,16 @@ import { DadataModule } from './dadata/dadata.module';
 import { MapsModule } from './maps/maps.module';
 import { DefaultModule } from './default/default.module';
 
-const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNC, DB_OLD_HOST, DB_OLD_USERNAME, DB_OLD_PASSWORD, DB_OLD_NAME } = process.env;
+const { DB_PORT, DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNC, DB_OLD_HOST, DB_OLD_USERNAME, DB_OLD_PASSWORD, DB_OLD_NAME } = process.env;
+
+console.log('SYSTEM VARIABLES:', process.env);
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: DB_HOST,
-      port: 5432,
+      port: Number(DB_PORT),
       username: DB_USERNAME,
       password: DB_PASSWORD,
       database: DB_NAME,
