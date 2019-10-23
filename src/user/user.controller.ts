@@ -134,7 +134,7 @@ export class UserController {
     if (!isAccountExist) {
       throw new BadRequestException({ phone: NOT_EXIST_FTS_PHONE });
     }
-    await this.userService.deleteFtsAccountFromUser({ user, phone });
+    await this.userService.deleteFtsAccountFromUser({ userId: user.id, phone });
     return FTS_PHONE_DELETION_COMPLETE;
   }
 

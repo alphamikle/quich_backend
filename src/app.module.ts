@@ -29,6 +29,7 @@ const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNC, DB_OLD_HOST, DB_OLD
       database: DB_NAME,
       entities: [ __dirname + '/**/*.entity{.ts,.js}' ],
       synchronize: DB_SYNC === 'true',
+      // logging: 'all',
     }),
     TypeOrmModule.forRoot({
       name: 'oldDb',

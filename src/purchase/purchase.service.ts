@@ -29,7 +29,7 @@ export class PurchaseService {
 
   async getUserPurchases(userId: string): Promise<PurchaseEntity[]> {
     const purchases: PurchaseEntity[] = await this.purchaseEntityRepository.query(`
-      SELECT pe.id, pe."billId", pe."categoryId", pe."createdAt", pe.price, pe.quantity, pe.rate
+      SELECT pe.id, pe."billId", pe."categoryId", pe."createdAt", pe.price, pe.quantity, pe.rate, pe."productId"
       FROM purchase_entity pe
         LEFT JOIN bill_entity be on pe."billId" = be.id
         WHERE be."userId" = '${ userId }'
@@ -73,8 +73,8 @@ export class PurchaseService {
     return purchaseEntity;
   }
 
-  async getClosestCategoryIdByProductTitle(title: string): Promise<string | null> {
-    const closestProduct = await this.productService.getClosestProductByTitle(title);
+  async getClosestCategoryIdByProductTitle({ title, products }: { title: string, products: ProductEntity[] }): Promise<string | null> {
+    const closestProduct = await this.productService.getClosestProductByTitle({ title, products });
     if (!closestProduct) {
       return null;
     }
@@ -86,8 +86,9 @@ export class PurchaseService {
   }
 
   async extractCategoriesIdsForPurchaseDtos(purchaseDtos: PurchaseDto[]): Promise<PurchaseDto[]> {
+    const products = await this.productService.getAllProducts();
     return await Promise.all(purchaseDtos.map(async dto => {
-      dto.categoryId = await this.getClosestCategoryIdByProductTitle(dto.title);
+      dto.categoryId = await this.getClosestCategoryIdByProductTitle({ title: dto.title.trim(), products });
       return dto;
     }));
   }

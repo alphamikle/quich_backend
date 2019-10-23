@@ -67,16 +67,17 @@ export class BillController {
   @UseGuards(Guards)
   @ApiBearerAuth()
   @Post()
-  @ApiOperation({ title: 'Сохранение формы чека' })
+  @ApiOperation({ title: 'Создание формы чека' })
   @ApiResponse({
     status: 201,
-    type: String,
+    type: BillEntity,
   })
-  async createBill(@RequestUser() user: UserEntity, @Body() billDto: BillDto): Promise<string> {
+  async createBill(@RequestUser() user: UserEntity, @Body() billDto: BillDto): Promise<BillEntity> {
+    console.log(billDto);
     const shop = await this.shopService.findOrCreateShop(billDto.shop);
     const bill = await this.billService.createBillForUser({ billDto, shopId: shop.id, userId: user.id });
     await Promise.all(billDto.purchases.map(purchaseDto => this.purchaseService.createPurchase({ purchaseDto, billId: bill.id })));
-    return OK;
+    return bill;
   }
 
   @UseGuards(Guards)
@@ -85,15 +86,15 @@ export class BillController {
   @ApiOperation({ title: 'Редактирование формы чека' })
   @ApiResponse({
     status: 200,
-    type: String,
+    type: BillEntity,
   })
-  async editBill(@RequestUser() user: UserEntity, @Param('billId') billId: string, @Body() billDto: BillDto): Promise<string> {
+  async editBill(@RequestUser() user: UserEntity, @Param('billId') billId: string, @Body() billDto: BillDto): Promise<BillEntity> {
     const billEntity = await this.billService.getBillById(billId);
     const shop = await this.shopService.editShop(billDto.shop);
     billDto.shop.id = shop.id;
-    await this.billService.editBill({ billDto, billEntity });
+    const editedBill = await this.billService.editBill({ billDto, billEntity });
     await Promise.all(billDto.purchases.map(purchaseDto => this.purchaseService.editPurchase({ purchaseDto, billId: billEntity.id })));
-    return OK;
+    return editedBill;
   }
 
   @UseGuards(Guards)

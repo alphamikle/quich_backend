@@ -23,6 +23,6 @@ export const FTS_UNKNOWN_FETCHING_ERROR = 'Неизвестная ошибка �
 export const FTS_BILL_NOT_SEND_ERROR = 'Не найдены данные чека в ФНС';
 export const FTS_TRY_MORE_ERROR = 'Ошибка при загрузке данных чека из ФНС. Попробуйте позднее';
 export const CATEGORY_NOT_EXIST_ERROR = 'Категории с данным id не существует';
-export const CATEGORY_TITLE_DOUBLE_ERROR = 'Категория с данным названием уже существует';
-// # OTHERS
+export const CATEGORY_TITLE_DOUBLE_ERROR = 'Такая категория у вас уже есть';
+// # OTHERS:
 export const UNDEFINED_CATEGORY_TITLE = 'НЕОПРЕДЕЛЕННОЕ';

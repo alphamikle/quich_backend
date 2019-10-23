@@ -43,7 +43,7 @@ export class FtsTransformer {
     const purchaseDto = new PurchaseDto();
     purchaseDto.price = ftsPurchase.price / 100;
     purchaseDto.quantity = ftsPurchase.quantity;
-    purchaseDto.title = ftsPurchase.name;
+    purchaseDto.title = ftsPurchase.name ? ftsPurchase.name.trim() : '';
     return purchaseDto;
   }
 }

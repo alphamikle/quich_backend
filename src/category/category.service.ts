@@ -16,22 +16,27 @@ export class CategoryService {
   }
 
   async getUserCategories(userId: string): Promise<CategoryDto[]> {
-    return await this.categoryEntityRepository.query(`
+    const categories: CategoryDto[] = await this.categoryEntityRepository.query(`
       SELECT ce.id, ce.title, ctue.color FROM category_entity ce
         LEFT JOIN category_to_user_entity ctue on ce.id = ctue."categoryId"
         WHERE ctue."userId" = '${ userId }'
     `);
+    return categories.map((category) => {
+      category.color = Number(category.color);
+      return category;
+    });
   }
 
   async getCategoryForUserById({ categoryId, userId }: { categoryId: string, userId: string }): Promise<CategoryDto> {
     const categories: CategoryDto[] = await this.categoryEntityRepository.query(`
-      SELECT ce.id, ce.title, ctue.color FROM category_entity ce
+      SELECT ce.id, ce.title, ctue.color::numeric FROM category_entity ce
         LEFT JOIN category_to_user_entity ctue on ce.id = ctue."categoryId"
         WHERE ctue."userId" = '${ userId }' AND ctue."categoryId" = '${ categoryId }'
     `);
     let category: CategoryDto;
     if (categories.length > 0) {
       category = categories[ 0 ];
+      category.color = Number(category.color);
     }
     return category;
   }

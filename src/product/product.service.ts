@@ -47,18 +47,53 @@ export class ProductService {
     return await this.productEntityRepository.find({ order: { title: 'ASC' } });
   }
 
-  async getClosestProductByTitle(title: string): Promise<ProductEntity | null> {
+  async getClosestProductByTitle({ title, products }: { title: string, products: ProductEntity[] }): Promise<ProductEntity | null> {
+    const separator = /( )|(\.)/g;
     let min = Infinity;
     let target: ProductEntity = null;
-    const products = await this.getAllProducts();
+    title = title.toLowerCase();
+    const subTitles = title.split(separator).filter(t => t).map(t => t.trim()).filter(t => t.length > 2);
+    const subTitlesLength = subTitles.length;
     for (let i = 0, l = products.length; i < l; i++) {
+      let isLess = false;
       const product = products[ i ];
-      const distance = getWordsDistance(title, product.title);
-      if (min > distance && distance < (title.length + product.title.length) / 3) {
+      const productTitle = product.title.toLowerCase();
+      const distance = getWordsDistance(title, productTitle);
+      // ? Дистанция должна быть больше 1|5 от суммы длин строк названий
+      const partOfWordsLength = (title.length + productTitle.length) / 5;
+      if (min > distance && distance < partOfWordsLength) {
+        isLess = true;
         min = distance;
         target = product;
         if (min === 0) {
           return target;
+        }
+      }
+      const smallestTitleLength = Math.min(title.length, productTitle.length);
+      // ? По словам пробегаемся если не нашли совпадений в предыдущем поиске и если дистанция не длиннее кратчайшего слова
+      if (!isLess && distance < smallestTitleLength) {
+        let subCount = 0;
+        let hasEqualityWords = false;
+        const productSubTitles = productTitle.split(separator).filter(t => t).map(t => t.trim()).filter(t => t.length > 2);
+        const productSubTitlesLength = productSubTitles.length;
+        for (let k = 0; k < subTitlesLength; k++) {
+          const subTitle = subTitles[k];
+          for (let x = 0; x < productSubTitlesLength; x++) {
+            const productSubTitle = productSubTitles[x];
+            const subDistance = getWordsDistance(subTitle, productSubTitle);
+            if (subDistance === 0) {
+              hasEqualityWords = true;
+              break;
+            }
+            const smallestSubWordLength = Math.min(subTitle.length, productSubTitle.length);
+            if (subDistance <= 2 && subDistance < smallestSubWordLength) {
+              subCount++;
+            }
+          }
+        }
+        // ? Количество похожих слов должно быть 2 или по одному одинаковому и хотя бы одному похожему
+        if (subCount > 2 || (hasEqualityWords && subCount)) {
+          target = product;
         }
       }
     }

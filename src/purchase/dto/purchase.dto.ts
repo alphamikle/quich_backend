@@ -13,4 +13,6 @@ export class PurchaseDto {
   rate?: number;
   @ApiModelPropertyOptional()
   categoryId?: string;
+  @ApiModelPropertyOptional({ default: false })
+  isValid?: boolean;
 }

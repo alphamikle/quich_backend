@@ -13,7 +13,7 @@ export class BillService {
   }
 
   async getUserBills(userId: string) {
-    return await this.billEntityRepository.find({ where: { userId } });
+    return await this.billEntityRepository.find({ where: { userId }, order: { billDate: 'DESC' } });
   }
 
   async createBillForUser({ billDto, shopId, userId }: { billDto: BillDto, shopId: string, userId: string }) {

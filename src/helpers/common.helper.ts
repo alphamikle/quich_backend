@@ -6,5 +6,5 @@ export async function wait(delay: number = 500) {
 
 export function getWordsDistance(first: string, second: string) {
   const max = leven(first, second);
-  return Math.min(max, leven(second, first));
+  return Math.max(max, leven(second, first));
 }

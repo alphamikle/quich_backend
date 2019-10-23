@@ -40,6 +40,7 @@ export class DefaultController {
   })
   @ApiOperation({ title: 'Получение всех данных пользователя в приложении' })
   async getAllUserData(@RequestUser() user: UserEntity): Promise<AllUserDataDto> {
-    return await this.defaultService.getAllUserData(user.id);
+    const data = await this.defaultService.getAllUserData(user.id);
+    return data;
   }
 }

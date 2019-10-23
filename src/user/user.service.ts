@@ -75,8 +75,8 @@ export class UserService {
     return await this.ftsAccountEntityRepository.save(ftsAccount);
   }
 
-  async deleteFtsAccountFromUser({ user, phone }: { user: UserEntity, phone: string }): Promise<void> {
-    await this.ftsAccountEntityRepository.delete({ user, phone });
+  async deleteFtsAccountFromUser({ userId, phone }: { userId: string, phone: string }): Promise<void> {
+    await this.ftsAccountEntityRepository.delete({ userId, phone });
   }
 
   async makeFtsAccountMain({ user, phone }: { user: UserEntity, phone: string }): Promise<void> {

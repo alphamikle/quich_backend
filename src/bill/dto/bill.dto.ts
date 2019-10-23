@@ -9,11 +9,19 @@ export class BillDto {
   shop!: ShopDto;
   @ApiModelProperty({ type: String, format: 'date-time' })
   billDate!: Date;
+  @ApiModelPropertyOptional()
+  date?: string;
+  @ApiModelPropertyOptional()
+  time?: string;
   @ApiModelProperty()
   comment?: string;
   @ApiModelProperty({ format: 'double' })
   totalSum!: number;
   @ApiModelProperty({ type: [PurchaseDto] })
   purchases!: PurchaseDto[];
+  @ApiModelPropertyOptional({ default: false })
+  isValid?: boolean;
+  @ApiModelPropertyOptional({ default: false })
+  isPurchasesValid?: boolean;
   providerCode?: string;
 }
