@@ -113,10 +113,9 @@ export class FtsService {
 
   async checkBillExistence({ fiscalNumber: fn, checkType: ct = 1, fiscalDocument: fd, fiscalProp: fp, dateTime, totalSum: ts }: FtsQrDto,
                            userCredentials: FtsAccountDto): Promise<boolean> {
-    const formattedDate = this.formatDateToFtsDate(dateTime);
     const penny = ts * 100;
     const preUrl = '/v1/ofds/*/inns/*/fss/';
-    const url = encodeURI(`${ preUrl }${ fn }/operations/${ ct }/tickets/${ fd }?fiscalSign=${ fp }&date=${ formattedDate }&sum=${ penny }`);
+    const url = encodeURI(`${ preUrl }${ fn }/operations/${ ct }/tickets/${ fd }?fiscalSign=${ fp }&date=${ dateTime }&sum=${ penny }`);
     try {
       await this.api.get(url, { headers: this.getHeaders(userCredentials) });
       return true;
@@ -126,23 +125,23 @@ export class FtsService {
     }
   }
 
-  async fetchBillData({ fiscalNumber, fiscalDocument, fiscalProp }: FtsQrDto, ftsAccountDto: FtsAccountDto, count = 0, limit = 2):
+  async fetchBillData({ fiscalNumber, fiscalDocument, fiscalProp }: FtsQrDto, ftsAccountDto: FtsAccountDto, count = 0, limit = 3):
     Promise<FtsFetchResponseBill | string> {
-    if (count >= limit) {
-      throw new RequestTimeoutException();
-    }
     if (count > 0) {
       await wait(500 * count);
     }
     const url = `/v1/inns/*/kkts/*/fss/${ fiscalNumber }/tickets/${ fiscalDocument }?fiscalSign=${ fiscalProp }&sendToEmail=no`;
     try {
+      if (count >= limit) {
+        throw new RequestTimeoutException();
+      }
       const response: FtsFetchResponse = await this.api.get(url, { headers: this.getHeaders(ftsAccountDto) });
       if (response.status !== 200) {
         return await this.fetchBillData({ fiscalNumber, fiscalDocument, fiscalProp }, ftsAccountDto, count + 1);
       }
       return response.data.document.receipt;
     } catch (err) {
-      console.error('FETCHING ERROR', err);
+      console.error('FETCHING ERROR', err.message);
       if (count < limit) {
         return await this.fetchBillData({ fiscalNumber, fiscalDocument, fiscalProp }, ftsAccountDto, count + 1);
       }
@@ -162,12 +161,6 @@ export class FtsService {
       }
       return error;
     }
-  }
-
-  private formatDateToFtsDate(date: string): string {
-    return date;
-    // const isoDate = this.dateHelper.format(date, 'yyyy-MM-dd HH:mm');
-    // return isoDate.replace(/(-)|(:)/g, '').replace(' ', 'T');
   }
 
   private generateAuthorizationValue(userCredentials: FtsAccountDto): string {

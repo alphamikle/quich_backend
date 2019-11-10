@@ -29,6 +29,7 @@ import { PurchaseService } from '../purchase/purchase.service';
 import { ProductService } from '../product/product.service';
 import { UserService } from '../user/user.service';
 import { AllUserDataDto } from './dto/AllUserData.dto';
+import { BillRequestService } from '../bill-request/bill-request.service';
 
 @Injectable()
 export class DefaultService {
@@ -77,6 +78,7 @@ export class DefaultService {
     private readonly purchaseService: PurchaseService,
     private readonly productService: ProductService,
     private readonly userService: UserService,
+    private readonly billRequestService: BillRequestService,
   ) {
   }
 
@@ -87,7 +89,8 @@ export class DefaultService {
     const purchases = await this.purchaseService.getUserPurchases(userId);
     const products = await this.productService.getUserProducts(userId);
     const accounts = await this.userService.getFtsAccountsByUserId(userId);
-    return { bills, categories, shops, purchases, products, accounts };
+    const billsRequests = await this.billRequestService.getUnloadedBillRequestsByUserId(userId);
+    return { bills, categories, shops, purchases, products, accounts, billsRequests };
   }
 
   async importOldData() {
@@ -247,6 +250,7 @@ export class DefaultService {
       newPurchase.productId = productsMap.get(purchase.productId).id;
       newPurchase.billId = billMap.get(purchase.checkId).id;
       newPurchase.rate = purchase.rating;
+      newPurchase.createdAt = purchase.createdAt;
       newPurchase = await this.purchaseEntityRepository.save(newPurchase);
       purchaseMap.set(purchase.id, newPurchase);
     }
@@ -266,7 +270,7 @@ export class DefaultService {
       newBillRequest.isFetched = cartsRequest.isFetched;
       newBillRequest.totalSum = cartsRequest.cartSum;
       newBillRequest.userId = usersMap.get(cartsRequest.userId).id;
-      newBillRequest.rawData = cartsRequest.cartResult;
+      // newBillRequest.rawData = cartsRequest.cartResult;
       newBillRequest = await this.billRequestEntityRepository.save(newBillRequest);
     }
     console.timeEnd('Requests');

@@ -14,6 +14,7 @@ import { FtsAccountEntity } from '../user/entities/fts-account.entity';
 import { BillRequestService } from '../bill-request/bill-request.service';
 import { BillRequestEntity } from '../bill-request/entities/bill-request.entity';
 import { FtsFetchResponseBill } from './dto/fts-fetch-response/bill.dto';
+import { FtsTransformer } from './fts.transformer';
 
 @ApiUseTags('fts')
 @Controller('fts')
@@ -24,6 +25,7 @@ export class FtsController {
     @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
     private readonly billRequestService: BillRequestService,
+    private readonly ftsTransformer: FtsTransformer,
   ) {
   }
 
@@ -100,7 +102,7 @@ export class FtsController {
       throw new BadRequestException({ push: FTS_NOT_CHECKED_BILL_ERROR });
     }
     if (billRequest.isFetched) {
-      return billRequest.rawData;
+      return billRequest.ftsData;
     }
     const ftsAccountFromBillRequest = await this.ftsService.getBillRequestToFtsAccountEntityByBillRequestId(billRequest.id);
     const ftsAccount = await this.userService.getFtsAccountById(ftsAccountFromBillRequest.ftsAccountId);
@@ -108,7 +110,14 @@ export class FtsController {
     const billData = await this.ftsService.fetchBillData(ftsQrDto, { password: ftsAccount.password, phone: ftsAccount.phone });
     if (typeof billData !== 'string') {
       await this.billRequestService.makeBillRequestFetched(billRequest.id);
-      await this.billRequestService.addRawDataToBillRequest({ billRequestId: billRequest.id, rawData: billData });
+      await this.billRequestService.addRawDataToBillRequest({
+        billRequestId: billRequest.id,
+        rawData: this.ftsTransformer.transformFtsBillToBillDto(billData),
+      });
+      await this.billRequestService.addFtsDataToBillRequest({
+        billRequestId: billRequest.id,
+        ftsData: billData,
+      });
       return billData;
     }
     throw new NotFoundException({ push: billData }); // TODO: Коды ошибок от фнс и их проброс тут

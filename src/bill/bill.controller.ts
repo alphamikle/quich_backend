@@ -16,7 +16,8 @@ import { PurchaseService } from '../purchase/purchase.service';
 import { BillService } from './bill.service';
 import { BillEntity } from './entities/bill.entity';
 import { ShopDto } from '../shop/dto/shop.dto';
-import { OK } from '../helpers/text';
+import { INVALID_ID_ERROR, INVALID_USER_ERROR, OK } from '../helpers/text';
+import { DateHelper } from '../helpers/date.helper';
 
 @ApiUseTags('bill')
 @Controller('bill')
@@ -30,6 +31,7 @@ export class BillController {
     private readonly shopService: ShopService,
     private readonly purchaseService: PurchaseService,
     private readonly billService: BillService,
+    private readonly dateHelper: DateHelper,
   ) {
   }
 
@@ -66,6 +68,43 @@ export class BillController {
 
   @UseGuards(Guards)
   @ApiBearerAuth()
+  @Post('data/request/:requestId')
+  @ApiOperation({ title: 'Получение информации о чеке по id BillRequest' })
+  @ApiResponse({
+    status: 201,
+    type: BillDto,
+  })
+  async getBillDataByBillRequestId(@RequestUser() user: UserEntity, @Param('requestId') requestId: string): Promise<BillDto> {
+    const billRequest = await this.billRequestService.getBillRequestById(requestId);
+    if (!billRequest) {
+      throw new BadRequestException({ push: INVALID_ID_ERROR });
+    }
+    if (billRequest.userId !== user.id) {
+      throw new BadRequestException({ push: INVALID_USER_ERROR });
+    }
+    if (billRequest.isFetched && billRequest.rawData !== null) {
+      return billRequest.rawData;
+    }
+    const ftsQrDto: FtsQrDto = {
+      totalSum: billRequest.totalSum,
+      dateTime: this.dateHelper.transformDateToFtsDate(billRequest.billDate),
+      fiscalDocument: billRequest.fiscalDocument,
+      fiscalNumber: billRequest.fiscalNumber,
+      fiscalProp: billRequest.fiscalProp,
+    };
+    await this.billRequestService.incrementIterations(requestId);
+    const billData = await this.getBillDataFromFtsOrOfd(user, ftsQrDto);
+    if (typeof billData === 'string') {
+      throw new BadRequestException({ push: billData });
+    }
+    billData.shop = await this.extractShopDtoInfo(billData.shop);
+    billData.purchases = await this.purchaseService.extractCategoriesIdsForPurchaseDtos(billData.purchases);
+    await this.billRequestService.setRawData({ id: requestId, rawData: billData });
+    return billData;
+  }
+
+  @UseGuards(Guards)
+  @ApiBearerAuth()
   @Post()
   @ApiOperation({ title: 'Создание формы чека' })
   @ApiResponse({
@@ -93,7 +132,7 @@ export class BillController {
     const shop = await this.shopService.editShop(billDto.shop);
     billDto.shop.id = shop.id;
     const editedBill = await this.billService.editBill({ billDto, billEntity });
-    await Promise.all(billDto.purchases.map(purchaseDto => this.purchaseService.editPurchase({ purchaseDto, billId: billEntity.id })));
+    await this.purchaseService.editPurchases({ purchases: billDto.purchases, billId: billDto.id });
     return editedBill;
   }
 
@@ -157,11 +196,13 @@ export class BillController {
       await this.billRequestService.makeBillRequestChecked(billRequestId);
       const billDataFromFts = await this.ftsService.fetchBillData(ftsQrDto, ftsAccountDto);
       if (typeof billDataFromFts !== 'string') {
+        const billDto = this.ftsTransformer.transformFtsBillToBillDto(billDataFromFts);
         await Promise.all([
           this.billRequestService.makeBillRequestFetched(billRequestId),
-          this.billRequestService.addRawDataToBillRequest({ billRequestId, rawData: billDataFromFts }),
+          this.billRequestService.addRawDataToBillRequest({ billRequestId, rawData: billDto }),
+          this.billRequestService.addFtsDataToBillRequest({ billRequestId, ftsData: billDataFromFts }),
         ]);
-        return this.ftsTransformer.transformFtsBillToBillDto(billDataFromFts);
+        return billDto;
       } else {
         return billDataFromFts;
       }

@@ -4,6 +4,7 @@ import { BillEntity } from '../../bill/entities/bill.entity';
 import { BillProviderEntity } from '../../bill-provider/entities/bill-provider.entity';
 import { FtsFetchResponseBill } from '../../fts/dto/fts-fetch-response/bill.dto';
 import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
+import { BillDto } from '../../bill/dto/bill.dto';
 
 @Entity()
 export class BillRequestEntity {
@@ -35,8 +36,12 @@ export class BillRequestEntity {
   @Column({ type: 'real' })
   totalSum!: number;
 
+  @ApiModelProperty({ type: BillDto })
   @Column({ type: 'jsonb', nullable: true })
-  rawData?: FtsFetchResponseBill;
+  rawData?: BillDto;
+
+  @Column({ type: 'jsonb', nullable: true })
+  ftsData?: FtsFetchResponseBill;
 
   @ApiModelProperty()
   @Column({ default: false })

@@ -28,6 +28,7 @@ import { UserModule } from '../user/user.module';
 import { CategoryModule } from '../category/category.module';
 import { ProductModule } from '../product/product.module';
 import { PurchaseModule } from '../purchase/purchase.module';
+import { BillRequestModule } from '../bill-request/bill-request.module';
 
 @Module({
   controllers: [ DefaultController ],
@@ -62,6 +63,7 @@ import { PurchaseModule } from '../purchase/purchase.module';
     CategoryModule,
     ProductModule,
     PurchaseModule,
+    BillRequestModule,
   ],
   providers: [ DefaultService ],
 })

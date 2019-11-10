@@ -2,56 +2,56 @@ version: '3.1'
 
 services:
 
-  quich:
-    container_name: quich_v2
-    build:
-      context: .
-      dockerfile: ./dockerfiles/node.Dockerfile
-    restart: always
-    user: node
-    working_dir: /usr/src/app
-    environment:
-      NODE_ENV: ${NODE_ENV}
-      DB_HOST: ${DB_HOST}
-      APP_PORT: ${APP_PORT}
-      IS_IN_DOCKER: ${IS_IN_DOCKER}
-      DB_PORT: ${DB_PORT}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
-      DB_SYNC: ${DB_SYNC}
-      DB_OLD_HOST: ${DB_OLD_HOST}
-      DB_OLD_USERNAME: ${DB_OLD_USERNAME}
-      DB_OLD_PASSWORD: ${DB_OLD_PASSWORD}
-      DB_OLD_NAME: ${DB_OLD_NAME}
-      ROUNDS: ${ROUNDS}
-      TOKEN_DURATION: ${TOKEN_DURATION}
-      DADATA_TOKEN: ${DADATA_TOKEN}
-      YANDEX_TOKEN: ${YANDEX_TOKEN}
-    volumes:
-      - ./:/usr/src/app
-      - /usr/src/app/node_modules
-    ports:
-      - 3000:3000
-    command: npm run tsnode:dev
+#  quich:
+#    container_name: quich_v2
+#    build:
+#      context: .
+#      dockerfile: ./dockerfiles/node.Dockerfile
+#    restart: always
+#    user: node
+#    working_dir: /usr/src/app
+#    environment:
+#      NODE_ENV: ${NODE_ENV}
+#      DB_HOST: ${DB_HOST}
+#      APP_PORT: ${APP_PORT}
+#      IS_IN_DOCKER: ${IS_IN_DOCKER}
+#      DB_PORT: ${DB_PORT}
+#      DB_USERNAME: ${DB_USERNAME}
+#      DB_PASSWORD: ${DB_PASSWORD}
+#      DB_NAME: ${DB_NAME}
+#      DB_SYNC: ${DB_SYNC}
+#      DB_OLD_HOST: ${DB_OLD_HOST}
+#      DB_OLD_USERNAME: ${DB_OLD_USERNAME}
+#      DB_OLD_PASSWORD: ${DB_OLD_PASSWORD}
+#      DB_OLD_NAME: ${DB_OLD_NAME}
+#      ROUNDS: ${ROUNDS}
+#      TOKEN_DURATION: ${TOKEN_DURATION}
+#      DADATA_TOKEN: ${DADATA_TOKEN}
+#      YANDEX_TOKEN: ${YANDEX_TOKEN}
+#    volumes:
+#      - ./:/usr/src/app
+#      - /usr/src/app/node_modules
+#    ports:
+#      - 3000:3000
+#    command: npm run tsnode:dev
 #    links:
 #      - pg
 
-#  pg:
-#    container_name: pg
-#    build:
-#      context: .
-#      dockerfile: ./dockerfiles/postgres.Dockerfile
-#    restart: always
-#    volumes:
-#      - pgdata:/var/lib/postgresql/data/pgdata
-#    ports:
-#      - ${DB_PORT}:5432
-#    environment:
-#      POSTGRES_PASSWORD: ${DB_PASSWORD}
-#      POSTGRES_USER: ${DB_USERNAME}
-#      POSTGRES_DB: ${DB_NAME}
-#      PGDATA: /var/lib/postgresql/data/pgdata
+  pg:
+    container_name: pg
+    build:
+      context: .
+      dockerfile: ./dockerfiles/postgres.Dockerfile
+    restart: always
+    volumes:
+      - pgdata:/var/lib/postgresql/data/pgdata
+    ports:
+      - ${DB_PORT}:5432
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_DB: ${DB_NAME}
+      PGDATA: /var/lib/postgresql/data/pgdata
 
 volumes:
   pgdata:

@@ -13,6 +13,7 @@ import { UserModule } from '../user/user.module';
 import { OfdModule } from '../ofd/ofd.module';
 import { ShopModule } from '../shop/shop.module';
 import { PurchaseModule } from '../purchase/purchase.module';
+import { DateHelper } from '../helpers/date.helper';
 
 @Module({
   controllers: [ BillController ],
@@ -31,7 +32,7 @@ import { PurchaseModule } from '../purchase/purchase.module';
     ShopModule,
     PurchaseModule,
   ],
-  providers: [ BillService ],
+  providers: [ BillService, DateHelper ],
   exports: [ BillService ],
 })
 export class BillModule {

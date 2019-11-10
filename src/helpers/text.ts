@@ -24,5 +24,7 @@ export const FTS_BILL_NOT_SEND_ERROR = 'Не найдены данные чек�
 export const FTS_TRY_MORE_ERROR = 'Ошибка при загрузке данных чека из ФНС. Попробуйте позднее';
 export const CATEGORY_NOT_EXIST_ERROR = 'Категории с данным id не существует';
 export const CATEGORY_TITLE_DOUBLE_ERROR = 'Такая категория у вас уже есть';
+export const INVALID_USER_ERROR = 'Неверные данные пользователя';
+export const INVALID_ID_ERROR = 'Неверный параметр ID';
 // # OTHERS:
 export const UNDEFINED_CATEGORY_TITLE = 'НЕОПРЕДЕЛЕННОЕ';

@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PurchaseEntity } from './entities/purchase.entity';
-import { In, Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 import { PurchaseDto } from './dto/purchase.dto';
 import { ProductService } from '../product/product.service';
 import { ProductEntity } from '../product/entities/product.entity';
+import { animationFrameScheduler } from 'rxjs';
 
 @Injectable()
 export class PurchaseService {
@@ -53,11 +54,27 @@ export class PurchaseService {
     return await this.purchaseEntityRepository.find({ where: { billId } });
   }
 
+  async deleteOutdatedPurchasesByIds({ purchasesIds, billId }: { purchasesIds: string[], billId: string }) {
+    if (purchasesIds.length > 0) {
+      await this.purchaseEntityRepository.delete({ id: Not(In(purchasesIds)), billId });
+    }
+  }
+
+  async editPurchases({ purchases, billId }: { purchases: PurchaseDto[], billId: string }): Promise<PurchaseEntity[]> {
+    const currentPurchasesIds: string[] = [];
+    const editedPurchases = await Promise.all(purchases.map(purchaseDto => this.editPurchase({ purchaseDto, billId })));
+    currentPurchasesIds.push(...editedPurchases.map(purchaseEntity => purchaseEntity.id));
+    await this.deleteOutdatedPurchasesByIds({ purchasesIds: currentPurchasesIds, billId });
+    return editedPurchases;
+  }
+
   async editPurchase({ purchaseDto, billId }: { purchaseDto: PurchaseDto, billId: string }): Promise<PurchaseEntity> {
     let purchaseEntity: PurchaseEntity;
     let product: ProductEntity;
     if (purchaseDto.id) {
       purchaseEntity = await this.getPurchaseById(purchaseDto.id);
+    }
+    if (purchaseEntity) {
       product = await this.productService.getProductById(purchaseEntity.productId);
       if (purchaseDto.title !== product.title) {
         product = await this.productService.findOrCreateProductByTitleOrId({ title: purchaseDto.title, id: null });

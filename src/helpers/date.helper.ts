@@ -11,15 +11,15 @@ export class DateHelper {
     return past(date);
   }
 
-  subDays(date: Date, amount: number) {
+  subDays(date: Date, amount: number): Date {
     return subD(date, amount);
   }
 
-  format(date: Date, format: string) {
+  format(date: Date, format: string): string {
     return fo(date, format);
   }
 
-  transformFtsDateToDate(ftsDate: string) {
+  transformFtsDateToDate(ftsDate: string): Date {
     // ? 20190429T1951 - 13
     // ? 20190429T195151 - 15
     if (ftsDate.length === 13) {
@@ -27,5 +27,9 @@ export class DateHelper {
     }
     ftsDate = ftsDate.replace(/^([0-9]{4})([0-9]{2})([0-9]{2})(T)([0-9]{2})([0-9]{2})([0-9]{2})$/, '$1-$2-$3 $5:$6:$7');
     return new Date(ftsDate);
+  }
+
+  transformDateToFtsDate(date: Date): string {
+    return this.format(date, 'yyyyMMdd HHmm').replace(' ', 'T');
   }
 }

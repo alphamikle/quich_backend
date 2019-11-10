@@ -6,6 +6,7 @@ import { BillRequestCreatingDto } from './dto/bill-request-creating.dto';
 import { FtsQrDto } from '../fts/dto/fts-qr.dto';
 import { FtsFetchResponseBill } from '../fts/dto/fts-fetch-response/bill.dto';
 import { DateHelper } from '../helpers/date.helper';
+import { BillDto } from '../bill/dto/bill.dto';
 
 @Injectable()
 export class BillRequestService {
@@ -21,20 +22,32 @@ export class BillRequestService {
     return await this.billRequestEntityRepository.findOne({ where: { fiscalDocument, fiscalNumber, fiscalProp } });
   }
 
-  async createBillRequest({ billDate, fiscalDocument, fiscalNumber, fiscalProp, isFetched, rawData, totalSum, userId }: BillRequestCreatingDto) {
+  async getBillRequestById(id: string): Promise<BillRequestEntity> {
+    return await this.billRequestEntityRepository.findOne(id);
+  }
+
+  async incrementIterations(id: string): Promise<void> {
+    await this.billRequestEntityRepository.update({ id }, { fetchingIterations: () => '"fetchingIterations" + 1' });
+  }
+
+  async setRawData({ id, rawData }: { id: string, rawData: BillDto }) {
+    await this.billRequestEntityRepository.update({ id }, { isFetched: true, rawData });
+  }
+
+  async createBillRequest({ billDate, fiscalDocument, fiscalNumber, fiscalProp, isFetched, totalSum, userId }: BillRequestCreatingDto):
+    Promise<BillRequestEntity> {
     const billRequestEntity = new BillRequestEntity();
     billRequestEntity.billDate = billDate;
     billRequestEntity.fiscalDocument = fiscalDocument;
     billRequestEntity.fiscalNumber = fiscalNumber;
     billRequestEntity.fiscalProp = fiscalProp;
     billRequestEntity.isFetched = isFetched;
-    billRequestEntity.rawData = rawData;
     billRequestEntity.totalSum = totalSum;
     billRequestEntity.userId = userId;
     return await this.billRequestEntityRepository.save(billRequestEntity);
   }
 
-  async findOrCreateBillRequest({ userId, ftsQrDto }: { userId: string, ftsQrDto: FtsQrDto }) {
+  async findOrCreateBillRequest({ userId, ftsQrDto }: { userId: string, ftsQrDto: FtsQrDto }): Promise<BillRequestEntity> {
     let billRequest = await this.getBillRequestByProps({
       fiscalNumber: ftsQrDto.fiscalNumber,
       fiscalDocument: ftsQrDto.fiscalDocument,
@@ -61,7 +74,15 @@ export class BillRequestService {
     await this.billRequestEntityRepository.update({ id: billRequestId }, { isFetched: true });
   }
 
-  async addRawDataToBillRequest({ billRequestId, rawData }: { billRequestId: string, rawData: FtsFetchResponseBill }): Promise<void> {
+  async addRawDataToBillRequest({ billRequestId, rawData }: { billRequestId: string, rawData: BillDto }): Promise<void> {
     await this.billRequestEntityRepository.update({ id: billRequestId }, { rawData });
+  }
+
+  async addFtsDataToBillRequest({ billRequestId, ftsData }: { billRequestId: string, ftsData: FtsFetchResponseBill }): Promise<void> {
+    await this.billRequestEntityRepository.update({ id: billRequestId }, { ftsData });
+  }
+
+  async getUnloadedBillRequestsByUserId(userId: string): Promise<BillRequestEntity[]> {
+    return await this.billRequestEntityRepository.find({ where: { /*isFetched: false, */userId }, order: { billDate: 'DESC' } });
   }
 }
