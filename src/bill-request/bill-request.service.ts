@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BillRequestEntity } from './entities/bill-request.entity';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { BillRequestCreatingDto } from './dto/bill-request-creating.dto';
 import { FtsQrDto } from '../fts/dto/fts-qr.dto';
 import { FtsFetchResponseBill } from '../fts/dto/fts-fetch-response/bill.dto';
@@ -30,8 +30,13 @@ export class BillRequestService {
     await this.billRequestEntityRepository.update({ id }, { fetchingIterations: () => '"fetchingIterations" + 1' });
   }
 
-  async setRawData({ id, rawData }: { id: string, rawData: BillDto }) {
+  async setRawData({ id, rawData }: { id: string, rawData: BillDto }): Promise<void> {
+    rawData.billRequestId = id;
     await this.billRequestEntityRepository.update({ id }, { isFetched: true, rawData });
+  }
+
+  async setBillIdToBillRequest({ billRequestId, billId }: { billRequestId: string, billId: string }): Promise<void> {
+    await this.billRequestEntityRepository.update({ id: billRequestId }, { billId });
   }
 
   async createBillRequest({ billDate, fiscalDocument, fiscalNumber, fiscalProp, isFetched, totalSum, userId }: BillRequestCreatingDto):
@@ -83,6 +88,6 @@ export class BillRequestService {
   }
 
   async getUnloadedBillRequestsByUserId(userId: string): Promise<BillRequestEntity[]> {
-    return await this.billRequestEntityRepository.find({ where: { /*isFetched: false, */userId }, order: { billDate: 'DESC' } });
+    return await this.billRequestEntityRepository.find({ where: { billId: IsNull(), userId }, order: { billDate: 'DESC' } });
   }
 }

@@ -112,10 +112,13 @@ export class BillController {
     type: BillEntity,
   })
   async createBill(@RequestUser() user: UserEntity, @Body() billDto: BillDto): Promise<BillEntity> {
-    console.log(billDto);
+    console.log('Save bill', billDto);
     const shop = await this.shopService.findOrCreateShop(billDto.shop);
     const bill = await this.billService.createBillForUser({ billDto, shopId: shop.id, userId: user.id });
     await Promise.all(billDto.purchases.map(purchaseDto => this.purchaseService.createPurchase({ purchaseDto, billId: bill.id })));
+    if (billDto.billRequestId) {
+      await this.billRequestService.setBillIdToBillRequest({ billRequestId: billDto.billRequestId, billId: bill.id });
+    }
     return bill;
   }
 

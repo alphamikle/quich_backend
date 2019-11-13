@@ -23,5 +23,7 @@ export class BillDto {
   isValid?: boolean;
   @ApiModelPropertyOptional({ default: false })
   isPurchasesValid?: boolean;
+  @ApiModelPropertyOptional()
+  billRequestId?: string;
   providerCode?: string;
 }
