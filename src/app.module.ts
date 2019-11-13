@@ -31,6 +31,7 @@ console.log('SYSTEM VARIABLES:', DB_PORT, DB_HOST, DB_USERNAME, DB_PASSWORD, DB_
       database: DB_NAME,
       entities: [ __dirname + '/**/*.entity{.ts,.js}' ],
       synchronize: DB_SYNC === 'true',
+      uuidExtension: 'pgcrypto',
       // logging: 'all',
     }),
     TypeOrmModule.forRoot({
