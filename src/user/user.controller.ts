@@ -5,8 +5,8 @@ import {
   Delete,
   ForbiddenException,
   forwardRef,
-  Get,
-  Inject,
+  Get, Head,
+  Inject, Param,
   Patch,
   Post,
   Query,
@@ -19,7 +19,7 @@ import { UserEntity } from './entities/user.entity';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import {
   BAD_FTS_SIGN_IN_DATA,
-  DUPLICATE_FTS_PHONE,
+  DUPLICATE_FTS_PHONE, EMAIL_RESTORE_SUCCESS,
   FTS_PHONE_DELETION_COMPLETE,
   NOT_EXIST_FTS_PHONE,
   REG_ERROR,
@@ -36,6 +36,7 @@ import { FtsAccountDto } from '../fts/dto/fts-account.dto';
 import { FtsValidator } from '../fts/fts.validator';
 import { FtsAccountModifyDto } from './dto/fts-account-modify.dto';
 import { FtsService } from '../fts/fts.service';
+import { EmailService, RestoreEmailCredentials } from '../email/email.service';
 
 @ApiUseTags('user')
 @Controller({ path: 'user' })
@@ -51,6 +52,7 @@ export class UserController {
     private readonly ftsValidator: FtsValidator,
     @Inject(forwardRef(() => FtsService))
     private readonly ftsService: FtsService,
+    private readonly emailService: EmailService,
   ) {
   }
 
@@ -67,6 +69,27 @@ export class UserController {
     }
     await this.authService.signUp({ email, password });
     return SIGN_UP_SUCCESS;
+  }
+
+  @Head('restore/:email')
+  @ApiOperation({ title: 'Восстановление пароля пользователя' })
+  @ApiResponse({
+    status: 201,
+    type: String,
+  })
+  async restore(@Param('email') email: string): Promise<string> {
+    const isUserExits = await this.userValidator.isUserExist(email);
+    if (isUserExits) {
+      const user = await this.userService.getUserByEmail(email);
+      const newPassword = this.authService.generateNewPassword();
+      const newHash = await this.authService.getHashOf(newPassword);
+      await this.userService.setUserPassword({ user, password: newHash });
+      const credentials: RestoreEmailCredentials = {
+        to: email,
+      };
+      await this.emailService.sendRestoreEmail({ credentials, newPassword });
+    }
+    return EMAIL_RESTORE_SUCCESS;
   }
 
   @Post('sign-in')

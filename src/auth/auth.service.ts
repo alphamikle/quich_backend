@@ -18,6 +18,21 @@ export class AuthService {
   ) {
   }
 
+  generateNewPassword() {
+    const chars = [ ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789' ];
+    return Array(6)
+      .fill(0)
+      .map(() => {
+        const index = Math.ceil(Math.random() * chars.length);
+        const char = chars[ index ] || '';
+        if (index % 2 === 0) {
+          return char.toLowerCase();
+        }
+        return char;
+      })
+      .join('');
+  }
+
   async signUp({ email, password }: UserCredentialsDto): Promise<UserEntity> {
     const passwordHash: string = await this.getHashOf(password);
     return this.userService.createUser({ email, passwordHash });
@@ -31,7 +46,7 @@ export class AuthService {
   }
 
   async getHashOf(value: string): Promise<string> {
-    return await hash(value, Number(ROUNDS) || 5);
+    return await hash(value, Number(ROUNDS));
   }
 
   async isHashValid(value: string, encrypted: string): Promise<boolean> {

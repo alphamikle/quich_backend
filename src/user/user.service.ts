@@ -22,7 +22,12 @@ export class UserService {
   ) {
   }
 
-  async getFtsAccountById(ftsAccountId: string): Promise<FtsAccountEntity | undefined> {
+  async setUserPassword({ user, password }: { user: UserEntity, password: string }): Promise<UserEntity> {
+    user.password = password;
+    return await this.userEntityRepository.save(user);
+  }
+
+  async getFtsAccountById(ftsAccountId: string): Promise<FtsAccountEntity> {
     return await this.ftsAccountEntityRepository.findOne(ftsAccountId);
   }
 

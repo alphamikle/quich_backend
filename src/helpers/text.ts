@@ -2,6 +2,7 @@
 export const OK = 'Успешно!';
 export const REG_ERROR = 'Данный пользователь уже зарегистрирован';
 export const SIGN_UP_SUCCESS = 'Вы успешно зарегистрировались!';
+export const EMAIL_RESTORE_SUCCESS = 'Запрос на восстановление пароля отправлен на email!';
 export const SIGN_IN_NO_USER = 'Пользователя с данным email не существует';
 export const SIGN_IN_BAD_PASSWORD = 'Неверный пароль';
 export const UNAUTHORIZED = 'Ошибка авторизации';
