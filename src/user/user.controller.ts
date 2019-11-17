@@ -71,7 +71,7 @@ export class UserController {
     return SIGN_UP_SUCCESS;
   }
 
-  @Head('restore/:email')
+  @Get('restore/:email')
   @ApiOperation({ title: 'Восстановление пароля пользователя' })
   @ApiResponse({
     status: 201,

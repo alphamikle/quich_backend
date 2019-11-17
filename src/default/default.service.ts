@@ -246,7 +246,7 @@ export class DefaultService {
         newPurchase.categoryId = category ? category.id : undefinedCategory.id;
       }
       newPurchase.quantity = purchase.quantity;
-      newPurchase.price = purchase.price;
+      newPurchase.price = Math.trunc(purchase.price * 100) / 100;
       newPurchase.productId = productsMap.get(purchase.productId).id;
       newPurchase.billId = billMap.get(purchase.checkId).id;
       newPurchase.rate = purchase.rating;
