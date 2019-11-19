@@ -22,6 +22,7 @@ import { DateHelper } from '../helpers/date.helper';
 @ApiUseTags('bill')
 @Controller('bill')
 export class BillController {
+  private billRequestIdCache: Map<string, string> = new Map();
   constructor(
     private readonly billRequestService: BillRequestService,
     private readonly ftsService: FtsService,
@@ -63,6 +64,8 @@ export class BillController {
     }
     billData.shop = await this.extractShopDtoInfo(billData.shop);
     billData.purchases = await this.purchaseService.extractCategoriesIdsForPurchaseDtos(billData.purchases);
+    const billRequestId = this.extractBillRequestIdFromCache({ userId: user.id, ftsQrDto });
+    await this.billRequestService.setRawData({ id: billRequestId, rawData: billData });
     return billData;
   }
 
@@ -112,7 +115,6 @@ export class BillController {
     type: BillEntity,
   })
   async createBill(@RequestUser() user: UserEntity, @Body() billDto: BillDto): Promise<BillEntity> {
-    console.log('Save bill', billDto);
     const shop = await this.shopService.findOrCreateShop(billDto.shop);
     const bill = await this.billService.createBillForUser({ billDto, shopId: shop.id, userId: user.id });
     await Promise.all(billDto.purchases.map(purchaseDto => this.purchaseService.createPurchase({ purchaseDto, billId: bill.id })));
@@ -179,6 +181,21 @@ export class BillController {
     return billFromFts;
   }
 
+  private setBillRequestIdToCache({ userId, ftsQrDto, billRequestId }: { userId: string, ftsQrDto: FtsQrDto, billRequestId: string }) {
+    this.billRequestIdCache.set(this.generateBillRequestCacheKey({ userId, ftsQrDto }), billRequestId);
+  }
+
+  private extractBillRequestIdFromCache({ userId, ftsQrDto }: { userId: string, ftsQrDto: FtsQrDto }) {
+    const key = this.generateBillRequestCacheKey({ userId, ftsQrDto });
+    const billRequestId = this.billRequestIdCache.get(key);
+    this.billRequestIdCache.delete(key);
+    return billRequestId;
+  }
+
+  private generateBillRequestCacheKey({ userId, ftsQrDto }: { userId: string, ftsQrDto: FtsQrDto }) {
+    return `${userId}${ftsQrDto.fiscalProp}${ftsQrDto.fiscalNumber}${ftsQrDto.fiscalDocument}`;
+  }
+
   private async getBillDataFromFts(user: UserEntity, ftsQrDto: FtsQrDto): Promise<string | BillDto> {
     const billRequest = await this.billRequestService.findOrCreateBillRequest({ userId: user.id, ftsQrDto });
     let ftsAccount = await this.userService.getNextFtsAccountByUserId(user.id);
@@ -202,9 +219,9 @@ export class BillController {
         const billDto = this.ftsTransformer.transformFtsBillToBillDto(billDataFromFts);
         await Promise.all([
           this.billRequestService.makeBillRequestFetched(billRequestId),
-          this.billRequestService.addRawDataToBillRequest({ billRequestId, rawData: billDto }),
           this.billRequestService.addFtsDataToBillRequest({ billRequestId, ftsData: billDataFromFts }),
         ]);
+        this.setBillRequestIdToCache({ userId: user.id, ftsQrDto, billRequestId: billRequest.id });
         return billDto;
       } else {
         return billDataFromFts;

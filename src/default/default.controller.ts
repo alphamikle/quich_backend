@@ -31,6 +31,15 @@ export class DefaultController {
     return await this.defaultService.importOldData();
   }
 
+  @Head('service')
+  @ApiResponse({
+    status: 200,
+  })
+  @ApiOperation({ title: 'Сервисный маршрут для внутренних нужд' })
+  async serviceAction() {
+    return await this.defaultService.doServiceWork();
+  }
+
   @UseGuards(Guards)
   @ApiBearerAuth()
   @Get('data')

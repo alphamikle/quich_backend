@@ -110,8 +110,8 @@ export class FtsController {
     const billData = await this.ftsService.fetchBillData(ftsQrDto, { password: ftsAccount.password, phone: ftsAccount.phone });
     if (typeof billData !== 'string') {
       await this.billRequestService.makeBillRequestFetched(billRequest.id);
-      await this.billRequestService.addRawDataToBillRequest({
-        billRequestId: billRequest.id,
+      await this.billRequestService.setRawData({
+        id: billRequest.id,
         rawData: this.ftsTransformer.transformFtsBillToBillDto(billData),
       });
       await this.billRequestService.addFtsDataToBillRequest({

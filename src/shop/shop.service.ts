@@ -38,9 +38,12 @@ export class ShopService {
       }
     }
     if (shop.address) {
-      const { latitude, longitude } = await this.mapsService.getCoordinatesByAddress(shop.address);
-      shop.latitude = latitude;
-      shop.longitude = longitude;
+      const coords = await this.mapsService.getCoordinatesByAddress(shop.address);
+      if (coords !== null) {
+        const { latitude, longitude } = coords;
+        shop.latitude = latitude;
+        shop.longitude = longitude;
+      }
     }
     return await this.shopEntityRepository.save(shop);
   }

@@ -79,10 +79,6 @@ export class BillRequestService {
     await this.billRequestEntityRepository.update({ id: billRequestId }, { isFetched: true });
   }
 
-  async addRawDataToBillRequest({ billRequestId, rawData }: { billRequestId: string, rawData: BillDto }): Promise<void> {
-    await this.billRequestEntityRepository.update({ id: billRequestId }, { rawData });
-  }
-
   async addFtsDataToBillRequest({ billRequestId, ftsData }: { billRequestId: string, ftsData: FtsFetchResponseBill }): Promise<void> {
     await this.billRequestEntityRepository.update({ id: billRequestId }, { ftsData });
   }

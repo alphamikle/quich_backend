@@ -20,6 +20,7 @@ export class CategoryService {
       SELECT ce.id, ce.title, ctue.color FROM category_entity ce
         LEFT JOIN category_to_user_entity ctue on ce.id = ctue."categoryId"
         WHERE ctue."userId" = '${ userId }'
+        ORDER BY ce.title
     `);
     return categories.map((category) => {
       category.color = Number(category.color);

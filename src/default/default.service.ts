@@ -277,4 +277,23 @@ export class DefaultService {
 
     return { usersMap, ftsAccountsMap, shopsMap, productsMap, categoriesMap, categoriesToUsersMap, billMap, purchaseMap };
   }
+
+  async doServiceWork() {
+    const trunc = (value: number) => Math.trunc(value * 100) / 100;
+    const purchases = await this.purchaseEntityRepository.find();
+    await Promise.all(purchases.map(async purchase => {
+      purchase.price = trunc(purchase.price);
+      return await this.purchaseEntityRepository.save(purchase);
+    }));
+    const bills = await this.billEntityRepository.find();
+    await Promise.all(bills.map(async bill => {
+      bill.totalSum = trunc(bill.totalSum);
+      return await this.billEntityRepository.save(bill);
+    }));
+    const billRequests = await this.billRequestEntityRepository.find();
+    await Promise.all(billRequests.map(async billRequest => {
+      billRequest.totalSum = trunc(billRequest.totalSum);
+      return await this.billRequestEntityRepository.save(billRequest);
+    }));
+  }
 }
