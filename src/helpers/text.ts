@@ -23,9 +23,13 @@ export const FTS_NOT_CHECKED_BILL_ERROR = 'Чек не был проверен �
 export const FTS_UNKNOWN_FETCHING_ERROR = 'Неизвестная ошибка при загрузке чека из ФНС';
 export const FTS_BILL_NOT_SEND_ERROR = 'Не найдены данные чека в ФНС';
 export const FTS_TRY_MORE_ERROR = 'Ошибка при загрузке данных чека из ФНС. Попробуйте позднее';
-export const CATEGORY_NOT_EXIST_ERROR = 'Категории с данным id не существует';
+export const CATEGORY_NOT_EXIST_ERROR = 'Категории с данным ID не существует';
 export const CATEGORY_TITLE_DOUBLE_ERROR = 'Такая категория у вас уже есть';
 export const INVALID_USER_ERROR = 'Неверные данные пользователя';
 export const INVALID_ID_ERROR = 'Неверный параметр ID';
+export const NOT_FOUND_FTS_ACCOUNT = 'Не найден аккаунт ФНС!';
+export const NOT_FOUND_BILL_REQUEST = 'Не найден запрос чека с таким ID';
+export const INCORRECT_USER_ID = 'Некорректные данные пользователя';
+export const SENDING_FTS_SMS = 'Ожидайте СМС с кодом для входа';
 // # OTHERS:
 export const UNDEFINED_CATEGORY_TITLE = 'НЕОПРЕДЕЛЕННОЕ';

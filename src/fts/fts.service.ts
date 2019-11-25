@@ -83,9 +83,11 @@ export class FtsService {
 
   async signUp(signUpCredentials: FtsRegistrationDto): Promise<string | true> {
     try {
-      await this.api.post('/v1/mobile/users/signup', signUpCredentials);
+      const response = await this.api.post('/v1/mobile/users/signup', signUpCredentials);
+      console.log(response);
       return true;
     } catch (err) {
+      console.error(err.response);
       const response: AxiosResponse = err.response;
       if (response.status === 409) {
         return FTS_USER_EXIST_ERROR;

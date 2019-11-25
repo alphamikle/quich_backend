@@ -16,7 +16,7 @@ import { PurchaseService } from '../purchase/purchase.service';
 import { BillService } from './bill.service';
 import { BillEntity } from './entities/bill.entity';
 import { ShopDto } from '../shop/dto/shop.dto';
-import { INVALID_ID_ERROR, INVALID_USER_ERROR, OK } from '../helpers/text';
+import { INVALID_ID_ERROR, INVALID_USER_ERROR, NOT_FOUND_FTS_ACCOUNT, OK } from '../helpers/text';
 import { DateHelper } from '../helpers/date.helper';
 
 @ApiUseTags('bill')
@@ -117,7 +117,14 @@ export class BillController {
   async createBill(@RequestUser() user: UserEntity, @Body() billDto: BillDto): Promise<BillEntity> {
     const shop = await this.shopService.findOrCreateShop(billDto.shop);
     const bill = await this.billService.createBillForUser({ billDto, shopId: shop.id, userId: user.id });
-    await Promise.all(billDto.purchases.map(purchaseDto => this.purchaseService.createPurchase({ purchaseDto, billId: bill.id })));
+    // ? Пояснение:
+    /** Избавился от Promise.all, потому что в одном чеке может
+     * быть два продукта с одинаковым названием, но разной ценой
+     * и сохранится только один из них
+     */
+    for await (const purchaseDto of billDto.purchases) {
+      await this.purchaseService.createPurchase({ purchaseDto, billId: bill.id });
+    }
     if (billDto.billRequestId) {
       await this.billRequestService.setBillIdToBillRequest({ billRequestId: billDto.billRequestId, billId: bill.id });
     }
@@ -204,6 +211,7 @@ export class BillController {
     }
     if (!ftsAccount) {
       // ? Ждем до получения чека от ОФД
+      return NOT_FOUND_FTS_ACCOUNT;
     }
     await this.userService.addFtsAccountIdToQueue(ftsAccount.id);
     let checkStatus = billRequest.isChecked;

@@ -22,7 +22,7 @@ import {
   DUPLICATE_FTS_PHONE, EMAIL_RESTORE_SUCCESS,
   FTS_PHONE_DELETION_COMPLETE,
   NOT_EXIST_FTS_PHONE,
-  REG_ERROR,
+  REG_ERROR, SENDING_FTS_SMS,
   SIGN_IN_BAD_PASSWORD,
   SIGN_IN_NO_USER,
   SIGN_UP_SUCCESS,
@@ -37,6 +37,7 @@ import { FtsValidator } from '../fts/fts.validator';
 import { FtsAccountModifyDto } from './dto/fts-account-modify.dto';
 import { FtsService } from '../fts/fts.service';
 import { EmailService, RestoreEmailCredentials } from '../email/email.service';
+import { FtsRegistrationDto } from '../fts/dto/fts-registration.dto';
 
 @ApiUseTags('user')
 @Controller({ path: 'user' })
@@ -133,6 +134,16 @@ export class UserController {
     type: FtsAccountEntity,
   })
   async addFtsAccountToUser(@RequestUser() user: UserEntity, @Body() ftsAccountData: FtsAccountDto): Promise<FtsAccountEntity> {
+    if (ftsAccountData.password === null || ftsAccountData.password === undefined) {
+      const ftsRegistrationDto = new FtsRegistrationDto({ email: user.email, phone: ftsAccountData.phone });
+      const result = await this.ftsService.signUp(ftsRegistrationDto);
+      if (result === true) {
+        throw new BadRequestException({ push: SENDING_FTS_SMS });
+      } else {
+        await this.ftsService.remindPassword({ phone: ftsAccountData.phone });
+        throw new BadRequestException({ push: SENDING_FTS_SMS });
+      }
+    }
     const isCredentialsValid = await this.ftsValidator.isSignInDataValid(ftsAccountData);
     if (!isCredentialsValid) {
       throw new BadRequestException({ push: BAD_FTS_SIGN_IN_DATA });

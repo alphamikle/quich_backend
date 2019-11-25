@@ -40,6 +40,7 @@ export class FtsController {
     if (validationInfo !== true) {
       throw new BadRequestException(validationInfo);
     }
+    console.log(regDto);
     const response = await this.ftsService.signUp(regDto);
     if (response !== true) {
       throw new BadRequestException({ push: response });

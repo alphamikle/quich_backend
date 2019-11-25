@@ -22,19 +22,12 @@ export class DefaultController {
     return 'PONG';
   }
 
-  @Head('import')
-  @ApiResponse({
-    status: 200,
-  })
-  @ApiOperation({ title: 'Импорт старых данных quich' })
-  async importAction() {
-    return await this.defaultService.importOldData();
-  }
-
   @Head('service')
   @ApiResponse({
     status: 200,
   })
+  @UseGuards(Guards)
+  @ApiBearerAuth()
   @ApiOperation({ title: 'Сервисный маршрут для внутренних нужд' })
   async serviceAction() {
     return await this.defaultService.doServiceWork();

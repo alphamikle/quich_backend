@@ -6,10 +6,13 @@ import { BillEntity } from '../bill/entities/bill.entity';
 import { UserEntity } from '../user/entities/user.entity';
 import { BillProviderEntity } from '../bill-provider/entities/bill-provider.entity';
 import { DateHelper } from '../helpers/date.helper';
+import { BillRequestValidator } from './bill-request.validator';
+import { BillRequestController } from './bill-request.controller';
 
 @Module({
+  controllers: [ BillRequestController ],
   imports: [ TypeOrmModule.forFeature([ BillRequestEntity, BillEntity, UserEntity, BillProviderEntity ]) ],
-  providers: [ BillRequestService, DateHelper ],
+  providers: [ BillRequestService, DateHelper, BillRequestValidator ],
   exports: [ BillRequestService ],
 })
 export class BillRequestModule {

@@ -22,6 +22,10 @@ export class BillRequestService {
     return await this.billRequestEntityRepository.findOne({ where: { fiscalDocument, fiscalNumber, fiscalProp } });
   }
 
+  async deleteBillRequestById(id: string) {
+    await this.billRequestEntityRepository.delete({ id });
+  }
+
   async getBillRequestById(id: string): Promise<BillRequestEntity> {
     return await this.billRequestEntityRepository.findOne(id);
   }

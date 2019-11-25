@@ -16,6 +16,6 @@ export class ProductEntity {
   purchases?: PurchaseEntity[];
 
   @ApiModelProperty({ type: String, format: 'date-time' })
-  @CreateDateColumn()
+  @Column({ default: () => 'now()' })
   createdAt!: Date;
 }

@@ -26,7 +26,7 @@ export class CommonValidator {
     return true;
   }
 
-  validateEmail(email: string) {
+  validateEmail(email: string): string | true {
     if (this.isEmpty(email)) {
       return NOT_EMPTY_ERROR;
     } else if (!this.isEmail(email)) {
