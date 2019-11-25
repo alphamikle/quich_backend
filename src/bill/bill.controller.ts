@@ -16,7 +16,7 @@ import { PurchaseService } from '../purchase/purchase.service';
 import { BillService } from './bill.service';
 import { BillEntity } from './entities/bill.entity';
 import { ShopDto } from '../shop/dto/shop.dto';
-import { INVALID_ID_ERROR, INVALID_USER_ERROR, NOT_FOUND_FTS_ACCOUNT, OK } from '../helpers/text';
+import { BILL_IS_BEEN_SAVED, INVALID_ID_ERROR, INVALID_USER_ERROR, NOT_FOUND_FTS_ACCOUNT, OK } from '../helpers/text';
 import { DateHelper } from '../helpers/date.helper';
 
 @ApiUseTags('bill')
@@ -205,6 +205,9 @@ export class BillController {
 
   private async getBillDataFromFts(user: UserEntity, ftsQrDto: FtsQrDto): Promise<string | BillDto> {
     const billRequest = await this.billRequestService.findOrCreateBillRequest({ userId: user.id, ftsQrDto });
+    if (billRequest && billRequest.isFetched && billRequest.billId) {
+      return BILL_IS_BEEN_SAVED;
+    }
     let ftsAccount = await this.userService.getNextFtsAccountByUserId(user.id);
     if (!ftsAccount) {
       ftsAccount = await this.userService.getRandomFtsAccount();
