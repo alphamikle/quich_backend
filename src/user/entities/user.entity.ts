@@ -5,6 +5,7 @@ import { BillEntity } from '../../bill/entities/bill.entity';
 import { CategoryToUserEntity } from '../../category/entities/category-to-user.entity';
 import { BillRequestEntity } from '../../bill-request/entities/bill-request.entity';
 import { ApiModelProperty } from '@nestjs/swagger';
+import { SubscriptionEntity } from '../../subscription/entities/subscription.entity';
 
 @Entity()
 export class UserEntity {
@@ -38,4 +39,7 @@ export class UserEntity {
 
   @OneToMany(() => BillRequestEntity, billRequest => billRequest.user)
   billRequests?: BillRequestEntity[];
+
+  @OneToMany(() => SubscriptionEntity, subscription => subscription.user)
+  subscriptions?: SubscriptionEntity[];
 }

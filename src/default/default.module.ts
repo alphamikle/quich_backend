@@ -34,17 +34,6 @@ import { BillRequestModule } from '../bill-request/bill-request.module';
   controllers: [ DefaultController ],
   imports: [
     TypeOrmModule.forFeature([
-      CartModel,
-      CartRequestModel,
-      CategoryModel,
-      FtsAccountModel,
-      ProductModel,
-      PurchaseModel,
-      ScanModel,
-      ShopModel,
-      UserModel,
-    ], 'oldDb'),
-    TypeOrmModule.forFeature([
       BillEntity,
       BillProviderEntity,
       BillRequestEntity,

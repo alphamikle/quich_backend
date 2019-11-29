@@ -16,6 +16,7 @@ import { DadataModule } from './dadata/dadata.module';
 import { MapsModule } from './maps/maps.module';
 import { DefaultModule } from './default/default.module';
 import { EmailModule } from './email/email.module';
+import { SubscriptionModule } from './subscription/subscription.module';
 
 const { DB_PORT, DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNC, DB_OLD_HOST, DB_OLD_USERNAME, DB_OLD_PASSWORD, DB_OLD_NAME } = process.env;
 
@@ -33,17 +34,6 @@ const { DB_PORT, DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNC, DB_OLD_HOS
       uuidExtension: 'pgcrypto',
       // logging: 'all',
     }),
-    TypeOrmModule.forRoot({
-      name: 'oldDb',
-      type: 'postgres',
-      host: DB_OLD_HOST,
-      port: 5432,
-      username: DB_OLD_USERNAME,
-      password: DB_OLD_PASSWORD,
-      database: DB_OLD_NAME,
-      entities: [ __dirname + '/default/models/*.model{.ts,.js}' ],
-      synchronize: false,
-    }),
     PassportModule,
     UserModule,
     AuthModule,
@@ -60,6 +50,7 @@ const { DB_PORT, DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNC, DB_OLD_HOS
     MapsModule,
     DefaultModule,
     EmailModule,
+    SubscriptionModule,
   ],
   controllers: [],
   providers: [],
