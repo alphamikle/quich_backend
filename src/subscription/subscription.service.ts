@@ -27,6 +27,7 @@ export class SubscriptionService {
   private generateCommonSubscription({ userId, activeFrom, activeTo, rawBody }: CommonSubscriptionConstructorData) {
     const subscription = new SubscriptionEntity();
     subscription.userId = userId;
+    subscription.subscriptionId = rawBody.message.messageId;
     subscription.activeFrom = activeFrom;
     subscription.activeTo = activeTo;
     subscription.rawBody = rawBody;
