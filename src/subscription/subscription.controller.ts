@@ -16,8 +16,14 @@ export class SubscriptionController {
     type: String,
   })
   async googleSubscriptionHook(@Body() googlePlayHookDto: GooglePlayHookDto) {
-    console.log('GP Hook:', googlePlayHookDto);
+    console.log(`Get GP hook ${new Date()}`);
     googlePlayHookDto = this.subscriptionService.decodeGPHData(googlePlayHookDto);
-    console.log(googlePlayHookDto);
+    const subscription = this.subscriptionService.generateAndroidSubscription({
+      userId: '01147b9b-02f4-44dd-8eb8-ab6684d87896',
+      activeFrom: new Date(),
+      activeTo: new Date(2020),
+      rawBody: googlePlayHookDto,
+    });
+    await this.subscriptionService.createSubscription(subscription);
   }
 }

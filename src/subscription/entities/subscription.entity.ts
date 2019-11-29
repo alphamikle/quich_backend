@@ -1,5 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UserEntity } from '../../user/entities/user.entity';
+import { GooglePlayHookDto } from '../dto/google-play-hook.dto';
 
 export enum Platform {
   IOS = 'IOS',
@@ -52,4 +53,7 @@ export class SubscriptionEntity {
 
   @Column({ default: () => 'now()' })
   createdAt!: Date;
+
+  @Column({ type: 'jsonb', nullable: true })
+  rawBody?: GooglePlayHookDto;
 }
