@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Platform, SubscriptionEntity } from './entities/subscription.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { GooglePlayHookDto } from './dto/google-play-hook.dto';
 
 @Injectable()
 export class SubscriptionService {
@@ -9,6 +10,12 @@ export class SubscriptionService {
     @InjectRepository(SubscriptionEntity)
     private readonly subscriptionRepository: Repository<SubscriptionEntity>,
   ) {}
+
+  decodeGPHData(gphDto: GooglePlayHookDto): GooglePlayHookDto {
+    const buffer = Buffer.from(gphDto.message.data, 'base64');
+    gphDto.message.decodedData = buffer.toString('utf8');
+    return gphDto;
+  }
 
   async createSubscription(subscription: SubscriptionEntity): Promise<SubscriptionEntity> {
     return await this.subscriptionRepository.save(subscription);
