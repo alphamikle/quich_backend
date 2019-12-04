@@ -26,25 +26,25 @@ export class ProductService {
   async createProduct(title: string): Promise<ProductEntity> {
     const product = new ProductEntity();
     product.title = title;
-    return await this.productEntityRepository.save(product);
+    return this.productEntityRepository.save(product);
   }
 
   async getProductByTitle(title: string): Promise<ProductEntity> {
-    return await this.productEntityRepository.findOne({ where: { title } });
+    return this.productEntityRepository.findOne({ where: { title } });
   }
 
   async getProductById(id: string): Promise<ProductEntity> {
-    return await this.productEntityRepository.findOne({ where: { id } });
+    return this.productEntityRepository.findOne({ where: { id } });
   }
 
   async createProductEntity(title: string): Promise<ProductEntity> {
     const product = new ProductEntity();
     product.title = title;
-    return await this.productEntityRepository.save(product);
+    return this.productEntityRepository.save(product);
   }
 
   async getAllProducts(): Promise<ProductEntity[]> {
-    return await this.productEntityRepository.find({ order: { title: 'ASC' } });
+    return this.productEntityRepository.find({ order: { title: 'ASC' } });
   }
 
   async getClosestProductByTitle({ title, products }: { title: string, products: ProductEntity[] }): Promise<ProductEntity | null> {

@@ -27,7 +27,7 @@ export class CategoryController {
     isArray: true,
   })
   async getUserCategories(@RequestUser() user: UserEntity): Promise<CategoryDto[]> {
-    return await this.categoryService.getUserCategories(user.id);
+    return this.categoryService.getUserCategories(user.id);
   }
 
   @UseGuards(Guards)
@@ -43,7 +43,7 @@ export class CategoryController {
     if (existCategory) {
       throw new BadRequestException({ title: CATEGORY_TITLE_DOUBLE_ERROR });
     }
-    return await this.categoryService.createCategoryForUserId({ categoryDto, userId: user.id });
+    return this.categoryService.createCategoryForUserId({ categoryDto, userId: user.id });
   }
 
   @UseGuards(Guards)
@@ -67,7 +67,7 @@ export class CategoryController {
     if (categoryByTitle && categoryByTitle.title !== existCategory.title) {
       throw new BadRequestException({ title: CATEGORY_TITLE_DOUBLE_ERROR });
     }
-    return await this.categoryService.editCategory({ categoryDto, userId: user.id });
+    return this.categoryService.editCategory({ categoryDto, userId: user.id });
   }
 
   @UseGuards(Guards)

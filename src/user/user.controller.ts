@@ -109,7 +109,7 @@ export class UserController {
     if (!isPasswordValid) {
       throw new ForbiddenException({ password: SIGN_IN_BAD_PASSWORD });
     }
-    return await this.authService.signIn(user);
+    return this.authService.signIn(user);
   }
 
   @UseGuards(Guards)
@@ -122,7 +122,7 @@ export class UserController {
     isArray: true,
   })
   async getFtsAccountsList(@RequestUser() user: UserEntity): Promise<FtsAccountEntity[]> {
-    return await this.userService.getFtsAccountsByUserId(user.id);
+    return this.userService.getFtsAccountsByUserId(user.id);
   }
 
   @UseGuards(Guards)
@@ -152,7 +152,7 @@ export class UserController {
     if (isAccountExist) {
       throw new BadRequestException({ phone: DUPLICATE_FTS_PHONE });
     }
-    return await this.userService.addFtsAccountToUser({ user, ftsAccountData });
+    return this.userService.addFtsAccountToUser({ user, ftsAccountData });
   }
 
   @UseGuards(Guards)
@@ -192,6 +192,6 @@ export class UserController {
     if (isMain) {
       await this.userService.makeFtsAccountMain({ user, phone });
     }
-    return await this.ftsService.changeFtsAccountPassword({ password, phone });
+    return this.ftsService.changeFtsAccountPassword({ password, phone });
   }
 }

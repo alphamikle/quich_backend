@@ -19,7 +19,7 @@ export class BillRequestService {
 
   async getBillRequestByProps({ fiscalDocument, fiscalNumber, fiscalProp }:
                                 { fiscalDocument: string, fiscalNumber: string, fiscalProp: string }): Promise<BillRequestEntity> {
-    return await this.billRequestEntityRepository.findOne({ where: { fiscalDocument, fiscalNumber, fiscalProp } });
+    return this.billRequestEntityRepository.findOne({ where: { fiscalDocument, fiscalNumber, fiscalProp } });
   }
 
   async deleteBillRequestById(id: string) {
@@ -27,7 +27,7 @@ export class BillRequestService {
   }
 
   async getBillRequestById(id: string): Promise<BillRequestEntity> {
-    return await this.billRequestEntityRepository.findOne(id);
+    return this.billRequestEntityRepository.findOne(id);
   }
 
   async incrementIterations(id: string): Promise<void> {
@@ -53,7 +53,7 @@ export class BillRequestService {
     billRequestEntity.isFetched = isFetched;
     billRequestEntity.totalSum = totalSum;
     billRequestEntity.userId = userId;
-    return await this.billRequestEntityRepository.save(billRequestEntity);
+    return this.billRequestEntityRepository.save(billRequestEntity);
   }
 
   async findOrCreateBillRequest({ userId, ftsQrDto }: { userId: string, ftsQrDto: FtsQrDto }): Promise<BillRequestEntity> {
@@ -88,6 +88,6 @@ export class BillRequestService {
   }
 
   async getUnloadedBillRequestsByUserId(userId: string): Promise<BillRequestEntity[]> {
-    return await this.billRequestEntityRepository.find({ where: { billId: IsNull(), userId }, order: { billDate: 'DESC' } });
+    return this.billRequestEntityRepository.find({ where: { billId: IsNull(), userId }, order: { billDate: 'DESC' } });
   }
 }

@@ -1,14 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { Market, Platform, SubscriptionEntity } from './entities/subscription.entity';
+import { IsNull, Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Market, Platform, SubscriptionEntity } from './entities/subscription.entity';
 import { GooglePlayHookDto } from './dto/google-play-hook.dto';
+import { GooglePlayDataDto } from './dto/google-play-data.dto';
+import { DateHelper } from '../helpers/date.helper';
+import { GooglePlayProduct } from './dto/google-play-product';
+import { GooglePlaySubscriptionInfo } from './interface/google-api.interface';
 
 export interface CommonSubscriptionConstructorData {
-  userId: string;
   activeFrom: Date;
   activeTo: Date;
-  rawBody: GooglePlayHookDto;
+  hookRawBody: GooglePlayHookDto;
 }
 
 @Injectable()
@@ -16,34 +19,34 @@ export class SubscriptionService {
   constructor(
     @InjectRepository(SubscriptionEntity)
     private readonly subscriptionRepository: Repository<SubscriptionEntity>,
-  ) {}
-
-  decodeGPHData(gphDto: GooglePlayHookDto): GooglePlayHookDto {
-    const buffer = Buffer.from(gphDto.message.data, 'base64');
-    gphDto.message.decodedData = JSON.parse(buffer.toString('utf8'));
-    return gphDto;
+    private readonly dateHelper: DateHelper,
+  ) {
   }
 
-  private generateCommonSubscription({ userId, activeFrom, activeTo, rawBody }: CommonSubscriptionConstructorData) {
-    const subscription = new SubscriptionEntity();
-    subscription.userId = userId;
-    subscription.price = 0;
-    subscription.subscriptionId = rawBody.message.messageId;
-    subscription.activeFrom = activeFrom;
-    subscription.activeTo = activeTo;
-    subscription.rawBody = rawBody;
-    return subscription;
+  extractAdditionalData(hookDto: GooglePlayHookDto): GooglePlayHookDto {
+    const buffer = Buffer.from(hookDto.message.data, 'base64');
+    const googlePlayData: GooglePlayDataDto = JSON.parse(buffer.toString('utf8'));
+    hookDto.message.decodedData = googlePlayData;
+    hookDto.actionDate = new Date(Number.parseInt(googlePlayData.eventTimeMillis, 10));
+    hookDto.status = googlePlayData.subscriptionNotification.notificationType;
+    hookDto.sku = googlePlayData.subscriptionNotification.subscriptionId;
+    return hookDto;
   }
 
-  generateAndroidSubscription({ userId, activeFrom, activeTo, rawBody }: CommonSubscriptionConstructorData) {
-    const subscription = this.generateCommonSubscription({ userId, activeFrom, activeTo, rawBody });
+  addEndDate({ hookDto, product }: { hookDto: GooglePlayHookDto, product: GooglePlayProduct }): GooglePlayHookDto {
+    hookDto.endDate = this.dateHelper.addDurationFromGooglePlayPeriodString(product.subscriptionPeriod, hookDto.actionDate);
+    return hookDto;
+  }
+
+  generateAndroidSubscription({ activeFrom, activeTo, hookRawBody }: CommonSubscriptionConstructorData) {
+    const subscription = this.generateCommonSubscription({ activeFrom, activeTo, hookRawBody });
     subscription.platform = Platform.ANDROID;
     subscription.market = Market.GOOGLE_PLAY;
     return subscription;
   }
 
   async createSubscription(subscription: SubscriptionEntity): Promise<SubscriptionEntity> {
-    return await this.subscriptionRepository.save(subscription);
+    return this.subscriptionRepository.save(subscription);
   }
 
   async pauseSubscriptionById(id: string): Promise<void> {
@@ -54,8 +57,50 @@ export class SubscriptionService {
     await this.subscriptionRepository.update({ id }, { isActive: true });
   }
 
-  async hasUserActiveSubscriptionForPlatform({ userId, platform }: { userId: string, platform: Platform }) {
+  async hasUserActiveSubscriptionForPlatform({ userId, platform }: { userId: string, platform: Platform }): Promise<boolean> {
     const count = await this.subscriptionRepository.count({ where: { userId, isActive: true, platform } });
     return count > 0;
+  }
+
+  assignSubscriptionWithGooglePlaySubscriptionInfo({
+    subscription,
+    subscriptionInfo,
+  }:
+                                                     {
+                                                       subscription: SubscriptionEntity,
+                                                       subscriptionInfo: GooglePlaySubscriptionInfo,
+                                                     }): SubscriptionEntity {
+    subscription.orderId = subscriptionInfo.orderId;
+    subscription.subscriptionInfoRawBody = subscriptionInfo;
+    subscription.price = subscriptionInfo.priceAmountMicros;
+    return subscription;
+  }
+
+  async getLastSubscriptionByPurchaseToken(purchaseToken: string): Promise<SubscriptionEntity> {
+    const data = await this.subscriptionRepository.findOne({ where: { purchaseToken }, order: { createdAt: 'DESC' } });
+    return data;
+  }
+
+  async setUserFromOneSubscriptionToAllByToken(purchaseToken: string): Promise<void> {
+    const subscriptionWithUser = await this.subscriptionRepository.findOne({ where: { purchaseToken, userId: Not(IsNull()) } });
+    if (subscriptionWithUser) {
+      await this.subscriptionRepository.update({ purchaseToken }, { userId: subscriptionWithUser.userId });
+    }
+  }
+
+  async setUserIdToSubscriptionsByToken({ userId, purchaseToken }: { userId: string; purchaseToken: string }) {
+    await this.subscriptionRepository.update({ purchaseToken }, { userId });
+  }
+
+  private generateCommonSubscription({ activeFrom, activeTo, hookRawBody }: CommonSubscriptionConstructorData): SubscriptionEntity {
+    const subscription = new SubscriptionEntity();
+    subscription.price = 0;
+    subscription.purchaseToken = hookRawBody.message.decodedData.subscriptionNotification.purchaseToken;
+    subscription.activeFrom = activeFrom;
+    subscription.activeTo = activeTo;
+    subscription.hookRawBody = hookRawBody;
+    subscription.status = hookRawBody.status;
+    subscription.sku = hookRawBody.message.decodedData.subscriptionNotification.subscriptionId;
+    return subscription;
   }
 }

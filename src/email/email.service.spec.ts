@@ -6,7 +6,7 @@ describe('EmailService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [EmailService],
+      providers: [ EmailService ],
     }).compile();
 
     service = module.get<EmailService>(EmailService);
@@ -14,7 +14,7 @@ describe('EmailService', () => {
 
   it('Send test email', async () => {
     service.initialize({ host: '', password: '', username: '', port: 0 });
-    await service.sendTextEmail();
+    await service.sendTextEmail({ from: '', to: '', text: '', title: '' });
     expect(undefined).toBeUndefined();
   });
 });

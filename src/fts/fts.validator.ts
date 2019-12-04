@@ -15,7 +15,7 @@ export class FtsValidator {
   }
 
   async isSignInDataValid(signInCredentials: FtsAccountDto): Promise<boolean> {
-    return await this.ftsService.signIn(signInCredentials);
+    return this.ftsService.signIn(signInCredentials);
   }
 
   validateRegistrationDto({ phone, name, email }: FtsRegistrationDto): { phone: string; name: string; email: string } | true {

@@ -17,7 +17,7 @@ export class PurchaseService {
   }
 
   async getPurchaseById(id: string): Promise<PurchaseEntity> {
-    return await this.purchaseEntityRepository.findOne(id);
+    return this.purchaseEntityRepository.findOne(id);
   }
 
   async updateUserPurchasesCategoryId({ oldCategoryId, newCategoryId, userId }: { oldCategoryId: string, newCategoryId: string, userId: string }) {
@@ -47,11 +47,11 @@ export class PurchaseService {
     purchase.quantity = purchaseDto.quantity;
     purchase.rate = purchaseDto.rate;
     purchase.billId = billId;
-    return await this.purchaseEntityRepository.save(purchase);
+    return this.purchaseEntityRepository.save(purchase);
   }
 
   async getPurchasesByBillId(billId: string): Promise<PurchaseEntity[]> {
-    return await this.purchaseEntityRepository.find({ where: { billId } });
+    return this.purchaseEntityRepository.find({ where: { billId } });
   }
 
   async deleteOutdatedPurchasesByIds({ purchasesIds, billId }: { purchasesIds: string[], billId: string }) {
@@ -104,7 +104,7 @@ export class PurchaseService {
 
   async extractCategoriesIdsForPurchaseDtos(purchaseDtos: PurchaseDto[]): Promise<PurchaseDto[]> {
     const products = await this.productService.getAllProducts();
-    return await Promise.all(purchaseDtos.map(async dto => {
+    return Promise.all(purchaseDtos.map(async dto => {
       dto.categoryId = await this.getClosestCategoryIdByProductTitle({ title: dto.title.trim(), products });
       return dto;
     }));

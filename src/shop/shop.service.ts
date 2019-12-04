@@ -45,15 +45,15 @@ export class ShopService {
         shop.longitude = longitude;
       }
     }
-    return await this.shopEntityRepository.save(shop);
+    return this.shopEntityRepository.save(shop);
   }
 
   async getShopByTitle(title: string): Promise<ShopEntity> {
-    return await this.shopEntityRepository.findOne({ title });
+    return this.shopEntityRepository.findOne({ title });
   }
 
   async getShopByTitleAndAddress({ title, address }: { title: string, address: string }): Promise<ShopEntity> {
-    return await this.shopEntityRepository.findOne({ title, address });
+    return this.shopEntityRepository.findOne({ title, address });
   }
 
   async getShopByProps({ title, address }: { title: string, address?: string }): Promise<ShopEntity> {
@@ -68,13 +68,13 @@ export class ShopService {
   }
 
   async getShopById(id: string): Promise<ShopEntity> {
-    return await this.shopEntityRepository.findOne(id);
+    return this.shopEntityRepository.findOne(id);
   }
 
   async editShop(shopDto: ShopDto): Promise<ShopEntity> {
     const shop = await this.getShopById(shopDto.id);
     if (shopDto.title !== shop.title) {
-      return await this.createShopEntity(shopDto);
+      return this.createShopEntity(shopDto);
     }
     return shop;
   }

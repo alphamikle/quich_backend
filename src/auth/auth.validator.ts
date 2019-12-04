@@ -12,7 +12,7 @@ export class AuthValidator {
   }
 
   async isPasswordValid({ user, password }: { user: UserEntity, password: string }): Promise<boolean> {
-    return await this.authService.isHashValid(password, user.password);
+    return this.authService.isHashValid(password, user.password);
   }
 
   async isTokenValid(token: string): Promise<boolean> {

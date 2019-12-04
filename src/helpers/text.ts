@@ -32,5 +32,6 @@ export const NOT_FOUND_BILL_REQUEST = 'Не найден запрос чека �
 export const INCORRECT_USER_ID = 'Некорректные данные пользователя';
 export const SENDING_FTS_SMS = 'Ожидайте СМС с кодом для входа';
 export const BILL_IS_BEEN_SAVED = 'Данный чек был сохранен вами ранее';
+export const INCORRECT_GOOGLE_PLAY_HOOK_DATA = 'Некорректные данные подписки';
 // # OTHERS:
 export const UNDEFINED_CATEGORY_TITLE = 'НЕОПРЕДЕЛЕННОЕ';

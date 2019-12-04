@@ -56,11 +56,11 @@ export class CategoryService {
   }
 
   async getCategoryEntityByTitle(title: string): Promise<CategoryEntity> {
-    return await this.categoryEntityRepository.findOne({ where: { title } });
+    return this.categoryEntityRepository.findOne({ where: { title } });
   }
 
   async getCategoryEntityById(id: string): Promise<CategoryEntity> {
-    return await this.categoryEntityRepository.findOne(id);
+    return this.categoryEntityRepository.findOne(id);
   }
 
   async createCategoryForUserId({ categoryDto, userId }: { categoryDto: CategoryDto, userId: string }): Promise<CategoryDto> {
@@ -78,7 +78,7 @@ export class CategoryService {
       categoryToUserEntity.color = categoryDto.color;
       await this.categoryToUserEntityRepository.save(categoryToUserEntity);
     }
-    return await this.getCategoryForUserById({ categoryId: category.id, userId });
+    return this.getCategoryForUserById({ categoryId: category.id, userId });
   }
 
   async changeUserCategoryColor({ categoryDto, userId }:
@@ -90,13 +90,13 @@ export class CategoryService {
       },
     });
     categoryToUserEntity.color = categoryDto.color;
-    return await this.categoryToUserEntityRepository.save(categoryToUserEntity);
+    return this.categoryToUserEntityRepository.save(categoryToUserEntity);
   }
 
   async createCategoryEntity(categoryDto: CategoryDto): Promise<CategoryEntity> {
     const category = new CategoryEntity();
     category.title = categoryDto.title;
-    return await this.categoryEntityRepository.save(category);
+    return this.categoryEntityRepository.save(category);
   }
 
   async replaceUserCategoryByOther({ oldCategoryId, newCategoryId, userId }:
@@ -118,7 +118,7 @@ export class CategoryService {
     if (category.color !== categoryDto.color) {
       await this.changeUserCategoryColor({ categoryDto: { id: categoryEntity.id, color: categoryDto.color, title: categoryDto.title }, userId });
     }
-    return await this.getCategoryForUserById({ categoryId: categoryEntity.id, userId });
+    return this.getCategoryForUserById({ categoryId: categoryEntity.id, userId });
   }
 
   async deleteCategoryFromUser({ categoryId, userId }: { categoryId: string, userId: string }) {

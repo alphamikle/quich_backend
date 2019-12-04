@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { PassportModule } from '@nestjs/passport';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
-import { PassportModule } from '@nestjs/passport';
 import { FtsModule } from './fts/fts.module';
 import { BillModule } from './bill/bill.module';
 import { ShopModule } from './shop/shop.module';
@@ -18,7 +18,7 @@ import { DefaultModule } from './default/default.module';
 import { EmailModule } from './email/email.module';
 import { SubscriptionModule } from './subscription/subscription.module';
 
-const { DB_PORT, DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNC, DB_OLD_HOST, DB_OLD_USERNAME, DB_OLD_PASSWORD, DB_OLD_NAME } = process.env;
+const { DB_PORT, DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNC } = process.env;
 
 @Module({
   imports: [
@@ -29,7 +29,7 @@ const { DB_PORT, DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNC, DB_OLD_HOS
       username: DB_USERNAME,
       password: DB_PASSWORD,
       database: DB_NAME,
-      entities: [ __dirname + '/**/*.entity{.ts,.js}' ],
+      entities: [ `${__dirname}/**/*.entity{.ts,.js}` ],
       synchronize: DB_SYNC === 'true',
       uuidExtension: 'pgcrypto',
       // logging: 'all',

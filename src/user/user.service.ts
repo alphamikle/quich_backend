@@ -24,18 +24,18 @@ export class UserService {
 
   async setUserPassword({ user, password }: { user: UserEntity, password: string }): Promise<UserEntity> {
     user.password = password;
-    return await this.userEntityRepository.save(user);
+    return this.userEntityRepository.save(user);
   }
 
   async getFtsAccountById(ftsAccountId: string): Promise<FtsAccountEntity> {
-    return await this.ftsAccountEntityRepository.findOne(ftsAccountId);
+    return this.ftsAccountEntityRepository.findOne(ftsAccountId);
   }
 
   async createUser({ email, passwordHash }: { email: string, passwordHash: string }): Promise<UserEntity> {
     const user = new UserEntity();
     user.email = email;
     user.password = passwordHash;
-    return await this.userEntityRepository.save(user);
+    return this.userEntityRepository.save(user);
   }
 
   async createSession({ token, user }: { token: string, user: UserEntity }): Promise<SessionEntity> {
@@ -43,11 +43,11 @@ export class UserService {
     session.token = token;
     session.user = user;
     session.expiredAt = this.dateHelper.addDays(new Date(), Number(TOKEN_DURATION));
-    return await this.sessionEntityRepository.save(session);
+    return this.sessionEntityRepository.save(session);
   }
 
   async getUserByEmail(email: string): Promise<UserEntity> {
-    return await this.userEntityRepository.findOne({ where: { email } });
+    return this.userEntityRepository.findOne({ where: { email } });
   }
 
   async getUserByToken(token: string): Promise<UserEntity> {
@@ -77,7 +77,7 @@ export class UserService {
     ftsAccount.userId = user.id;
     const otherAccounts = await this.getFtsAccountsByUserId(user.id);
     ftsAccount.isMain = otherAccounts.length === 0;
-    return await this.ftsAccountEntityRepository.save(ftsAccount);
+    return this.ftsAccountEntityRepository.save(ftsAccount);
   }
 
   async deleteFtsAccountFromUser({ userId, phone }: { userId: string, phone: string }): Promise<void> {
@@ -135,7 +135,7 @@ export class UserService {
       return null;
     }
     const onlyIds = lessUsedFtsAccountsIds.map(item => item.ftsAccountId);
-    return await this.ftsAccountEntityRepository.findOne(onlyIds[ 0 ]);
+    return this.ftsAccountEntityRepository.findOne(onlyIds[ 0 ]);
   }
 
   /**

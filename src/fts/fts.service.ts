@@ -60,11 +60,11 @@ export class FtsService {
     const ftsAccountToBillRequest = new FtsAccountToBillRequestEntity();
     ftsAccountToBillRequest.billRequestId = billRequestId;
     ftsAccountToBillRequest.ftsAccountId = ftsAccountId;
-    return await this.ftsAccountToBillRequestEntityRepository.save(ftsAccountToBillRequest);
+    return this.ftsAccountToBillRequestEntityRepository.save(ftsAccountToBillRequest);
   }
 
   async getBillRequestToFtsAccountEntityByBillRequestId(billRequestId: string): Promise<FtsAccountToBillRequestEntity | undefined> {
-    return await this.ftsAccountToBillRequestEntityRepository.findOne({ where: { billRequestId } });
+    return this.ftsAccountToBillRequestEntityRepository.findOne({ where: { billRequestId } });
   }
 
   setFtsUrl(baseUrl: string = 'https://proverkacheka.nalog.ru:9999'): void {
@@ -110,7 +110,7 @@ export class FtsService {
   async changeFtsAccountPassword({ password, phone }: { password: string, phone: string }): Promise<FtsAccountEntity> {
     const ftsAccount: FtsAccountEntity = await this.ftsAccountEntityRepository.findOne({ where: { phone } });
     ftsAccount.password = password;
-    return await this.ftsAccountEntityRepository.save(ftsAccount);
+    return this.ftsAccountEntityRepository.save(ftsAccount);
   }
 
   async checkBillExistence({ fiscalNumber: fn, checkType: ct = 1, fiscalDocument: fd, fiscalProp: fp, dateTime, totalSum: ts }: FtsQrDto,
@@ -139,13 +139,13 @@ export class FtsService {
       }
       const response: FtsFetchResponse = await this.api.get(url, { headers: this.getHeaders(ftsAccountDto) });
       if (response.status !== 200) {
-        return await this.fetchBillData({ fiscalNumber, fiscalDocument, fiscalProp }, ftsAccountDto, count + 1);
+        return this.fetchBillData({ fiscalNumber, fiscalDocument, fiscalProp }, ftsAccountDto, count + 1);
       }
       return response.data.document.receipt;
     } catch (err) {
       console.error('FETCHING ERROR', err.message);
       if (count < limit) {
-        return await this.fetchBillData({ fiscalNumber, fiscalDocument, fiscalProp }, ftsAccountDto, count + 1);
+        return this.fetchBillData({ fiscalNumber, fiscalDocument, fiscalProp }, ftsAccountDto, count + 1);
       }
       let error = FTS_TRY_MORE_ERROR;
       if (err.response && err.response.status) {

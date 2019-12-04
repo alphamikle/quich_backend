@@ -13,7 +13,7 @@ export class BillService {
   }
 
   async getUserBills(userId: string) {
-    return await this.billEntityRepository.find({ where: { userId }, order: { billDate: 'DESC' } });
+    return this.billEntityRepository.find({ where: { userId }, order: { billDate: 'DESC' } });
   }
 
   async createBillForUser({ billDto, shopId, userId }: { billDto: BillDto, shopId: string, userId: string }) {
@@ -23,11 +23,11 @@ export class BillService {
     bill.shopId = shopId;
     bill.totalSum = billDto.totalSum;
     bill.userId = userId;
-    return await this.billEntityRepository.save(bill);
+    return this.billEntityRepository.save(bill);
   }
 
   async getBillById(id: string) {
-    return await this.billEntityRepository.findOne(id);
+    return this.billEntityRepository.findOne(id);
   }
 
   async editBill({ billDto, billEntity }: { billDto: BillDto, billEntity: BillEntity }) {
@@ -35,7 +35,7 @@ export class BillService {
     billEntity.comment = billDto.comment;
     billEntity.billDate = billDto.billDate;
     billEntity.shopId = billDto.shop.id;
-    return await this.billEntityRepository.save(billEntity);
+    return this.billEntityRepository.save(billEntity);
   }
 
   async deleteBill(id: string): Promise<void> {

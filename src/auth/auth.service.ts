@@ -46,18 +46,18 @@ export class AuthService {
   }
 
   async getHashOf(value: string): Promise<string> {
-    return await hash(value, Number(ROUNDS));
+    return hash(value, Number(ROUNDS));
   }
 
   async isHashValid(value: string, encrypted: string): Promise<boolean> {
-    return await compare(value, encrypted);
+    return compare(value, encrypted);
   }
 
   async generateAuthToken({ dateMark, email }: { dateMark: number, email: string }): Promise<string> {
-    return await this.getHashOf(dateMark.toString() + email);
+    return this.getHashOf(dateMark.toString() + email);
   }
 
   async getSessionByToken(token: string): Promise<SessionEntity> {
-    return await this.sessionEntityRepository.findOne({ where: { token } });
+    return this.sessionEntityRepository.findOne({ where: { token } });
   }
 }

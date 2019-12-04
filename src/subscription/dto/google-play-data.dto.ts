@@ -1,4 +1,6 @@
-export class GphDataDto {
+import { Sku, Status } from '../entities/subscription.entity';
+
+export class GooglePlayDataDto {
   version!: string;
   packageName!: string;
   eventTimeMillis!: string;
@@ -7,7 +9,7 @@ export class GphDataDto {
 
 export interface SubscriptionNotification {
   version: string;
-  notificationType: number;
+  notificationType: Status;
   purchaseToken: string;
-  subscriptionId: string;
+  subscriptionId: Sku;
 }

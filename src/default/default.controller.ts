@@ -30,7 +30,7 @@ export class DefaultController {
   @ApiBearerAuth()
   @ApiOperation({ title: 'Сервисный маршрут для внутренних нужд' })
   async serviceAction() {
-    return await this.defaultService.doServiceWork();
+    return this.defaultService.doServiceWork();
   }
 
   @UseGuards(Guards)

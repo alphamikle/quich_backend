@@ -32,4 +32,31 @@ export class DateHelper {
   transformDateToFtsDate(date: Date): string {
     return this.format(date, 'yyyyMMdd HHmm').replace(' ', 'T');
   }
+
+  addDurationFromGooglePlayPeriodString(period: string, date: Date) {
+    const newDate = new Date(date);
+    const dayRegExp = /^P([0-9]{1,2})D$/;
+    const weekRegExp = /^P([0-9]{1,2})W$/;
+    const monthRegExp = /^P([0-9]{1,2})M$/;
+    let result: RegExpExecArray = dayRegExp.exec(period);
+    if (result !== null) {
+      const durationInDays = Number.parseInt(result[1], 10);
+      newDate.setDate(newDate.getDate() + durationInDays);
+    }
+    result = weekRegExp.exec(period);
+    if (result !== null) {
+      const durationInDays = Number.parseInt(result[1], 10) * 7;
+      newDate.setDate(newDate.getDate() + durationInDays);
+    }
+    result = monthRegExp.exec(period);
+    if (result !== null) {
+      const durationInMonths = Number.parseInt(result[1], 10);
+      newDate.setMonth(newDate.getMonth() + durationInMonths);
+    }
+    if (result === null) {
+      throw new Error(`Error in parse google play subscription duration ${period}`);
+    }
+    return newDate;
+
+  }
 }

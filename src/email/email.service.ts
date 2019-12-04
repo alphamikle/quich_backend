@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { createTransport, Transporter } from 'nodemailer';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EmailContentEntity } from './entities/email-content.entity';
 import { Repository } from 'typeorm';
+import { EmailContentEntity } from './entities/email-content.entity';
 import { PASSWORD_VARIABLE, REQUIRED_ENTITIES, RESTORE_ENTITY_CODE } from './content/mock-content';
 
 export interface EmailCredentials {
@@ -76,7 +76,7 @@ export class EmailService {
   }
 
   async sendTextEmail({ to, from, text, title }: TextEmailCredentials): Promise<void> {
-    const result = await this.transport.sendMail({
+    await this.transport.sendMail({
       to,
       from,
       text,
@@ -84,7 +84,7 @@ export class EmailService {
     });
   }
 
-  async sendRestoreEmail({ credentials, newPassword }: { credentials: RestoreEmailCredentials, newPassword: string }) {
+  async sendRestoreEmail({ credentials, newPassword }: { credentials: RestoreEmailCredentials; newPassword: string }): Promise<void> {
     const restoreContent = await this.getEmailContentEntityByCode(RESTORE_ENTITY_CODE);
     const text = this.replaceVars(restoreContent.content, PASSWORD_VARIABLE, newPassword);
     await this.sendTextEmail({
@@ -96,11 +96,11 @@ export class EmailService {
   }
 
   async getEmailContentEntityByCode(code: string): Promise<EmailContentEntity> {
-    return await this.emailContentEntityRepository.findOne({ code });
+    return this.emailContentEntityRepository.findOne({ code });
   }
 
   async createEmailContentEntity(emailContentEntity: EmailContentEntity): Promise<EmailContentEntity> {
-    return await this.emailContentEntityRepository.save(emailContentEntity);
+    return this.emailContentEntityRepository.save(emailContentEntity);
   }
 
   private async initDefaultEntities(): Promise<void> {
@@ -113,7 +113,7 @@ export class EmailService {
     await Promise.all(notSyncedDefaults.map(defaultEntity => this.createEmailContentEntity(defaultEntity)));
   }
 
-  private replaceVars(content: string, variable: string, replacer: string) {
+  private replaceVars(content: string, variable: string, replacer: string): string {
     return content.replace(variable, replacer);
   }
 }
