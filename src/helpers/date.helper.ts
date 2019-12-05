@@ -38,6 +38,7 @@ export class DateHelper {
     const dayRegExp = /^P([0-9]{1,2})D$/;
     const weekRegExp = /^P([0-9]{1,2})W$/;
     const monthRegExp = /^P([0-9]{1,2})M$/;
+    const yearRegExp = /^P([0-9]{1,2})Y$/;
     let result: RegExpExecArray = dayRegExp.exec(period);
     if (result !== null) {
       const durationInDays = Number.parseInt(result[1], 10);
@@ -52,6 +53,11 @@ export class DateHelper {
     if (result !== null) {
       const durationInMonths = Number.parseInt(result[1], 10);
       newDate.setMonth(newDate.getMonth() + durationInMonths);
+    }
+    result = yearRegExp.exec(period);
+    if (result !== null) {
+      const durationInYears = Number.parseInt(result[1], 10);
+      newDate.setFullYear(newDate.getFullYear() + durationInYears);
     }
     if (result === null) {
       throw new Error(`Error in parse google play subscription duration ${period}`);
