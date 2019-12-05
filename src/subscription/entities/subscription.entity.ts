@@ -33,6 +33,7 @@ export enum Status {
 
 export enum Sku {
   TEST_MONTHLY_SUBSCRIPTION = 'test_monthly_subscription',
+  TEST_YEARLY_SUBSCRIPTION = 'test_yearly_subscription',
 }
 
 @Entity()
