@@ -74,6 +74,8 @@ export class SubscriptionService {
     subscription.orderId = subscriptionInfo.orderId;
     subscription.subscriptionInfoRawBody = subscriptionInfo;
     subscription.price = subscriptionInfo.priceAmountMicros;
+    subscription.activeTo = new Date(subscriptionInfo.expiryTimeMillis);
+    subscription.activeFrom = new Date(subscriptionInfo.startTimeMillis);
     return subscription;
   }
 

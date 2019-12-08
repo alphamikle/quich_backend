@@ -34,12 +34,12 @@ export class SubscriptionController {
       throw new BadRequestException(validationResult);
     }
     hookDto = this.subscriptionService.extractAdditionalData(hookDto);
-    const product = await this.googleApiService.getProductInfoBySku(hookDto.sku);
-    hookDto = this.subscriptionService.addEndDate({ hookDto, product });
+    const fallbackStartDate = new Date(1990, 1, 1);
+    const fallbackEndDate = new Date(2030, 1, 1);
 
     let subscription = this.subscriptionService.generateAndroidSubscription({
-      activeFrom: hookDto.actionDate,
-      activeTo: hookDto.endDate,
+      activeFrom: fallbackStartDate,
+      activeTo: fallbackEndDate,
       hookRawBody: hookDto,
     });
 

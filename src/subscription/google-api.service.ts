@@ -56,7 +56,7 @@ export class GoogleApiService {
       subscriptionId: sku,
     });
     const { data } = response;
-    const transformedData = data as any as GooglePlaySubscriptionInfo;
+    const transformedData = data as unknown as GooglePlaySubscriptionInfo;
     transformedData.startTimeMillis = Number.parseInt(data.startTimeMillis, 10);
     transformedData.expiryTimeMillis = Number.parseInt(data.expiryTimeMillis, 10);
     transformedData.autoResumeTimeMillis = data.autoResumeTimeMillis ? Number.parseInt(data.autoResumeTimeMillis, 10) : undefined;
