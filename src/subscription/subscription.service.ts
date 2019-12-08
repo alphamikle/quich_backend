@@ -103,11 +103,7 @@ export class SubscriptionService {
   }
 
   async getUserSubscriptionInfo(userId: string): Promise<SubscriptionInfoDto> {
-    const userSubscriptions = await this.subscriptionRepository.find({ where: { userId, isActive: true, activeTo: MoreThan(new Date()) }, order: { activeTo: 'DESC' } });
-    const activeSubscription = userSubscriptions.find((subscription) => {
-      const { status } = subscription;
-      return status === Status.SUBSCRIPTION_RENEWED || status === Status.SUBSCRIPTION_PURCHASED;
-    });
+    const activeSubscription = await this.subscriptionRepository.findOne({ where: { userId, isActive: true, activeTo: MoreThan(new Date()) }, order: { activeTo: 'DESC' } });
     if (!activeSubscription) {
       return null;
     }
