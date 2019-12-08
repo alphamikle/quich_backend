@@ -9,6 +9,8 @@ import { Guards } from '../helpers/guards';
 import { RequestUser } from '../user/user.decorator';
 import { UserEntity } from '../user/entities/user.entity';
 import { UserPurchaseAssignDto } from './dto/user-purchase-assign.dto';
+import { SubscriptionInfoDto } from './dto/subscription-info.dto';
+import { INCORRECT_GOOGLE_PLAY_HOOK_DATA } from '../helpers/text';
 
 @ApiUseTags('subscription')
 @Controller('subscription')
@@ -57,8 +59,19 @@ export class SubscriptionController {
     type: String,
   })
   async addUserToSubscriptionData(@RequestUser() user: UserEntity, @Body() purchaseAssignDto: UserPurchaseAssignDto) {
-    const lastSubscriptionInfo = await this.subscriptionService.getLastSubscriptionByPurchaseToken(purchaseAssignDto.purchaseToken);
-    await this.subscriptionService.setUserIdToSubscriptionsByToken({ userId: user.id, purchaseToken: purchaseAssignDto.purchaseToken });
+    const { purchaseToken } = purchaseAssignDto;
+    const validationResult = await this.subscriptionValidator.isSubscriptionExist(purchaseToken);
+    if (validationResult !== true) {
+      throw new BadRequestException(validationResult);
+    }
+    // const haveUserThisSubscription = await this.subscriptionService.isSubscriptionActiveAndBelongsToUser({ userId: user.id, purchaseToken });
+    // if (!haveUserThisSubscription) {
+    //   const subscription = await this.subscriptionService.getLastSubscriptionByPurchaseToken(purchaseToken);
+    //   if (subscription.isActive) {
+    //
+    //   }
+    // }
+    await this.subscriptionService.setUserIdToSubscriptionsByToken({ userId: user.id, purchaseToken });
   }
 
   @Get('product')
@@ -87,5 +100,21 @@ export class SubscriptionController {
       throw new BadRequestException(validationResult);
     }
     return this.googleApiService.getSubscriptionInfo({ token, sku });
+  }
+
+  @UseGuards(Guards)
+  @ApiBearerAuth()
+  @Get('subscription/is-active')
+  @ApiOperation({ title: 'Проверка наличия у пользователя активной подписки' })
+  @ApiResponse({
+    status: 200,
+    type: SubscriptionInfoDto,
+  })
+  async hasUserSubscriptionWithoutGooglePlay(@RequestUser() user: UserEntity) {
+    const activeSubscription = await this.subscriptionService.getUserSubscriptionInfo(user.id);
+    if (!activeSubscription) {
+      throw new BadRequestException({ push: INCORRECT_GOOGLE_PLAY_HOOK_DATA });
+    }
+    return activeSubscription;
   }
 }

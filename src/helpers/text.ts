@@ -33,5 +33,6 @@ export const INCORRECT_USER_ID = 'Некорректные данные поль
 export const SENDING_FTS_SMS = 'Ожидайте СМС с кодом для входа';
 export const BILL_IS_BEEN_SAVED = 'Данный чек был сохранен вами ранее';
 export const INCORRECT_GOOGLE_PLAY_HOOK_DATA = 'Некорректные данные подписки';
+export const SUBSCRIPTION_NOT_EXIST = 'Подписки с таким ID не существует';
 // # OTHERS:
 export const UNDEFINED_CATEGORY_TITLE = 'НЕОПРЕДЕЛЕННОЕ';

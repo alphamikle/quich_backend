@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { GooglePlayHookDto } from './dto/google-play-hook.dto';
-import { INCORRECT_GOOGLE_PLAY_HOOK_DATA, UNKNOWN_ERROR } from '../helpers/text';
+import { INCORRECT_GOOGLE_PLAY_HOOK_DATA, SUBSCRIPTION_NOT_EXIST, UNKNOWN_ERROR } from '../helpers/text';
 import { Sku, SubscriptionEntity } from './entities/subscription.entity';
 
 const { GOOGLE_PLAY_HOOK_THEME } = process.env;
@@ -28,10 +28,18 @@ export class SubscriptionValidator {
     return Boolean(sku in Sku) || error;
   }
 
+  async isSubscriptionExist(purchaseToken: string): Promise<{ push: string } | true> {
+    const isExist = (await this.subscriptionEntityRepository.count({ where: { purchaseToken } })) > 0;
+    if (!isExist) {
+      return { push: SUBSCRIPTION_NOT_EXIST };
+    }
+    return true;
+  }
+
   async validateSubscriptionInfo({ token, sku }: { token: string; sku: Sku }): Promise<true | { push: string }> {
     const error = { push: UNKNOWN_ERROR };
     const isSkuExist = this.validateProductInfo(sku) === true;
-    const isTokenExist = (await this.subscriptionEntityRepository.count({ where: { purchaseToken: token } })) > 0;
-    return isSkuExist && isTokenExist || error;
+    const isTokenExist = await this.isSubscriptionExist(token);
+    return isSkuExist && isTokenExist === true || error;
   }
 }

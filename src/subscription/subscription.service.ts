@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { IsNull, Not, Repository } from 'typeorm';
+import { IsNull, MoreThan, Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Market, Platform, SubscriptionEntity } from './entities/subscription.entity';
+import { Market, Platform, Status, SubscriptionEntity } from './entities/subscription.entity';
 import { GooglePlayHookDto } from './dto/google-play-hook.dto';
 import { GooglePlayDataDto } from './dto/google-play-data.dto';
 import { DateHelper } from '../helpers/date.helper';
 import { GooglePlayProduct } from './dto/google-play-product';
 import { GooglePlaySubscriptionInfo } from './interface/google-api.interface';
+import { SubscriptionInfoDto } from './dto/subscription-info.dto';
 
 export interface CommonSubscriptionConstructorData {
   activeFrom: Date;
@@ -77,8 +78,15 @@ export class SubscriptionService {
   }
 
   async getLastSubscriptionByPurchaseToken(purchaseToken: string): Promise<SubscriptionEntity> {
-    const data = await this.subscriptionRepository.findOne({ where: { purchaseToken }, order: { createdAt: 'DESC' } });
-    return data;
+    return this.subscriptionRepository.findOne({ where: { purchaseToken }, order: { createdAt: 'DESC' } });
+  }
+
+  async isSubscriptionActiveAndBelongsToUser({ purchaseToken, userId }: { purchaseToken: string; userId: string }): Promise<boolean> {
+    const lastSubscription = await this.getLastSubscriptionByPurchaseToken(purchaseToken);
+    if (!lastSubscription) {
+      return false;
+    }
+    return lastSubscription.isActive && lastSubscription.userId === userId;
   }
 
   async setUserFromOneSubscriptionToAllByToken(purchaseToken: string): Promise<void> {
@@ -88,8 +96,24 @@ export class SubscriptionService {
     }
   }
 
-  async setUserIdToSubscriptionsByToken({ userId, purchaseToken }: { userId: string; purchaseToken: string }) {
+  async setUserIdToSubscriptionsByToken({ userId, purchaseToken }: { userId: string; purchaseToken: string }): Promise<void> {
     await this.subscriptionRepository.update({ purchaseToken }, { userId });
+  }
+
+  async getUserSubscriptionInfo(userId: string): Promise<SubscriptionInfoDto> {
+    const userSubscriptions = await this.subscriptionRepository.find({ where: { userId, isActive: true, activeTo: MoreThan(new Date()) }, order: { activeTo: 'DESC' } });
+    const activeSubscription = userSubscriptions.find((subscription) => {
+      const { status } = subscription;
+      return status === Status.SUBSCRIPTION_RENEWED || status === Status.SUBSCRIPTION_PURCHASED;
+    });
+    if (!activeSubscription) {
+      return null;
+    }
+    const subscriptionInfo = new SubscriptionInfoDto();
+    subscriptionInfo.activeFrom = activeSubscription.activeFrom;
+    subscriptionInfo.activeTo = activeSubscription.activeTo;
+    subscriptionInfo.isActive = activeSubscription.isActive;
+    return subscriptionInfo;
   }
 
   private generateCommonSubscription({ activeFrom, activeTo, hookRawBody }: CommonSubscriptionConstructorData): SubscriptionEntity {
