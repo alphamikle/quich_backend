@@ -4,6 +4,7 @@ import { CategoryEntity } from './entities/category.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CategoryToUserEntity } from './entities/category-to-user.entity';
 import { CategoryDto } from './dto/category.dto';
+import { PurchaseService } from '../purchase/purchase.service';
 
 @Injectable()
 export class CategoryService {

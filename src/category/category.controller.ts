@@ -67,7 +67,9 @@ export class CategoryController {
     if (categoryByTitle && categoryByTitle.title !== existCategory.title) {
       throw new BadRequestException({ title: CATEGORY_TITLE_DOUBLE_ERROR });
     }
-    return this.categoryService.editCategory({ categoryDto, userId: user.id });
+    const category = await this.categoryService.editCategory({ categoryDto, userId: user.id });
+    await this.purchaseService.updateUserPurchasesCategoryId({ oldCategoryId: categoryDto.id, newCategoryId: category.id, userId: user.id });
+    return category;
   }
 
   @UseGuards(Guards)
