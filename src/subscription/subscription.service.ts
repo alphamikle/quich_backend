@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { IsNull, MoreThan, Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Market, Platform, Status, SubscriptionEntity } from './entities/subscription.entity';
+import { Market, Platform, SubscriptionEntity } from './entities/subscription.entity';
 import { GooglePlayHookDto } from './dto/google-play-hook.dto';
 import { GooglePlayDataDto } from './dto/google-play-data.dto';
 import { DateHelper } from '../helpers/date.helper';

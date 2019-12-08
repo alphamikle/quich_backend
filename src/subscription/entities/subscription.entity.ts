@@ -34,6 +34,9 @@ export enum Status {
 export enum Sku {
   TEST_MONTHLY_SUBSCRIPTION = 'test_monthly_subscription',
   TEST_YEARLY_SUBSCRIPTION = 'test_yearly_subscription',
+  COFFEE_CUP_SUBSCRIPTION = 'coffe_cup',
+  BREAKFAST_SUBSCRIPTION = 'breakfast',
+  KILO_BEEF_SUBSCRIPTION = 'kilo_beef',
 }
 
 @Entity()
@@ -56,7 +59,7 @@ export class SubscriptionEntity {
   @Column({ type: 'enum', enum: Status })
   status!: Status;
 
-  @Column({ type: 'enum', enum: Sku, default: Sku.TEST_MONTHLY_SUBSCRIPTION })
+  @Column({ type: 'enum', enum: Sku, default: Sku.COFFEE_CUP_SUBSCRIPTION })
   sku!: Sku;
 
   @Column()
