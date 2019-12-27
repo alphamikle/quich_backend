@@ -102,8 +102,8 @@ export class PurchaseService {
     return closestPurchase.categoryId;
   }
 
-  async extractCategoriesIdsForPurchaseDtos(purchaseDtos: PurchaseDto[]): Promise<PurchaseDto[]> {
-    const products = await this.productService.getAllProducts();
+  async extractCategoriesIdsForPurchaseDtos({ purchaseDtos, userId }: { purchaseDtos: PurchaseDto[]; userId: string }): Promise<PurchaseDto[]> {
+    const products = await this.productService.getUserProducts(userId);
     return Promise.all(purchaseDtos.map(async dto => {
       dto.categoryId = await this.getClosestCategoryIdByProductTitle({ title: dto.title.trim(), products });
       return dto;

@@ -63,7 +63,7 @@ export class BillController {
       throw new BadRequestException({ push: billData });
     }
     billData.shop = await this.extractShopDtoInfo(billData.shop);
-    billData.purchases = await this.purchaseService.extractCategoriesIdsForPurchaseDtos(billData.purchases);
+    billData.purchases = await this.purchaseService.extractCategoriesIdsForPurchaseDtos({ purchaseDtos: billData.purchases, userId: user.id });
     const billRequestId = this.extractBillRequestIdFromCache({ userId: user.id, ftsQrDto });
     await this.billRequestService.setRawData({ id: billRequestId, rawData: billData });
     return billData;
@@ -101,7 +101,7 @@ export class BillController {
       throw new BadRequestException({ push: billData });
     }
     billData.shop = await this.extractShopDtoInfo(billData.shop);
-    billData.purchases = await this.purchaseService.extractCategoriesIdsForPurchaseDtos(billData.purchases);
+    billData.purchases = await this.purchaseService.extractCategoriesIdsForPurchaseDtos({ purchaseDtos: billData.purchases, userId: user.id });
     await this.billRequestService.setRawData({ id: requestId, rawData: billData });
     return billData;
   }

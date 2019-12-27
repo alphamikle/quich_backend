@@ -44,5 +44,6 @@ module.exports = {
     'import/no-cycle': 'off',
     semi: ['error', 'always'],
     'no-multiple-empty-lines': ['error', { max: 1, maxEOF: 1 }],
+    'no-restricted-syntax': 'off',
   },
 };

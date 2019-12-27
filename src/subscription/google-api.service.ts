@@ -13,6 +13,7 @@ const { GOOGLE_API_CREDENTIALS_PATH, APP_PACKAGE_NAME } = process.env;
 export class GoogleApiService {
   private readonly publisher: AndroidPublisher;
   private readonly credentials: JWTInput;
+
   private readonly jwt: JWT;
   private readonly packageName: string;
   private products: Map<string, GooglePlayProduct> = new Map();
@@ -23,7 +24,7 @@ export class GoogleApiService {
     this.credentials = JSON.parse(readFileSync(GOOGLE_API_CREDENTIALS_PATH).toString('utf8'));
     const jwt = new JWT();
     jwt.fromJSON(this.credentials);
-    jwt.scopes = ['https://www.googleapis.com/auth/androidpublisher'];
+    jwt.scopes = [ 'https://www.googleapis.com/auth/androidpublisher' ];
     this.jwt = jwt;
   }
 
