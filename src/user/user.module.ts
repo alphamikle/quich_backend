@@ -14,6 +14,8 @@ import { CategoryToUserEntity } from '../category/entities/category-to-user.enti
 import { BillRequestEntity } from '../bill-request/entities/bill-request.entity';
 import { FtsAccountQueueEntity } from './entities/fts-account-queue.entity';
 import { EmailModule } from '../email/email.module';
+import { SubscriptionModule } from '../subscription/subscription.module';
+import { SubscriptionService } from '../subscription/subscription.service';
 
 @Module({
   imports: [
@@ -29,6 +31,7 @@ import { EmailModule } from '../email/email.module';
     forwardRef(() => AuthModule),
     forwardRef(() => FtsModule),
     EmailModule,
+    SubscriptionModule,
   ],
   controllers: [ UserController ],
   providers: [ UserService, UserValidator, DateHelper ],

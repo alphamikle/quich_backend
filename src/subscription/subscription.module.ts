@@ -11,6 +11,7 @@ import { SubscriptionValidator } from './subscription.validator';
   controllers: [ SubscriptionController ],
   imports: [ TypeOrmModule.forFeature([ SubscriptionEntity ]) ],
   providers: [ SubscriptionService, GoogleApiService, DateHelper, SubscriptionValidator ],
+  exports: [ SubscriptionService ],
 })
 export class SubscriptionModule {
 }

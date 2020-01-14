@@ -32,11 +32,15 @@ export enum Status {
 }
 
 export enum Sku {
+  // ? Test subs
   TEST_MONTHLY_SUBSCRIPTION = 'test_monthly_subscription',
   TEST_YEARLY_SUBSCRIPTION = 'test_yearly_subscription',
+  // ? Prod subs
   COFFEE_CUP_SUBSCRIPTION = 'coffe_cup',
   BREAKFAST_SUBSCRIPTION = 'breakfast',
   KILO_BEEF_SUBSCRIPTION = 'kilo_beef',
+  // ? Promo subs
+  FIRST_THREE_DAYS = 'first_three_days',
 }
 
 @Entity()

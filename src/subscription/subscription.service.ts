@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { IsNull, MoreThan, Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Market, Platform, SubscriptionEntity } from './entities/subscription.entity';
+import { Market, Platform, Sku, Status, SubscriptionEntity } from './entities/subscription.entity';
 import { GooglePlayHookDto } from './dto/google-play-hook.dto';
 import { GooglePlayDataDto } from './dto/google-play-data.dto';
 import { DateHelper } from '../helpers/date.helper';
 import { GooglePlayProduct } from './dto/google-play-product';
-import { GooglePlaySubscriptionInfo } from './interface/google-api.interface';
 import { SubscriptionInfoDto } from './dto/subscription-info.dto';
+import { GooglePlayMessageDto } from './dto/google-play-message.dto';
+import { GooglePlaySubscriptionInfo } from './interface/google-api.interface';
 
 export interface CommonSubscriptionConstructorData {
   activeFrom: Date;
@@ -46,6 +47,46 @@ export class SubscriptionService {
     return subscription;
   }
 
+  generateTemporarySubscription({ activeFrom, activeTo }: { activeFrom: Date; activeTo: Date }): SubscriptionEntity {
+    const token = 'TEMP.0000-0000-0000-00000';
+    const mockHookDto = new GooglePlayHookDto();
+    const mockMessage = new GooglePlayMessageDto();
+    const mockData = new GooglePlayDataDto();
+    mockData.subscriptionNotification = {
+      notificationType: Status.SUBSCRIPTION_IN_GRACE_PERIOD,
+      purchaseToken: token,
+      subscriptionId: Sku.FIRST_THREE_DAYS,
+      version: '1',
+    };
+    mockMessage.decodedData = mockData;
+    mockHookDto.status = Status.SUBSCRIPTION_IN_GRACE_PERIOD;
+    mockHookDto.message = mockMessage;
+    const subscription = this.generateCommonSubscription({ activeFrom, activeTo, hookRawBody: mockHookDto });
+    subscription.market = Market.WEB_SITE;
+    subscription.platform = Platform.ALL;
+    subscription.orderId = token;
+    subscription.subscriptionInfoRawBody = {
+      startTimeMillis: 0,
+      expiryTimeMillis: 0,
+      autoResumeTimeMillis: 0,
+      autoRenewing: false,
+      priceCurrencyCode: '',
+      priceAmountMicros: 0,
+      introductoryPriceInfo: {
+        introductoryPriceCurrencyCode: '',
+        introductoryPriceAmountMicros: 0,
+        introductoryPricePeriod: '',
+        introductoryPriceCycles: 0,
+      },
+      countryCode: '',
+      developerPayload: '',
+      userCancellationTimeMillis: 0,
+      orderId: '',
+      acknowledgementState: 1,
+    };
+    return subscription;
+  }
+
   async createSubscription(subscription: SubscriptionEntity): Promise<SubscriptionEntity> {
     return this.subscriptionRepository.save(subscription);
   }
@@ -64,9 +105,9 @@ export class SubscriptionService {
   }
 
   assignSubscriptionWithGooglePlaySubscriptionInfo({
-    subscription,
-    subscriptionInfo,
-  }:
+                                                     subscription,
+                                                     subscriptionInfo,
+                                                   }:
                                                      {
                                                        subscription: SubscriptionEntity,
                                                        subscriptionInfo: GooglePlaySubscriptionInfo,
@@ -103,7 +144,10 @@ export class SubscriptionService {
   }
 
   async getUserSubscriptionInfo(userId: string): Promise<SubscriptionInfoDto> {
-    const activeSubscription = await this.subscriptionRepository.findOne({ where: { userId, isActive: true, activeTo: MoreThan(new Date()) }, order: { activeTo: 'DESC' } });
+    const activeSubscription = await this.subscriptionRepository.findOne({
+      where: { userId, isActive: true, activeTo: MoreThan(new Date()) },
+      order: { activeTo: 'DESC' },
+    });
     if (!activeSubscription) {
       return null;
     }
@@ -112,6 +156,14 @@ export class SubscriptionService {
     subscriptionInfo.activeTo = activeSubscription.activeTo;
     subscriptionInfo.isActive = activeSubscription.isActive;
     return subscriptionInfo;
+  }
+
+  async addTemporarySubscriptionToUser({ userId, days = 3 }: { userId: string; days?: number }): Promise<SubscriptionEntity> {
+    const activeFrom = new Date();
+    const activeTo = this.dateHelper.addDays(activeFrom, days);
+    const subscription = this.generateTemporarySubscription({ activeFrom, activeTo });
+    subscription.userId = userId;
+    return this.subscriptionRepository.save(subscription);
   }
 
   private generateCommonSubscription({ activeFrom, activeTo, hookRawBody }: CommonSubscriptionConstructorData): SubscriptionEntity {
