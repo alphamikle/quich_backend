@@ -1,0 +1,270 @@
+[
+  {
+    "name": "OfdFetcher",
+    "qrDto": {
+      "checkType": 1,
+      "dateTime": "20191126T1903",
+      "fiscalDocument": "196748",
+      "fiscalNumber": "9289000100271041",
+      "fiscalProp": "3259003552",
+      "totalSum": 153.49
+    },
+    "response": null
+  },
+  {
+    "name": "FirstOfdFetcher",
+    "qrDto": {
+      "checkType": 1,
+      "dateTime": "20191126T1903",
+      "fiscalDocument": "196748",
+      "fiscalNumber": "9289000100271041",
+      "fiscalProp": "3259003552",
+      "totalSum": 153.49
+    },
+    "response": {
+      "uid": "",
+      "status": 2
+    }
+  },
+  {
+    "name": "OfdFetcher",
+    "qrDto": {
+      "checkType": 1,
+      "dateTime": "20191213T1208",
+      "fiscalDocument": "60494",
+      "fiscalNumber": "9289000100241937",
+      "fiscalProp": "49283044",
+      "totalSum": 390
+    },
+    "response": null
+  },
+  {
+    "name": "FirstOfdFetcher",
+    "qrDto": {
+      "checkType": 1,
+      "dateTime": "20191213T1208",
+      "fiscalDocument": "60494",
+      "fiscalNumber": "9289000100241937",
+      "fiscalProp": "49283044",
+      "totalSum": 390
+    },
+    "response": null
+  },
+  {
+    "name": "OfdFetcher",
+    "qrDto": {
+      "checkType": 1,
+      "dateTime": "20191212T1323",
+      "fiscalDocument": "117095",
+      "fiscalNumber": "9289000100346029",
+      "fiscalProp": "3230940083",
+      "totalSum": 55
+    },
+    "response": null
+  },
+  {
+    "name": "FirstOfdFetcher",
+    "qrDto": {
+      "checkType": 1,
+      "dateTime": "20191212T1323",
+      "fiscalDocument": "117095",
+      "fiscalNumber": "9289000100346029",
+      "fiscalProp": "3230940083",
+      "totalSum": 55
+    },
+    "response": null
+  },
+  {
+    "name": "OfdFetcher",
+    "qrDto": {
+      "checkType": 1,
+      "dateTime": "20200119T1529",
+      "fiscalDocument": "26261",
+      "fiscalNumber": "9280440300510636",
+      "fiscalProp": "3837470832",
+      "totalSum": 1899
+    },
+    "response": null
+  },
+  {
+    "name": "FirstOfdFetcher",
+    "qrDto": {
+      "checkType": 1,
+      "dateTime": "20200119T1529",
+      "fiscalDocument": "26261",
+      "fiscalNumber": "9280440300510636",
+      "fiscalProp": "3837470832",
+      "totalSum": 1899
+    },
+    "response": {
+      "uid": "",
+      "status": 2
+    }
+  },
+  {
+    "name": "OfdFetcher",
+    "qrDto": {
+      "checkType": 1,
+      "dateTime": "20191221T1643",
+      "fiscalDocument": "29025",
+      "fiscalNumber": "8710000101925791",
+      "fiscalProp": "0348340999",
+      "totalSum": 1590
+    },
+    "response": null
+  },
+  {
+    "name": "FirstOfdFetcher",
+    "qrDto": {
+      "checkType": 1,
+      "dateTime": "20191221T1643",
+      "fiscalDocument": "29025",
+      "fiscalNumber": "8710000101925791",
+      "fiscalProp": "0348340999",
+      "totalSum": 1590
+    },
+    "response": null
+  },
+  {
+    "name": "OfdFetcher",
+    "qrDto": {
+      "checkType": 1,
+      "dateTime": "20200101T1725",
+      "fiscalDocument": "101695",
+      "fiscalNumber": "9286000100257762",
+      "fiscalProp": "1212705181",
+      "totalSum": 647
+    },
+    "response": null
+  },
+  {
+    "name": "FirstOfdFetcher",
+    "qrDto": {
+      "checkType": 1,
+      "dateTime": "20200101T1725",
+      "fiscalDocument": "101695",
+      "fiscalNumber": "9286000100257762",
+      "fiscalProp": "1212705181",
+      "totalSum": 647
+    },
+    "response": {
+      "uid": "37c59fc4-6663-4e37-870d-ea6e04aae9bb",
+      "status": 1
+    }
+  },
+  {
+    "name": "OfdFetcher",
+    "qrDto": {
+      "checkType": 1,
+      "dateTime": "20191212T1246",
+      "fiscalDocument": "60230",
+      "fiscalNumber": "9289000100241937",
+      "fiscalProp": "110683313",
+      "totalSum": 405
+    },
+    "response": null
+  },
+  {
+    "name": "FirstOfdFetcher",
+    "qrDto": {
+      "checkType": 1,
+      "dateTime": "20191212T1246",
+      "fiscalDocument": "60230",
+      "fiscalNumber": "9289000100241937",
+      "fiscalProp": "110683313",
+      "totalSum": 405
+    },
+    "response": null
+  },
+  {
+    "name": "OfdFetcher",
+    "qrDto": {
+      "checkType": 1,
+      "dateTime": "20191209T1222",
+      "fiscalDocument": "22791",
+      "fiscalNumber": "9287440300624542",
+      "fiscalProp": "371292142",
+      "totalSum": 345
+    },
+    "response": null
+  },
+  {
+    "name": "FirstOfdFetcher",
+    "qrDto": {
+      "checkType": 1,
+      "dateTime": "20191209T1222",
+      "fiscalDocument": "22791",
+      "fiscalNumber": "9287440300624542",
+      "fiscalProp": "371292142",
+      "totalSum": 345
+    },
+    "response": null
+  },
+  {
+    "name": "OfdFetcher",
+    "qrDto": {
+      "checkType": 1,
+      "dateTime": "20191227T1746",
+      "fiscalDocument": "58865",
+      "fiscalNumber": "9280440300379124",
+      "fiscalProp": "3932041258",
+      "totalSum": 150
+    },
+    "response": {
+      "providerCode": "OFD",
+      "totalSum": null,
+      "shop": {
+        "title": "Станция \"Комсомольская\" Сокольнической линии АРМ КБ R050",
+        "address": "Москва, Комсомольская площадь, д. 2",
+        "tin": "ИНН 7702038150"
+      },
+      "billDate": "2019-12-27T14:46:00.000Z",
+      "purchases": [
+        {
+          "title": "КОШЕЛЕК",
+          "quantity": 1,
+          "price": 150
+        }
+      ]
+    }
+  },
+  {
+    "name": "FirstOfdFetcher",
+    "qrDto": {
+      "checkType": 1,
+      "dateTime": "20191227T1746",
+      "fiscalDocument": "58865",
+      "fiscalNumber": "9280440300379124",
+      "fiscalProp": "3932041258",
+      "totalSum": 150
+    },
+    "response": {
+      "uid": "",
+      "status": 2
+    }
+  },
+  {
+    "name": "OfdFetcher",
+    "qrDto": {
+      "checkType": 1,
+      "dateTime": "20191124T1243",
+      "fiscalDocument": "6212",
+      "fiscalNumber": "9289000100295561",
+      "fiscalProp": "120103689",
+      "totalSum": 545.87
+    },
+    "response": null
+  },
+  {
+    "name": "FirstOfdFetcher",
+    "qrDto": {
+      "checkType": 1,
+      "dateTime": "20191124T1243",
+      "fiscalDocument": "6212",
+      "fiscalNumber": "9289000100295561",
+      "fiscalProp": "120103689",
+      "totalSum": 545.87
+    },
+    "response": null
+  }
+]

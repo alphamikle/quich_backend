@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { addDays as ad, format as fo, isPast as past, subDays as subD } from 'date-fns';
+import { Injectable, Logger } from '@nestjs/common';
+import { addDays as ad, format as fo, isPast as past, subDays as subD, parseISO as pa } from 'date-fns';
 
 @Injectable()
 export class DateHelper {
@@ -64,5 +64,16 @@ export class DateHelper {
     }
     return newDate;
 
+  }
+
+  parse(value: string | Date): Date {
+    if (typeof value === 'string') {
+      return pa(value);
+    }
+    if (value instanceof Date) {
+      return value;
+    }
+    Logger.error(`Incorrect type of value was provided to dateParse function. Value is "${value}"`);
+    return null;
   }
 }

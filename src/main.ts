@@ -1,7 +1,8 @@
-import { output } from './config';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { Logger } from '@nestjs/common';
+import { output } from './config';
+import { AppModule } from './app.module';
 import * as pack from '../package.json';
 
 const { APP_PORT } = process.env;
@@ -25,4 +26,4 @@ async function bootstrap() {
   await app.listen(Number(APP_PORT));
 }
 
-bootstrap().then(() => console.log('APP IS STARTED ON PORT', APP_PORT));
+bootstrap().then(() => Logger.log(`APP IS STARTED ON PORT ${APP_PORT}`));

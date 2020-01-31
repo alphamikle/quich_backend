@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { createTransport, Transporter } from 'nodemailer';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -42,9 +42,9 @@ export class EmailService {
   ) {
     this.initialize();
     this.initDefaultEntities()
-      .then(() => console.log('Email entities synced'))
+      .then(() => Logger.log('Email entities synced'))
       .catch(err => {
-        console.error(err);
+        Logger.error(err.message);
         process.exit(-1);
       });
   }

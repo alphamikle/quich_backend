@@ -105,9 +105,9 @@ export class SubscriptionService {
   }
 
   assignSubscriptionWithGooglePlaySubscriptionInfo({
-                                                     subscription,
-                                                     subscriptionInfo,
-                                                   }:
+    subscription,
+    subscriptionInfo,
+  }:
                                                      {
                                                        subscription: SubscriptionEntity,
                                                        subscriptionInfo: GooglePlaySubscriptionInfo,
