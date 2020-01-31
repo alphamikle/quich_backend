@@ -1,9 +1,9 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
 import { UserEntity } from '../../user/entities/user.entity';
 import { BillEntity } from '../../bill/entities/bill.entity';
 import { BillProviderEntity } from '../../bill-provider/entities/bill-provider.entity';
 import { FtsFetchResponseBill } from '../../fts/dto/fts-fetch-response/bill.dto';
-import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
 import { BillDto } from '../../bill/dto/bill.dto';
 
 @Entity()
@@ -62,18 +62,21 @@ export class BillRequestEntity {
   @ApiModelProperty()
   @Column()
   userId!: string;
+
   @ManyToOne(() => UserEntity, user => user.billRequests)
   user?: UserEntity;
 
   @ApiModelPropertyOptional()
   @Column({ nullable: true })
   billId?: string;
+
   @ManyToOne(() => BillEntity, bill => bill.billRequests, { onDelete: 'CASCADE' })
   bill?: BillEntity;
 
   @ApiModelPropertyOptional()
   @Column({ nullable: true })
   billProviderId?: string;
+
   @ManyToOne(() => BillProviderEntity, billProvider => billProvider.billRequests)
   billProvider?: BillProviderEntity;
 }

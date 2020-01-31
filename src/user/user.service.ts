@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from './entities/user.entity';
 import { In, Repository } from 'typeorm';
+import { UserEntity } from './entities/user.entity';
 import { SessionEntity } from './entities/session.entity';
 import { DateHelper } from '../helpers/date.helper';
 import { FtsAccountEntity } from './entities/fts-account.entity';

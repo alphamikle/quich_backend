@@ -7,6 +7,7 @@ import { BillRequestEntity } from '../../bill-request/entities/bill-request.enti
 @Entity()
 export class BillProviderEntity {
   static FTS = 'fts';
+
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 

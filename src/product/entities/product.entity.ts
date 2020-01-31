@@ -1,6 +1,6 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { PurchaseEntity } from '../../purchase/entities/purchase.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiModelProperty } from '@nestjs/swagger';
+import { PurchaseEntity } from '../../purchase/entities/purchase.entity';
 
 @Entity()
 export class ProductEntity {

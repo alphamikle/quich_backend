@@ -20,6 +20,7 @@ export class SessionEntity {
 
   @Column('string')
   userId!: string;
+
   @ManyToOne(() => UserEntity, user => user.sessions, { onDelete: 'CASCADE' })
   user?: UserEntity;
 }

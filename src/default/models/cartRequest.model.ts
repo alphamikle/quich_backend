@@ -1,4 +1,4 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { CartModel } from './cart.model';
 import { UserModel } from './user.model';
 
@@ -46,12 +46,14 @@ export class CartRequestModel {
 
   @Column({ type: 'integer', nullable: true })
   cartId: number;
+
   @OneToOne(type => CartModel, { onDelete: 'SET NULL' })
   @JoinColumn()
   cart: CartModel;
 
   @Column({ type: 'integer' })
   userId: number;
+
   @ManyToOne(type => UserModel, user => user.requests, { onDelete: 'CASCADE' })
   user: UserModel;
 

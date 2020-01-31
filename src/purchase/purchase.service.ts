@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PurchaseEntity } from './entities/purchase.entity';
 import { In, Not, Repository } from 'typeorm';
+import { PurchaseEntity } from './entities/purchase.entity';
 import { PurchaseDto } from './dto/purchase.dto';
 import { ProductService } from '../product/product.service';
 import { ProductEntity } from '../product/entities/product.entity';
-import { animationFrameScheduler } from 'rxjs';
 
 @Injectable()
 export class PurchaseService {

@@ -1,4 +1,4 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { CategoryModel } from './category.model';
 import { PurchaseModel } from './purchase.model';
 
@@ -13,6 +13,7 @@ export class ProductModel {
 
   @Column({ type: 'integer', nullable: true })
   categoryId: number;
+
   @ManyToOne(type => CategoryModel, category => category.products, { onDelete: 'SET NULL' })
   category: CategoryModel;
 

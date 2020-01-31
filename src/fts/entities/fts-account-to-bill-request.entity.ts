@@ -9,11 +9,13 @@ export class FtsAccountToBillRequestEntity {
 
   @Column()
   billRequestId!: string;
+
   @ManyToOne(() => BillRequestEntity, { onDelete: 'CASCADE' })
   billRequest?: BillRequestEntity;
 
   @Column()
   ftsAccountId!: string;
+
   @ManyToOne(() => FtsAccountEntity, { onDelete: 'CASCADE' })
   ftsAccount?: FtsAccountEntity;
 }

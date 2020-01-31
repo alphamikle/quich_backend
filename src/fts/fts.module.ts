@@ -1,9 +1,9 @@
 import { forwardRef, Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { FtsService } from './fts.service';
 import { FtsValidator } from './fts.validator';
 import { CommonValidator } from '../helpers/common.validator';
 import { FtsController } from './fts.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { FtsAccountEntity } from '../user/entities/fts-account.entity';
 import { UserModule } from '../user/user.module';
 import { FtsAccountToBillRequestEntity } from './entities/fts-account-to-bill-request.entity';

@@ -1,4 +1,4 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ShopModel } from './shop.model';
 import { UserModel } from './user.model';
 import { PurchaseModel } from './purchase.model';
@@ -20,11 +20,13 @@ export class CartModel {
 
   @Column({ type: 'integer', nullable: false })
   shopId: number;
+
   @ManyToOne(type => ShopModel, shop => shop.checks)
   shop: ShopModel;
 
   @Column({ type: 'integer', nullable: false })
   userId: number;
+
   @ManyToOne(type => UserModel, user => user.checks, { onDelete: 'CASCADE' })
   user: UserModel;
 

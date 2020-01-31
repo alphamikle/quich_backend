@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ProductEntity } from './entities/product.entity';
 import { Repository } from 'typeorm';
+import { ProductEntity } from './entities/product.entity';
 import { getWordsDistance } from '../helpers/common.helper';
 
 @Injectable()
@@ -77,9 +77,9 @@ export class ProductService {
         const productSubTitles = productTitle.split(separator).filter(t => t).map(t => t.trim()).filter(t => t.length > 2);
         const productSubTitlesLength = productSubTitles.length;
         for (let k = 0; k < subTitlesLength; k++) {
-          const subTitle = subTitles[k];
+          const subTitle = subTitles[ k ];
           for (let x = 0; x < productSubTitlesLength; x++) {
-            const productSubTitle = productSubTitles[x];
+            const productSubTitle = productSubTitles[ x ];
             const subDistance = getWordsDistance(subTitle, productSubTitle);
             if (subDistance === 0) {
               hasEqualityWords = true;

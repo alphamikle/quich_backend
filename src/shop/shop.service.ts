@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ShopEntity } from './entities/shop.entity';
 import { Repository } from 'typeorm';
+import { ShopEntity } from './entities/shop.entity';
 import { ShopDto } from './dto/shop.dto';
 import { DadataService } from '../dadata/dadata.service';
 import { MapsService } from '../maps/maps.service';
@@ -20,7 +20,7 @@ export class ShopService {
     const shops: ShopEntity[] = await this.shopEntityRepository.query(`
       SELECT distinct(se.id), se.title, se.address, se.tin, se.latitude, se.longitude FROM shop_entity se
         LEFT OUTER JOIN bill_entity be on se.id = be."shopId"
-        WHERE be."userId" = '${userId}'
+        WHERE be."userId" = '${ userId }'
     `);
     return shops;
   }

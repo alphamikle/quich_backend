@@ -1,4 +1,4 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UserModel } from './user.model';
 
 @Entity({ name: 'fts_account' })
@@ -18,6 +18,7 @@ export class FtsAccountModel {
 
   @Column({ type: 'integer' })
   userId: number;
+
   @ManyToOne(type => UserModel, user => user.ftsAccounts, { onDelete: 'CASCADE' })
   user: UserModel;
 

@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { addDays as ad, format as fo, isPast as past, subDays as subD, parseISO as pa } from 'date-fns';
+import { addDays as ad, format as fo, isPast as past, parseISO as pa, subDays as subD } from 'date-fns';
 
 @Injectable()
 export class DateHelper {
@@ -41,26 +41,26 @@ export class DateHelper {
     const yearRegExp = /^P([0-9]{1,2})Y$/;
     let result: RegExpExecArray = dayRegExp.exec(period);
     if (result !== null) {
-      const durationInDays = Number.parseInt(result[1], 10);
+      const durationInDays = Number.parseInt(result[ 1 ], 10);
       newDate.setDate(newDate.getDate() + durationInDays);
     }
     result = weekRegExp.exec(period);
     if (result !== null) {
-      const durationInDays = Number.parseInt(result[1], 10) * 7;
+      const durationInDays = Number.parseInt(result[ 1 ], 10) * 7;
       newDate.setDate(newDate.getDate() + durationInDays);
     }
     result = monthRegExp.exec(period);
     if (result !== null) {
-      const durationInMonths = Number.parseInt(result[1], 10);
+      const durationInMonths = Number.parseInt(result[ 1 ], 10);
       newDate.setMonth(newDate.getMonth() + durationInMonths);
     }
     result = yearRegExp.exec(period);
     if (result !== null) {
-      const durationInYears = Number.parseInt(result[1], 10);
+      const durationInYears = Number.parseInt(result[ 1 ], 10);
       newDate.setFullYear(newDate.getFullYear() + durationInYears);
     }
     if (result === null) {
-      throw new Error(`Error in parse google play subscription duration ${period}`);
+      throw new Error(`Error in parse google play subscription duration ${ period }`);
     }
     return newDate;
 
@@ -73,7 +73,7 @@ export class DateHelper {
     if (value instanceof Date) {
       return value;
     }
-    Logger.error(`Incorrect type of value was provided to dateParse function. Value is "${value}"`);
+    Logger.error(`Incorrect type of value was provided to dateParse function. Value is "${ value }"`);
     return null;
   }
 }

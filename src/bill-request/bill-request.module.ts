@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { BillRequestService } from './bill-request.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { BillRequestService } from './bill-request.service';
 import { BillRequestEntity } from './entities/bill-request.entity';
 import { BillEntity } from '../bill/entities/bill.entity';
 import { UserEntity } from '../user/entities/user.entity';

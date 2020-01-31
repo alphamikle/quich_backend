@@ -27,6 +27,47 @@ export class OfdFetcher extends BaseOfdFetcher {
     }
   }
 
+  protected getShop(): ShopDto {
+    const shopTitle = this.getShopTitle();
+    const shopAddress = this.getShopAddress();
+    const shopPrettyTitle = this.getShopPrettyTitle();
+    const shopTin = this.getShopTin();
+    const shop = new ShopDto();
+    shop.title = shopPrettyTitle || shopTitle;
+    shop.address = shopAddress;
+    shop.tin = shopTin;
+    return shop;
+  }
+
+  protected getPurchases(): PurchaseDto[] {
+    const allBlocks = this.body.querySelectorAll('.margin-top-10');
+    const blocksLength = [ ...allBlocks ].length;
+    const productsBlock = this.getNthBlock(blocksLength - 1);
+    const productsSubBlocks = productsBlock.querySelectorAll('.ifw-bill-item');
+    const productsWithoutQR = [ ...productsSubBlocks ].slice(0, productsSubBlocks.length - 1);
+    const products: PurchaseDto[] = [];
+    for (const productBlock of productsWithoutQR) {
+      products.push(this.getPurchase(productBlock));
+    }
+    return products;
+  }
+
+  protected getPurchase(productNode: HTMLElement): PurchaseDto {
+    const productTitle = productNode.querySelector('.text-left').rawText;
+    const productPriceBlock = productNode.querySelector('.text-right');
+    const productQuantity = productPriceBlock.querySelector('div').querySelectorAll('span')[ 0 ].rawText;
+    const productPrice = productPriceBlock.querySelector('div').querySelectorAll('span')[ 2 ].rawText;
+    const quantity = Math.trunc(Number(productQuantity.replace(',', '.')) * 100) / 100;
+    const price = Math.trunc(Number(productPrice.replace(',', '.')) * 100) / 100;
+    const sum = quantity * price;
+    this.bill.totalSum += sum;
+    return {
+      title: productTitle,
+      quantity,
+      price,
+    };
+  }
+
   private async getRawData(): Promise<string> {
     const url = `https://check.ofd.ru/rec/${ this.fiscalNumber }/${ this.fiscalDocument }/${ this.fiscalProp }`;
     const rawResponse = await axios.get(url);
@@ -46,18 +87,6 @@ export class OfdFetcher extends BaseOfdFetcher {
       return this.bill;
     }
     return null;
-  }
-
-  protected getShop(): ShopDto {
-    const shopTitle = this.getShopTitle();
-    const shopAddress = this.getShopAddress();
-    const shopPrettyTitle = this.getShopPrettyTitle();
-    const shopTin = this.getShopTin();
-    const shop = new ShopDto();
-    shop.title = shopPrettyTitle || shopTitle;
-    shop.address = shopAddress;
-    shop.tin = shopTin;
-    return shop;
   }
 
   private decodeEntities(val: string): string {
@@ -95,35 +124,6 @@ export class OfdFetcher extends BaseOfdFetcher {
 
   private getShopPrettyTitle(): string {
     return this.decodeEntities(this.getRightBlockOf(4));
-  }
-
-  protected getPurchases(): PurchaseDto[] {
-    const allBlocks = this.body.querySelectorAll('.margin-top-10');
-    const blocksLength = [ ...allBlocks ].length;
-    const productsBlock = this.getNthBlock(blocksLength - 1);
-    const productsSubBlocks = productsBlock.querySelectorAll('.ifw-bill-item');
-    const productsWithoutQR = [ ...productsSubBlocks ].slice(0, productsSubBlocks.length - 1);
-    const products: PurchaseDto[] = [];
-    for (const productBlock of productsWithoutQR) {
-      products.push(this.getPurchase(productBlock));
-    }
-    return products;
-  }
-
-  protected getPurchase(productNode: HTMLElement): PurchaseDto {
-    const productTitle = productNode.querySelector('.text-left').rawText;
-    const productPriceBlock = productNode.querySelector('.text-right');
-    const productQuantity = productPriceBlock.querySelector('div').querySelectorAll('span')[ 0 ].rawText;
-    const productPrice = productPriceBlock.querySelector('div').querySelectorAll('span')[ 2 ].rawText;
-    const quantity = Math.trunc(Number(productQuantity.replace(',', '.')) * 100) / 100;
-    const price = Math.trunc(Number(productPrice.replace(',', '.')) * 100) / 100;
-    const sum = quantity * price;
-    this.bill.totalSum += sum;
-    return {
-      title: productTitle,
-      quantity,
-      price,
-    };
   }
 
 }

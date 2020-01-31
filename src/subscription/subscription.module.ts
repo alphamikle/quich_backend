@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { SubscriptionService } from './subscription.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { SubscriptionService } from './subscription.service';
 import { SubscriptionEntity } from './entities/subscription.entity';
 import { SubscriptionController } from './subscription.controller';
 import { GoogleApiService } from './google-api.service';

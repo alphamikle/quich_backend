@@ -8,6 +8,7 @@ export class FtsAccountQueueEntity {
 
   @Column()
   ftsAccountId!: string;
+
   @ManyToOne(() => FtsAccountEntity, { onDelete: 'CASCADE' })
   ftsAccount?: FtsAccountEntity;
 

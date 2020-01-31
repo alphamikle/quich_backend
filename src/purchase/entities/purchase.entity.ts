@@ -1,8 +1,8 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { ApiModelProperty } from '@nestjs/swagger';
 import { ProductEntity } from '../../product/entities/product.entity';
 import { BillEntity } from '../../bill/entities/bill.entity';
 import { CategoryEntity } from '../../category/entities/category.entity';
-import { ApiModelProperty } from '@nestjs/swagger';
 
 @Entity()
 export class PurchaseEntity {
@@ -25,18 +25,21 @@ export class PurchaseEntity {
   @ApiModelProperty()
   @Column()
   productId!: string;
+
   @ManyToOne(() => ProductEntity, product => product.purchases)
   product?: ProductEntity;
 
   @ApiModelProperty()
   @Column()
   categoryId!: string;
+
   @ManyToOne(() => CategoryEntity, category => category.purchases, { onDelete: 'RESTRICT' })
   category?: CategoryEntity;
 
   @ApiModelProperty()
   @Column()
   billId!: string;
+
   @ManyToOne(() => BillEntity, bill => bill.purchases, { onDelete: 'CASCADE' })
   bill?: BillEntity;
 

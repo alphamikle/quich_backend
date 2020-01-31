@@ -1,4 +1,4 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { UserModel } from './user.model';
 import { ProductModel } from './product.model';
 
@@ -16,6 +16,7 @@ export class CategoryModel {
 
   @Column({ type: 'integer' })
   userId: number;
+
   @ManyToOne(type => UserModel, user => user.categories, { onDelete: 'CASCADE' })
   user: UserModel;
 

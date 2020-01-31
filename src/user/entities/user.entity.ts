@@ -1,10 +1,10 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { ApiModelProperty } from '@nestjs/swagger';
 import { FtsAccountEntity } from './fts-account.entity';
 import { SessionEntity } from './session.entity';
 import { BillEntity } from '../../bill/entities/bill.entity';
 import { CategoryToUserEntity } from '../../category/entities/category-to-user.entity';
 import { BillRequestEntity } from '../../bill-request/entities/bill-request.entity';
-import { ApiModelProperty } from '@nestjs/swagger';
 import { SubscriptionEntity } from '../../subscription/entities/subscription.entity';
 
 @Entity()

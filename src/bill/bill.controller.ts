@@ -23,6 +23,7 @@ import { DateHelper } from '../helpers/date.helper';
 @Controller('bill')
 export class BillController {
   private billRequestIdCache: Map<string, string> = new Map();
+
   constructor(
     private readonly billRequestService: BillRequestService,
     private readonly ftsService: FtsService,
@@ -182,7 +183,8 @@ export class BillController {
     const [ billFromFts, billFromOfd ] = await Promise.all(promiseArr);
     if (billFromOfd === null && typeof billFromFts === 'string') {
       return billFromFts;
-    } else if (billFromOfd !== null) {
+    }
+    if (billFromOfd !== null) {
       return billFromOfd;
     }
     return billFromFts;
@@ -200,7 +202,7 @@ export class BillController {
   }
 
   private generateBillRequestCacheKey({ userId, ftsQrDto }: { userId: string, ftsQrDto: FtsQrDto }) {
-    return `${userId}${ftsQrDto.fiscalProp}${ftsQrDto.fiscalNumber}${ftsQrDto.fiscalDocument}`;
+    return `${ userId }${ ftsQrDto.fiscalProp }${ ftsQrDto.fiscalNumber }${ ftsQrDto.fiscalDocument }`;
   }
 
   private async getBillDataFromFts(user: UserEntity, ftsQrDto: FtsQrDto): Promise<string | BillDto> {
@@ -234,9 +236,9 @@ export class BillController {
         ]);
         this.setBillRequestIdToCache({ userId: user.id, ftsQrDto, billRequestId: billRequest.id });
         return billDto;
-      } else {
-        return billDataFromFts;
       }
+      return billDataFromFts;
+
     }
   }
 

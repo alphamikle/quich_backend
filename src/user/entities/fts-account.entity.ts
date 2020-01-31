@@ -1,6 +1,6 @@
 import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { UserEntity } from './user.entity';
 import { ApiModelProperty } from '@nestjs/swagger';
+import { UserEntity } from './user.entity';
 
 @Entity()
 export class FtsAccountEntity {
@@ -23,6 +23,7 @@ export class FtsAccountEntity {
   @ApiModelProperty()
   @Column()
   userId!: string;
+
   @ManyToOne(() => UserEntity, user => user.ftsAccounts, { onDelete: 'CASCADE' })
   user?: UserEntity;
 

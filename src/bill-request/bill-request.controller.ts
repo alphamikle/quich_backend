@@ -13,7 +13,8 @@ export class BillRequestController {
   constructor(
     private readonly billRequestService: BillRequestService,
     private readonly billRequestValidator: BillRequestValidator,
-  ) {}
+  ) {
+  }
 
   @UseGuards(Guards)
   @ApiBearerAuth()

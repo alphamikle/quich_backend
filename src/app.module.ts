@@ -29,7 +29,7 @@ const { DB_PORT, DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNC } = process
       username: DB_USERNAME,
       password: DB_PASSWORD,
       database: DB_NAME,
-      entities: [ `${__dirname}/**/*.entity{.ts,.js}` ],
+      entities: [ `${ __dirname }/**/*.entity{.ts,.js}` ],
       synchronize: DB_SYNC === 'true',
       uuidExtension: 'pgcrypto',
       // logging: 'all',

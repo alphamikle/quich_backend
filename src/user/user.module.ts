@@ -1,7 +1,7 @@
 import { forwardRef, Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { UserValidator } from './user.validator';
 import { SessionEntity } from './entities/session.entity';
@@ -15,7 +15,6 @@ import { BillRequestEntity } from '../bill-request/entities/bill-request.entity'
 import { FtsAccountQueueEntity } from './entities/fts-account-queue.entity';
 import { EmailModule } from '../email/email.module';
 import { SubscriptionModule } from '../subscription/subscription.module';
-import { SubscriptionService } from '../subscription/subscription.service';
 
 @Module({
   imports: [

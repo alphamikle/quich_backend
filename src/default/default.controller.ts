@@ -10,7 +10,8 @@ import { AllUserDataDto } from './dto/AllUserData.dto';
 export class DefaultController {
   constructor(
     private readonly defaultService: DefaultService,
-  ) {}
+  ) {
+  }
 
   @Get('ping')
   @ApiResponse({

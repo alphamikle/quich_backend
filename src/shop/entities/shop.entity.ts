@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { BillEntity } from '../../bill/entities/bill.entity';
 import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
+import { BillEntity } from '../../bill/entities/bill.entity';
 
 @Entity()
 export class ShopEntity {

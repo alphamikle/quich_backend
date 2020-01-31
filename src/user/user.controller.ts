@@ -5,24 +5,27 @@ import {
   Delete,
   ForbiddenException,
   forwardRef,
-  Get, Head,
-  Inject, Param,
+  Get,
+  Inject,
+  Param,
   Patch,
   Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { UserCredentialsDto } from './dto/user-credentials.dto';
 import { UserValidator } from './user.validator';
 import { UserEntity } from './entities/user.entity';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import {
   BAD_FTS_SIGN_IN_DATA,
-  DUPLICATE_FTS_PHONE, EMAIL_RESTORE_SUCCESS,
+  DUPLICATE_FTS_PHONE,
+  EMAIL_RESTORE_SUCCESS,
   FTS_PHONE_DELETION_COMPLETE,
   NOT_EXIST_FTS_PHONE,
-  REG_ERROR, SENDING_FTS_SMS,
+  REG_ERROR,
+  SENDING_FTS_SMS,
   SIGN_IN_BAD_PASSWORD,
   SIGN_IN_NO_USER,
   SIGN_UP_SUCCESS,

@@ -1,6 +1,8 @@
 import { Injectable, RequestTimeoutException } from '@nestjs/common';
-import { AxiosInstance, AxiosResponse, default as axios } from 'axios';
+import { AxiosInstance, default as axios } from 'axios';
 import * as https from 'https';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { FtsAccountDto } from './dto/fts-account.dto';
 import { FtsRegistrationDto } from './dto/fts-registration.dto';
 import {
@@ -13,9 +15,7 @@ import {
   UNKNOWN_ERROR,
 } from '../helpers/text';
 import { FtsRemindDto } from './dto/fts-remind.dto';
-import { InjectRepository } from '@nestjs/typeorm';
 import { FtsAccountEntity } from '../user/entities/fts-account.entity';
-import { Repository } from 'typeorm';
 import { FtsQrDto } from './dto/fts-qr.dto';
 import { FtsAccountToBillRequestEntity } from './entities/fts-account-to-bill-request.entity';
 import { DateHelper } from '../helpers/date.helper';
@@ -38,6 +38,7 @@ export interface FtsHeaders {
 @Injectable()
 export class FtsService {
   private readonly api: AxiosInstance;
+
   private baseUrl: string;
 
   constructor(
@@ -67,7 +68,7 @@ export class FtsService {
     return this.ftsAccountToBillRequestEntityRepository.findOne({ where: { billRequestId } });
   }
 
-  setFtsUrl(baseUrl: string = 'https://proverkacheka.nalog.ru:9999'): void {
+  setFtsUrl(baseUrl = 'https://proverkacheka.nalog.ru:9999'): void {
     this.baseUrl = baseUrl;
   }
 
@@ -88,10 +89,11 @@ export class FtsService {
       return true;
     } catch (err) {
       console.error(err.response);
-      const response: AxiosResponse = err.response;
+      const { response } = err;
       if (response.status === 409) {
         return FTS_USER_EXIST_ERROR;
-      } else if (response.status === 500) {
+      }
+      if (response.status === 500) {
         return INVALID_PHONE_ERROR;
       }
       return err.message || UNKNOWN_ERROR;
@@ -114,7 +116,7 @@ export class FtsService {
   }
 
   async checkBillExistence({ fiscalNumber: fn, checkType: ct = 1, fiscalDocument: fd, fiscalProp: fp, dateTime, totalSum: ts }: FtsQrDto,
-                           userCredentials: FtsAccountDto): Promise<boolean> {
+    userCredentials: FtsAccountDto): Promise<boolean> {
     const penny = ts * 100;
     const preUrl = '/v1/ofds/*/inns/*/fss/';
     const url = encodeURI(`${ preUrl }${ fn }/operations/${ ct }/tickets/${ fd }?fiscalSign=${ fp }&date=${ dateTime }&sum=${ penny }`);
@@ -149,16 +151,16 @@ export class FtsService {
       }
       let error = FTS_TRY_MORE_ERROR;
       if (err.response && err.response.status) {
-        const status: number = err.response.status;
+        const { status } = err.response;
         switch (status) {
-          case 406: {
-            error = FTS_BILL_NOT_SEND_ERROR;
-            break;
-          }
-          default: {
-            error = FTS_UNKNOWN_FETCHING_ERROR;
-            break;
-          }
+        case 406: {
+          error = FTS_BILL_NOT_SEND_ERROR;
+          break;
+        }
+        default: {
+          error = FTS_UNKNOWN_FETCHING_ERROR;
+          break;
+        }
         }
       }
       return error;

@@ -3,19 +3,23 @@ import { androidpublisher_v3, google } from 'googleapis';
 import { JWT, JWTInput } from 'google-auth-library';
 import { readFileSync } from 'fs';
 import { GooglePlayProduct } from './dto/google-play-product';
-import AndroidPublisher = androidpublisher_v3.Androidpublisher;
 import { Sku } from './entities/subscription.entity';
 import { GooglePlaySubscriptionInfo } from './interface/google-api.interface';
+
+import AndroidPublisher = androidpublisher_v3.Androidpublisher;
 
 const { GOOGLE_API_CREDENTIALS_PATH, APP_PACKAGE_NAME } = process.env;
 
 @Injectable()
 export class GoogleApiService {
   private readonly publisher: AndroidPublisher;
+
   private readonly credentials: JWTInput;
 
   private readonly jwt: JWT;
+
   private readonly packageName: string;
+
   private products: Map<string, GooglePlayProduct> = new Map();
 
   constructor() {

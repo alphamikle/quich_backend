@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { PurchaseService } from './purchase.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { PurchaseService } from './purchase.service';
 import { PurchaseEntity } from './entities/purchase.entity';
 import { ProductEntity } from '../product/entities/product.entity';
 import { CategoryEntity } from '../category/entities/category.entity';

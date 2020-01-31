@@ -1,16 +1,7 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { DefaultController } from './default.controller';
 import { DefaultService } from './default.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { CartModel } from './models/cart.model';
-import { CartRequestModel } from './models/cartRequest.model';
-import { CategoryModel } from './models/category.model';
-import { FtsAccountModel } from './models/ftsAccount.model';
-import { ProductModel } from './models/product.model';
-import { PurchaseModel } from './models/purchase.model';
-import { ScanModel } from './models/scan.model';
-import { ShopModel } from './models/shop.model';
-import { UserModel } from './models/user.model';
 import { BillEntity } from '../bill/entities/bill.entity';
 import { BillProviderEntity } from '../bill-provider/entities/bill-provider.entity';
 import { BillRequestEntity } from '../bill-request/entities/bill-request.entity';

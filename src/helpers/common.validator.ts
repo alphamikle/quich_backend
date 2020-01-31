@@ -20,7 +20,8 @@ export class CommonValidator {
   validatePhone(phone: string): string | true {
     if (this.isEmpty(phone)) {
       return NOT_EMPTY_ERROR;
-    } else if (!this.isPhone(phone)) {
+    }
+    if (!this.isPhone(phone)) {
       return INVALID_PHONE_ERROR;
     }
     return true;
@@ -29,7 +30,8 @@ export class CommonValidator {
   validateEmail(email: string): string | true {
     if (this.isEmpty(email)) {
       return NOT_EMPTY_ERROR;
-    } else if (!this.isEmail(email)) {
+    }
+    if (!this.isEmail(email)) {
       return INVALID_EMAIL_ERROR;
     }
     return true;

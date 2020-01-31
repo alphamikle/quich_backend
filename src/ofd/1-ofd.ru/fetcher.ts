@@ -41,6 +41,32 @@ export class FirstOfdFetcher extends BaseOfdFetcher {
     return this.transformFetcherDataToBillData();
   }
 
+  protected getShop(): ShopDto {
+    const shop = new ShopDto();
+    shop.tin = this.fetchResponse.ticket.userInn.trim();
+    shop.address = this.fetchResponse.retailPlaceAddress;
+    shop.title = this.fetchResponse.orgTitle;
+    return shop;
+  }
+
+  protected getPurchases(): PurchaseDto[] {
+    const purchases: PurchaseDto[] = [];
+    const purchasesData = this.fetchResponse.ticket.items;
+    for (const purchaseData of purchasesData) {
+      purchases.push(this.getPurchase(purchaseData));
+    }
+    return purchases;
+  }
+
+  protected getPurchase(item: Item): PurchaseDto {
+    const purchase = new PurchaseDto();
+    purchase.price = item.price / 100;
+    purchase.quantity = item.quantity;
+    purchase.title = item.name;
+    this.bill.totalSum += purchase.price * purchase.quantity;
+    return purchase;
+  }
+
   private async getRawData(): Promise<void> {
     try {
       const { data } = await axios.post<FirstOfdCheckBillResponse>(this.checkBillUrl, {
@@ -78,31 +104,5 @@ export class FirstOfdFetcher extends BaseOfdFetcher {
       return this.bill;
     }
     return null;
-  }
-
-  protected getShop(): ShopDto {
-    const shop = new ShopDto();
-    shop.tin = this.fetchResponse.ticket.userInn.trim();
-    shop.address = this.fetchResponse.retailPlaceAddress;
-    shop.title = this.fetchResponse.orgTitle;
-    return shop;
-  }
-
-  protected getPurchases(): PurchaseDto[] {
-    const purchases: PurchaseDto[] = [];
-    const purchasesData = this.fetchResponse.ticket.items;
-    for (const purchaseData of purchasesData) {
-      purchases.push(this.getPurchase(purchaseData));
-    }
-    return purchases;
-  }
-
-  protected getPurchase(item: Item): PurchaseDto {
-    const purchase = new PurchaseDto();
-    purchase.price = item.price / 100;
-    purchase.quantity = item.quantity;
-    purchase.title = item.name;
-    this.bill.totalSum += purchase.price * purchase.quantity;
-    return purchase;
   }
 }

@@ -69,7 +69,7 @@ export class OfdService {
           response,
         };
         data.push(info);
-        Logger.log(`Iteration: ${i}, Fetcher: ${OfdClass.name}, QrDto: ${JSON.stringify(qrDto)}, Delay: ${timeout}ms, Duration: ${Date.now() - start}ms`);
+        Logger.log(`Iteration: ${ i }, Fetcher: ${ OfdClass.name }, QrDto: ${ JSON.stringify(qrDto) }, Delay: ${ timeout }ms, Duration: ${ Date.now() - start }ms`);
       }
       i += 1;
     }
