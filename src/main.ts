@@ -5,7 +5,8 @@ import { output } from './config';
 import { AppModule } from './app.module';
 import * as pack from '../package.json';
 
-const { APP_PORT } = process.env;
+const { APP_PORT, NODE_ENV } = process.env;
+
 const configUser = output;
 
 async function bootstrap() {
@@ -26,4 +27,4 @@ async function bootstrap() {
   await app.listen(Number(APP_PORT));
 }
 
-bootstrap().then(() => Logger.log(`APP IS STARTED ON PORT ${ APP_PORT }`));
+bootstrap().then(() => Logger.log(`APP IS STARTED ON PORT ${ APP_PORT }`, `ENV IS ${NODE_ENV}`));

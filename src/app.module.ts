@@ -17,23 +17,13 @@ import { MapsModule } from './maps/maps.module';
 import { DefaultModule } from './default/default.module';
 import { EmailModule } from './email/email.module';
 import { SubscriptionModule } from './subscription/subscription.module';
-
-const { DB_PORT, DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNC } = process.env;
+import { ProxyModule } from './proxy/proxy.module';
+import { PuppeteerModule } from './puppeteer/puppeteer.module';
+import { typeOrmOptions } from './config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: DB_HOST,
-      port: Number(DB_PORT),
-      username: DB_USERNAME,
-      password: DB_PASSWORD,
-      database: DB_NAME,
-      entities: [ `${ __dirname }/**/*.entity{.ts,.js}` ],
-      synchronize: DB_SYNC === 'true',
-      uuidExtension: 'pgcrypto',
-      // logging: 'all',
-    }),
+    TypeOrmModule.forRoot(typeOrmOptions),
     PassportModule,
     UserModule,
     AuthModule,
@@ -51,6 +41,8 @@ const { DB_PORT, DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNC } = process
     DefaultModule,
     EmailModule,
     SubscriptionModule,
+    ProxyModule,
+    PuppeteerModule,
   ],
   controllers: [],
   providers: [],

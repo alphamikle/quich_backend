@@ -36,14 +36,15 @@ module.exports = {
     'no-param-reassign': 'off',
     'quotes': ['error', 'single'],
     'import/prefer-default-export': 'off',
-    complexity: 'error',
+    'complexity': 'error',
     'object-curly-spacing': 'error',
     'class-methods-use-this': 'off',
     'array-bracket-spacing': ['error', 'always'],
-    indent: ['error', 2],
+    'indent': ['error', 2],
     'import/no-cycle': 'off',
-    semi: ['error', 'always'],
+    'semi': ['error', 'always'],
     'no-multiple-empty-lines': ['error', { max: 1, maxEOF: 1 }],
     'no-restricted-syntax': 'off',
+    'no-await-in-loop': 'off'
   },
 };

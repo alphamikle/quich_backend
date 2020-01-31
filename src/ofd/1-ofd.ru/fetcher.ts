@@ -1,13 +1,13 @@
-import axios from 'axios';
 import { Logger } from '@nestjs/common';
+import * as assert from 'assert';
 import { FtsQrDto } from '../../fts/dto/fts-qr.dto';
-import { BaseOfdFetcher } from '../base-ofd-fetcher';
-import { fetchError } from '../fetcher-error';
+import { BaseOfdFetcher, FetcherParams } from '../base-ofd-fetcher';
 import { FetchResponse, Item } from './interfaces';
 import { BillDto } from '../../bill/dto/bill.dto';
 import { DateHelper } from '../../helpers/date.helper';
 import { ShopDto } from '../../shop/dto/shop.dto';
 import { PurchaseDto } from '../../purchase/dto/purchase.dto';
+import { ProxyService } from '../../proxy/proxy.service';
 
 export enum FirstOfdCheckBillStatus {
   EXIST = 1,
@@ -22,6 +22,8 @@ export interface FirstOfdCheckBillResponse {
 export class FirstOfdFetcher extends BaseOfdFetcher {
   private readonly dateHelper: DateHelper;
 
+  private readonly proxyService: ProxyService;
+
   private readonly checkBillUrl = 'https://consumer.1-ofd.ru/api/tickets/find-ticket';
 
   private readonly fetchBillUrl = 'https://consumer.1-ofd.ru/api/tickets/ticket/';
@@ -30,9 +32,12 @@ export class FirstOfdFetcher extends BaseOfdFetcher {
 
   private fetchResponse: FetchResponse = null;
 
-  constructor(qrDto: FtsQrDto, dateHelper: DateHelper) {
+  constructor(qrDto: FtsQrDto, { dateHelper, proxyService }: FetcherParams) {
     super(qrDto, '1-OFD');
+    assert(dateHelper !== undefined);
+    assert(proxyService !== undefined);
     this.dateHelper = dateHelper;
+    this.proxyService = proxyService;
   }
 
   public async fetchBill(): Promise<BillDto> {
@@ -69,17 +74,19 @@ export class FirstOfdFetcher extends BaseOfdFetcher {
 
   private async getRawData(): Promise<void> {
     try {
-      const { data } = await axios.post<FirstOfdCheckBillResponse>(this.checkBillUrl, {
-        fiscalDriveId: this.fiscalNumber,
-        fiscalDocumentNumber: this.fiscalDocument,
-        fiscalId: this.fiscalProp,
+      const { data } = await this.proxyService.request<FirstOfdCheckBillResponse>({
+        url: this.checkBillUrl,
+        data: {
+          fiscalDriveId: this.fiscalNumber,
+          fiscalDocumentNumber: this.fiscalDocument,
+          fiscalId: this.fiscalProp,
+        }
       });
       if (data.status === FirstOfdCheckBillStatus.NOT_EXIST) {
         this.notFound();
       }
       this.checkResponse = data;
     } catch (err) {
-      fetchError(FirstOfdFetcher, err.message);
       this.notFound();
     }
   }
@@ -87,7 +94,10 @@ export class FirstOfdFetcher extends BaseOfdFetcher {
   private async getBillData() {
     if (this.checkResponse !== null) {
       try {
-        const response = await axios.get<FetchResponse>(this.fetchBillUrl + this.checkResponse.uid);
+        const response = await this.proxyService.request<FetchResponse>({
+          url: this.fetchBillUrl + this.checkResponse.uid,
+          method: 'GET',
+        });
         this.fetchResponse = response.data;
       } catch (err) {
         Logger.error(err.message);

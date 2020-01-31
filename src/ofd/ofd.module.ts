@@ -4,9 +4,10 @@ import { OfdService } from './ofd.service';
 import { BillRequestEntity } from '../bill-request/entities/bill-request.entity';
 import { OfdController } from './ofd.controller';
 import { DateHelper } from '../helpers/date.helper';
+import { ProxyModule } from '../proxy/proxy.module';
 
 @Module({
-  imports: [ TypeOrmModule.forFeature([ BillRequestEntity ]) ],
+  imports: [ TypeOrmModule.forFeature([ BillRequestEntity ]), ProxyModule ],
   providers: [ OfdService, DateHelper ],
   exports: [ OfdService ],
   controllers: [ OfdController ],

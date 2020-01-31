@@ -10,6 +10,7 @@ import { BillRequestEntity } from '../bill-request/entities/bill-request.entity'
 import { DateHelper } from '../helpers/date.helper';
 import { FirstOfdFetcher } from './1-ofd.ru/fetcher';
 import { OfdFetcherClass } from './base-ofd-fetcher';
+import { ProxyService } from '../proxy/proxy.service';
 
 @Injectable()
 export class OfdService {
@@ -17,14 +18,17 @@ export class OfdService {
     @InjectRepository(BillRequestEntity)
     private readonly billRequestEntityRepository: Repository<BillRequestEntity>,
     private readonly dateHelper: DateHelper,
+    private readonly proxyService: ProxyService,
   ) {
   }
 
   async fetchBillData(qrData: FtsQrDto) {
-    const ofdFetcher = new OfdFetcher(qrData);
+    const ofdFetcher = new OfdFetcher(qrData, { proxyService: this.proxyService });
+    const firstOfdFetcher = new FirstOfdFetcher(qrData, { proxyService: this.proxyService, dateHelper: this.dateHelper });
 
     const responses: BillDto[] = await Promise.all([
       ofdFetcher.fetchBill(),
+      firstOfdFetcher.fetchBill(),
     ]);
     const results = responses.filter(response => response !== null);
     if (results.length > 0) {
@@ -61,7 +65,7 @@ export class OfdService {
       await new Promise(r => setTimeout(r, timeout));
       for await (const OfdClass of ofds) {
         const start = Date.now();
-        const fetcher = new OfdClass(qrDto, this.dateHelper);
+        const fetcher = new OfdClass(qrDto, { dateHelper: this.dateHelper, proxyService: this.proxyService });
         const response: BillDto = await fetcher.fetchBill();
         const info = {
           name: OfdClass.name,

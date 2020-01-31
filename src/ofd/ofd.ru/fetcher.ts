@@ -1,18 +1,22 @@
 import { HTMLElement, NodeType, parse } from 'node-html-parser';
 import { AllHtmlEntities } from 'html-entities';
-import axios from 'axios';
-import { BaseOfdFetcher } from '../base-ofd-fetcher';
+import * as assert from 'assert';
+import { BaseOfdFetcher, FetcherParams } from '../base-ofd-fetcher';
 import { ShopDto } from '../../shop/dto/shop.dto';
 import { PurchaseDto } from '../../purchase/dto/purchase.dto';
 import { FtsQrDto } from '../../fts/dto/fts-qr.dto';
 import { BillDto } from '../../bill/dto/bill.dto';
-import { fetchError } from '../fetcher-error';
+import { ProxyService } from '../../proxy/proxy.service';
 
 export class OfdFetcher extends BaseOfdFetcher {
   private body: HTMLElement;
 
-  constructor(qrDto: FtsQrDto) {
+  private readonly proxyService: ProxyService;
+
+  constructor(qrDto: FtsQrDto, { proxyService }: FetcherParams) {
     super(qrDto, 'OFD');
+    assert(proxyService !== undefined);
+    this.proxyService = proxyService;
   }
 
   async fetchBill(): Promise<BillDto> {
@@ -21,7 +25,6 @@ export class OfdFetcher extends BaseOfdFetcher {
       this.found();
       return this.getParsedData(rawData);
     } catch (err) {
-      fetchError(OfdFetcher, err.message);
       this.notFound();
       return null;
     }
@@ -70,7 +73,10 @@ export class OfdFetcher extends BaseOfdFetcher {
 
   private async getRawData(): Promise<string> {
     const url = `https://check.ofd.ru/rec/${ this.fiscalNumber }/${ this.fiscalDocument }/${ this.fiscalProp }`;
-    const rawResponse = await axios.get(url);
+    const rawResponse = await this.proxyService.request<string>({
+      url,
+      method: 'GET',
+    });
     return rawResponse.data;
   }
 

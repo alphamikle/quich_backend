@@ -5,8 +5,15 @@ import { FtsQrDto } from '../fts/dto/fts-qr.dto';
 import { ShopDto } from '../shop/dto/shop.dto';
 import { PurchaseDto } from '../purchase/dto/purchase.dto';
 import { Item } from './1-ofd.ru/interfaces';
+import { DateHelper } from '../helpers/date.helper';
+import { ProxyService } from '../proxy/proxy.service';
 
-export type OfdFetcherClass = { new(qrDto: FtsQrDto, ...args: any[]): BaseOfdFetcher };
+export interface FetcherParams {
+  dateHelper?: DateHelper;
+  proxyService?: ProxyService;
+}
+
+export type OfdFetcherClass = { new(qrDto: FtsQrDto, params?: FetcherParams): BaseOfdFetcher };
 
 export type PurchaseData = Item | HTMLElement;
 
