@@ -6,7 +6,7 @@ import { ProxyEntity } from './entity/proxy.entity';
 import { PuppeteerModule } from '../puppeteer/puppeteer.module';
 import { typeOrmOptions } from '../config';
 
-jest.setTimeout(60000);
+jest.setTimeout(600000);
 
 describe('ProxyService', () => {
   let service: ProxyService;
@@ -22,5 +22,13 @@ describe('ProxyService', () => {
 
   it('Load to DB proxy list', async () => {
     await service.refreshProxies();
+  });
+
+  it('Warm proxies', async () => {
+    await service.warmProxies();
+  });
+
+  it('Reset proxies', async () => {
+    await service.resetProxies();
   });
 });

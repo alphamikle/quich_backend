@@ -26,6 +26,7 @@
     "@nestjs/platform-express": "^6.10.5",
     "@nestjs/swagger": "^3.1.0",
     "@nestjs/typeorm": "^6.2.0",
+    "@types/request-promise": "^4.1.45",
     "axios": "^0.19.0",
     "bcrypt": "^3.0.7",
     "class-transformer": "^0.2.3",

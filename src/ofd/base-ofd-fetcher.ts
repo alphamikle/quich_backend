@@ -49,10 +49,10 @@ export abstract class BaseOfdFetcher {
   protected abstract getPurchase(purchaseData?: PurchaseData): PurchaseDto;
 
   protected notFound() {
-    Logger.warn(`Not found data of bill with qrDto=${ this.qrDtoString } in ${ this.constructor.name }`);
+    Logger.warn(`Not found data of bill with qrDto=${ this.qrDtoString } in ${ this.constructor.name }`, this.constructor.name);
   }
 
   protected found() {
-    Logger.log(`Found bill data with qrDto=${ this.qrDtoString } in ${ this.constructor.name }`);
+    Logger.log(`Found bill data with qrDto=${ this.qrDtoString } in ${ this.constructor.name }`, this.constructor.name);
   }
 }

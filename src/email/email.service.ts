@@ -44,7 +44,7 @@ export class EmailService {
     this.initDefaultEntities()
       .then(() => Logger.log('Email entities synced'))
       .catch(err => {
-        Logger.error(err.message);
+        Logger.error(err.message, null, EmailService.name);
         process.exit(-1);
       });
   }

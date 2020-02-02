@@ -14,6 +14,9 @@ export class ProxyEntity {
   @Column({ type: 'integer' })
   port!: number;
 
+  @Column({ type: 'integer', default: 0 })
+  averageTimeMs!: number;
+
   @Column({ default: 0, type: 'integer' })
   completeUses!: number;
 
@@ -25,4 +28,7 @@ export class ProxyEntity {
 
   @Column({ default: () => 'now()' })
   lastUsedDate: Date;
+
+  @Column({ type: 'jsonb', nullable: true })
+  errors: JSON[];
 }

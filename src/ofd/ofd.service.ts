@@ -41,12 +41,12 @@ export class OfdService {
     const billRequestEntities: BillRequestEntity[] = await this.billRequestEntityRepository.query(`
         select *
         from bill_request_entity bre
-        where bre."billId" is not null
-          and bre."ftsData" is not null
+        /*where bre."billId" is not null
+          and bre."ftsData" is not null*/
         order by random()
-        limit 20
+        limit 1000
     `);
-
+    Logger.log(`Found ${ billRequestEntities.length } billRequestEntities`);
     const ftsQrDtos: FtsQrDto[] = billRequestEntities.map(billRequest => {
       const qrDto = new FtsQrDto();
       qrDto.checkType = 1;
@@ -58,12 +58,10 @@ export class OfdService {
       return qrDto;
     });
     const ofds: OfdFetcherClass[] = [ OfdFetcher, FirstOfdFetcher ];
-    const data = [];
+    const data: any[] = [];
     let i = 0;
-    for await (const qrDto of ftsQrDtos) {
-      const timeout = (Math.floor(Math.random() * 4 + i) + 3) * 1000;
-      await new Promise(r => setTimeout(r, timeout));
-      for await (const OfdClass of ofds) {
+    await Promise.all(ftsQrDtos.map(async qrDto => {
+      await Promise.all(ofds.map(async OfdClass => {
         const start = Date.now();
         const fetcher = new OfdClass(qrDto, { dateHelper: this.dateHelper, proxyService: this.proxyService });
         const response: BillDto = await fetcher.fetchBill();
@@ -73,14 +71,13 @@ export class OfdService {
           response,
         };
         data.push(info);
-        Logger.log(`Iteration: ${ i }, Fetcher: ${ OfdClass.name }, QrDto: ${ JSON.stringify(qrDto) }, Delay: ${ timeout }ms, Duration: ${ Date.now() - start }ms`);
-      }
+        Logger.debug(`Iteration: ${ i }, Fetcher: ${ OfdClass.name }, QrDto: ${ JSON.stringify(qrDto) }, Duration: ${ Date.now() - start }ms`);
+      }));
       i += 1;
-    }
-    const dir = resolve(__dirname, './../../src', 'data.json');
-    console.log('FILE DIR', dir);
-    console.log(data);
+    }));
+    const dir = resolve(__dirname, '../', 'data.json');
+    Logger.log('FILE DIR', dir);
     writeFileSync(dir, JSON.stringify(data));
-    return data;
+    return data.filter(item => item.response !== null);
   }
 }

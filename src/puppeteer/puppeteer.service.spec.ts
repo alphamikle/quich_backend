@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PuppeteerService } from './puppeteer.service';
 
+jest.setTimeout(60 * 1000);
+
 describe('PuppeteerService', () => {
   let service: PuppeteerService;
 
@@ -13,7 +15,16 @@ describe('PuppeteerService', () => {
   });
 
   it('get free proxy list', async () => {
-    const proxyList = await service.getFreeProxyList();
-    console.log(proxyList);
+    await service.getFreeProxyList();
+  });
+
+  it('get open proxy list', async () => {
+    const list = await service.getOpenProxyList();
+    console.log(list.length);
+  });
+
+  it('get proxy scrape list', async () => {
+    const list = await service.getProxyScrapeList();
+    console.log(list.length);
   });
 });

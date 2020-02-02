@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { ElementHandle, launch, LaunchOptions } from 'puppeteer';
+import { Browser, ElementHandle, launch, LaunchOptions, Page } from 'puppeteer';
+import { resolve } from 'path';
+import { readdirSync, readFileSync, unlinkSync } from 'fs';
 
 const isDev = process.env.NODE_ENV === 'development';
+
+const curDir = resolve(__dirname);
 
 function child(num: number): string {
   return `:nth-child(${ num })`;
@@ -17,6 +21,14 @@ async function isNextEnabled(nextElement: ElementHandle): Promise<boolean> {
   return !classNames.includes('disabled');
 }
 
+async function sendToClient(page: Page): Promise<void> {
+  const client = await page.target().createCDPSession();
+  await client.send('Page.setDownloadBehavior', {
+    behavior: 'allow',
+    downloadPath: curDir,
+  });
+}
+
 enum Anonymity {
   ANON = 'anonymous',
   ELITE = 'elite proxy',
@@ -30,51 +42,45 @@ interface ProxyParams {
   isHttps: boolean;
 }
 
+function readFile(): ProxyParams[] {
+  const files = readdirSync(curDir);
+  const txtFile = files.find(file => file.includes('txt'));
+  const txtPath = resolve(curDir, txtFile);
+  const fileBuffer = readFileSync(txtPath);
+  const proxyParams = fileBuffer.toString('utf-8').split('\n').map(row => {
+    const [ ip, port ] = row.replace('\r', '').split(':');
+    const proxyParam: ProxyParams = {
+      isHttps: false,
+      port: Number(port),
+      ip,
+      anonymity: Anonymity.ANON,
+    };
+    return proxyParam;
+  });
+  unlinkSync(txtPath);
+  return proxyParams;
+}
+
+async function scrollPage(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    // eslint-disable-next-line no-undef
+    window.scrollBy(0, 300);
+  });
+}
+
 @Injectable()
 export class PuppeteerService {
+  private usingCounter = 0;
+
+  private browser: Promise<Browser> = null;
+
   private readonly options: LaunchOptions = {
     headless: isDev,
-    defaultViewport: {
-      width: 1920,
-      height: 1080,
-    },
+    defaultViewport: null,
+    args: [ '--window-size=1920,1080' ],
   };
 
-  public async getFreeProxyList() {
-    const limitSelector = '#proxylisttable_length > label > select';
-    const tableSelector = '#proxylisttable > tbody';
-    const httpsSelector = '#proxylisttable > tfoot > tr > th.hx.ui-state-default > select';
-    const nextButtonSelector = '#proxylisttable_next';
-
-    const rowsData: ProxyParams[] = [];
-
-    const browser = await launch(this.options);
-    const page = await browser.newPage();
-    await page.goto('https://free-proxy-list.net/');
-    await page.waitForSelector(limitSelector);
-    await page.select(limitSelector, '80');
-    await page.select(httpsSelector, 'yes');
-
-    let nextElement = await page.$(nextButtonSelector);
-
-    const getData: () => Promise<void> = async () => {
-      const tableBody = await page.$(tableSelector);
-      const rows = await tableBody.$$('tr');
-      rowsData.push(...await this.getRowsData(rows));
-      if (await isNextEnabled(nextElement)) {
-        await nextElement.click({ delay: 10 });
-        nextElement = await page.$(nextButtonSelector);
-        await getData();
-      }
-    };
-    await getData();
-    await page.close();
-    await browser.close();
-
-    return rowsData.filter(rowData => rowData.anonymity !== Anonymity.TRANSPARENT && rowData.isHttps === true);
-  }
-
-  private async getRowsData(rows: ElementHandle[]): Promise<ProxyParams[]> {
+  private async getFreeProxyListTableRowData(rows: ElementHandle[]): Promise<ProxyParams[]> {
     const data: ProxyParams[] = [];
     for await (const row of rows) {
       const proxy: ProxyParams = {
@@ -95,5 +101,94 @@ export class PuppeteerService {
       data.push(proxy);
     }
     return data;
+  }
+
+  private openBrowser(): Promise<Browser> {
+    this.usingCounter += 1;
+    if (this.browser === null) {
+      this.browser = launch(this.options);
+    }
+    return this.browser;
+  }
+
+  private async closeBrowser(): Promise<void> {
+    this.usingCounter -= 1;
+    if (this.usingCounter <= 0) {
+      await (await this.browser).close();
+      this.browser = null;
+    }
+  }
+
+  public async getFreeProxyList(): Promise<ProxyParams[]> {
+    const limitSelector = '#proxylisttable_length > label > select';
+    const tableSelector = '#proxylisttable > tbody';
+    const httpsSelector = '#proxylisttable > tfoot > tr > th.hx.ui-state-default > select';
+    const nextButtonSelector = '#proxylisttable_next';
+
+    const rowsData: ProxyParams[] = [];
+
+    const browser = await this.openBrowser();
+    const page = await browser.newPage();
+    await page.goto('https://free-proxy-list.net/');
+    await page.waitForSelector(limitSelector);
+    await page.select(limitSelector, '80');
+    await page.select(httpsSelector, 'yes');
+
+    let nextElement = await page.$(nextButtonSelector);
+
+    const getData: () => Promise<void> = async () => {
+      const tableBody = await page.$(tableSelector);
+      const rows = await tableBody.$$('tr');
+      rowsData.push(...await this.getFreeProxyListTableRowData(rows));
+      if (await isNextEnabled(nextElement)) {
+        await nextElement.click({ delay: 10 });
+        nextElement = await page.$(nextButtonSelector);
+        await getData();
+      }
+    };
+    await getData();
+    await page.close();
+    await this.closeBrowser();
+
+    return rowsData.filter(rowData => rowData.anonymity !== Anonymity.TRANSPARENT && rowData.isHttps === true);
+  }
+
+  public async getOpenProxyList() {
+    const httpProxyLinkSelector = '.list.http';
+    const downloadButtonSelector = '.download';
+
+    const browser = await this.openBrowser();
+    const page = await browser.newPage();
+    await page.goto('https://openproxy.space/list');
+    await scrollPage(page);
+    await page.waitForSelector(httpProxyLinkSelector);
+    await page.click(httpProxyLinkSelector);
+    await page.waitForSelector(downloadButtonSelector);
+    await page.click(downloadButtonSelector);
+    await sendToClient(page);
+    await page.waitFor(6000);
+    const proxyParams = readFile();
+
+    await page.close();
+    await this.closeBrowser();
+    return proxyParams;
+  }
+
+  public async getProxyScrapeList() {
+    const downloadHttpSelector = '#downloadhttp';
+
+    const browser = await this.openBrowser();
+    const page = await browser.newPage();
+    await page.goto('https://proxyscrape.com/free-proxy-list');
+    await page.waitForSelector(downloadHttpSelector);
+    await page.waitFor(2000);
+    await page.click(downloadHttpSelector);
+    await sendToClient(page);
+    await page.waitFor(8000);
+    const proxyParams = readFile();
+
+    await page.close();
+    await this.closeBrowser();
+    return proxyParams;
   }
 }

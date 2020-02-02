@@ -100,7 +100,7 @@ export class FirstOfdFetcher extends BaseOfdFetcher {
         });
         this.fetchResponse = response.data;
       } catch (err) {
-        Logger.error(err.message);
+        Logger.error(err.message, null, `${ FirstOfdFetcher.name }:getBillData`);
       }
     }
   }

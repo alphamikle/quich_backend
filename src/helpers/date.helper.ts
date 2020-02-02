@@ -73,7 +73,7 @@ export class DateHelper {
     if (value instanceof Date) {
       return value;
     }
-    Logger.error(`Incorrect type of value was provided to dateParse function. Value is "${ value }"`);
+    Logger.error(`Incorrect type of value was provided to dateParse function. Value is "${ value }"`, null, 'date.helper:parse');
     return null;
   }
 }

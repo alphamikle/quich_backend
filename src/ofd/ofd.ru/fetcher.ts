@@ -22,8 +22,9 @@ export class OfdFetcher extends BaseOfdFetcher {
   async fetchBill(): Promise<BillDto> {
     try {
       const rawData = await this.getRawData();
+      const parsedData = this.getParsedData(rawData);
       this.found();
-      return this.getParsedData(rawData);
+      return parsedData;
     } catch (err) {
       this.notFound();
       return null;
