@@ -4,6 +4,9 @@
   "description": "Backend of Quich application API SPECS",
   "author": "",
   "license": "MIT",
+  "engines": {
+    "node": ">=12"
+  },
   "scripts": {
     "build": "rimraf dist && tsc -p tsconfig.build.json",
     "build:mem": "rimraf dist && node --max-old-space-size=2048 node_modules/typescript/bin/tsc -p tsconfig.build.json",
