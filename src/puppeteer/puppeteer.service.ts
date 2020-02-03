@@ -58,7 +58,7 @@ function readFile(): ProxyParams[] {
     return proxyParam;
   });
   unlinkSync(txtPath);
-  return proxyParams;
+  return proxyParams.filter(param => !Number.isNaN(param.port));
 }
 
 async function scrollPage(page: Page): Promise<void> {
@@ -153,7 +153,7 @@ export class PuppeteerService {
     return rowsData.filter(rowData => rowData.anonymity !== Anonymity.TRANSPARENT && rowData.isHttps === true);
   }
 
-  public async getOpenProxyList() {
+  public async getOpenProxyList(): Promise<ProxyParams[]> {
     const httpProxyLinkSelector = '.list.http';
     const downloadButtonSelector = '.download';
 
@@ -174,7 +174,7 @@ export class PuppeteerService {
     return proxyParams;
   }
 
-  public async getProxyScrapeList() {
+  public async getProxyScrapeList(): Promise<ProxyParams[]> {
     const downloadHttpSelector = '#downloadhttp';
 
     const browser = await this.openBrowser();
@@ -183,6 +183,35 @@ export class PuppeteerService {
     await page.waitForSelector(downloadHttpSelector);
     await page.waitFor(2000);
     await page.click(downloadHttpSelector);
+    await sendToClient(page);
+    await page.waitFor(8000);
+    const proxyParams = readFile();
+
+    await page.close();
+    await this.closeBrowser();
+    return proxyParams;
+  }
+
+  public async getProxyDownloadList() {
+    const downloadBtnSelector = '#downloadbtn';
+    const filterSelector = '#country-select1 > dt';
+    const anonymousSelector = '#mislista2 > li:nth-child(3) > input';
+    const eliteSelector = '#mislista2 > li:nth-child(4) > input';
+    const filterButtonSelector = '#miboto';
+
+    const browser = await this.openBrowser();
+    const page = await browser.newPage();
+    await page.goto('https://www.proxy-list.download/HTTPS');
+    await page.waitForSelector(filterSelector);
+    await page.click(filterSelector);
+    await page.waitFor(400);
+    await page.click(anonymousSelector);
+    await page.waitFor(300);
+    await page.click(eliteSelector);
+    await page.waitFor(500);
+    await page.click(filterButtonSelector);
+    await page.waitFor(600);
+    await page.click(downloadBtnSelector);
     await sendToClient(page);
     await page.waitFor(8000);
     const proxyParams = readFile();

@@ -77,7 +77,7 @@ export class OfdFetcher extends BaseOfdFetcher {
     const rawResponse = await this.proxyService.request<string>({
       url,
       method: 'GET',
-    });
+    }, { disableProxy: true });
     return rawResponse.data;
   }
 

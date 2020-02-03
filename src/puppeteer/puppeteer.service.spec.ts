@@ -27,4 +27,9 @@ describe('PuppeteerService', () => {
     const list = await service.getProxyScrapeList();
     console.log(list.length);
   });
+
+  it('proxy list download', async () => {
+    const list = await service.getProxyDownloadList();
+    console.log(list.length);
+  });
 });

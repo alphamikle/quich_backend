@@ -49,7 +49,7 @@ export class ProxyService {
     }
   }
 
-  private async getLastUsedProxyEntity() {
+  private async getLastUsedProxyEntity(): Promise<ProxyEntity> {
     const lastUsingProxyId = this.proxyUsingQueue[ this.proxyUsingQueue.length - 1 ].id;
     const where: FindConditions<ProxyEntity> = {
       id: lastUsingProxyId,
@@ -58,6 +58,12 @@ export class ProxyService {
     const proxy = await this.proxyEntityRepository.findOne({ where, order: { lastUsedDate: 'ASC' } });
     await this.updateLastUseDate(proxy);
     return proxy;
+  }
+
+  private async getMostEffectiveProxy(): Promise<ProxyEntity> {
+    // TODO: Do it in monday
+    // const proxy = await this.proxyEntityRepository.findOne({ where:  })
+    return null;
   }
 
   private async updateLastUseDate(proxy: ProxyEntity): Promise<void> {
@@ -98,20 +104,35 @@ export class ProxyService {
     return this.proxyEntityRepository.save(proxy);
   }
 
+  // private async torRequest<T>(config: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  //
+  // }
+
   public async resetProxies() {
     await this.proxyEntityRepository.clear();
     await this.refreshProxies();
     await this.cacheUsingDates();
-    await this.warmProxies(500, 50);
+    await this.warmProxies(1000, 10);
   }
 
-  public async request<T>(config: AxiosRequestConfig, disableProxy = false) {
+  public async request<T>(config: AxiosRequestConfig, { disableProxy = false, useTor = false, isWarming = false, limit = 3, counter = 0 }): Promise<AxiosResponse<T>> {
     config.timeout = 8000;
-    if (disableProxy) {
+    if (disableProxy || counter >= limit) {
       return axios.request<T>(config);
     }
+    // if (useTor) {
+    //   return this.torRequest<T>(config);
+    // }
     const start = Date.now();
-    let proxy = await this.getLastUsedProxyEntity();
+    let proxy: ProxyEntity;
+    if (isWarming) {
+      proxy = await this.getLastUsedProxyEntity();
+    } else {
+      proxy = await this.getMostEffectiveProxy();
+    }
+    if (proxy === null) {
+      return this.request<T>(config, { isWarming, limit, counter: counter + 1 });
+    }
     config.proxy = {
       host: proxy.address,
       port: proxy.port,
@@ -133,22 +154,16 @@ export class ProxyService {
   }
 
   public async refreshProxies() {
-    const results = await Promise.all([
-      this.puppeteerService.getFreeProxyList(),
-      this.puppeteerService.getOpenProxyList(),
-      this.puppeteerService.getProxyScrapeList(),
-    ]);
     const proxyParams = [];
-    for (const result of results) {
-      proxyParams.push(...result);
-    }
-    const proxies: ProxyEntity[] = [];
+    proxyParams.push(...await this.puppeteerService.getFreeProxyList());
+    proxyParams.push(...await this.puppeteerService.getOpenProxyList());
+    proxyParams.push(...await this.puppeteerService.getProxyScrapeList());
+    proxyParams.push(...await this.puppeteerService.getProxyDownloadList());
     await Promise.all(proxyParams.map(async proxyParam => {
       const proxy = new ProxyEntity();
       proxy.address = proxyParam.ip;
       proxy.port = proxyParam.port;
       proxy.protocol = proxyParam.isHttps ? 'https' : 'http';
-      proxies.push(proxy);
       if (!await this.isProxyExist(proxy)) {
         return this.createProxy(proxy);
       }
@@ -168,7 +183,7 @@ export class ProxyService {
             const response = await this.request<string>({
               method: 'GET',
               url: `https://i.picsum.photos/id/${ value }/300/300.jpg`
-            });
+            }, {});
             Logger.log('Warming of proxy complete', `${ ProxyService.name }:warmProxies - ${ value }`);
             return response;
           } catch (err) {
@@ -187,7 +202,6 @@ export class ProxyService {
       i += 1;
       const start = Date.now();
       await Promise.all(chunk);
-      requests.splice(i - 1, 1);
       Logger.log(`Compete ${ i } chunk of ${ requests.length } in ${ Date.now() - start }ms`);
     }
     Logger.log(`Complete all chunks in ${ Date.now() - allStart }ms`);
