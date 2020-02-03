@@ -42,7 +42,7 @@ export class EmailService {
   ) {
     this.initialize();
     this.initDefaultEntities()
-      .then(() => Logger.log('Email entities synced'))
+      .then(() => Logger.log('Email entities synced', EmailService.name))
       .catch(err => {
         Logger.error(err.message, null, EmailService.name);
         process.exit(-1);
@@ -87,12 +87,18 @@ export class EmailService {
   async sendRestoreEmail({ credentials, newPassword }: { credentials: RestoreEmailCredentials; newPassword: string }): Promise<void> {
     const restoreContent = await this.getEmailContentEntityByCode(RESTORE_ENTITY_CODE);
     const text = this.replaceVars(restoreContent.content, PASSWORD_VARIABLE, newPassword);
-    await this.sendTextEmail({
-      to: credentials.to,
-      title: restoreContent.title,
-      text,
-      from: restoreContent.from,
-    });
+    try {
+      const config = {
+        to: credentials.to,
+        title: restoreContent.title,
+        text,
+        from: restoreContent.from,
+      };
+      Logger.log(config);
+      await this.sendTextEmail(config);
+    } catch (err) {
+      Logger.error(err.message, err.stack, EmailService.name);
+    }
   }
 
   async getEmailContentEntityByCode(code: string): Promise<EmailContentEntity> {

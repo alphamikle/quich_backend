@@ -6,11 +6,11 @@ import { ShopDto } from '../shop/dto/shop.dto';
 import { PurchaseDto } from '../purchase/dto/purchase.dto';
 import { Item } from './1-ofd.ru/interfaces';
 import { DateHelper } from '../helpers/date.helper';
-import { ProxyService } from '../proxy/proxy.service';
+import { RequestService } from '../proxy/dto/requestable.interface';
 
 export interface FetcherParams {
   dateHelper?: DateHelper;
-  proxyService?: ProxyService;
+  proxyService?: RequestService;
 }
 
 export type OfdFetcherClass = { new(qrDto: FtsQrDto, params?: FetcherParams): BaseOfdFetcher };

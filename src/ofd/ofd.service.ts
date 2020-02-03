@@ -44,7 +44,7 @@ export class OfdService {
         /*where bre."billId" is not null
           and bre."ftsData" is not null*/
         order by random()
-        limit 1000
+        limit 100
     `);
     Logger.log(`Found ${ billRequestEntities.length } billRequestEntities`);
     const ftsQrDtos: FtsQrDto[] = billRequestEntities.map(billRequest => {

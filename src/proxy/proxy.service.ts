@@ -4,6 +4,7 @@ import { FindConditions, Repository } from 'typeorm';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { ProxyEntity } from './entity/proxy.entity';
 import { PuppeteerService } from '../puppeteer/puppeteer.service';
+import { RequestService } from './dto/requestable.interface';
 
 interface ProxyIdUseDate {
   id: string;
@@ -11,7 +12,7 @@ interface ProxyIdUseDate {
 }
 
 @Injectable()
-export class ProxyService {
+export class ProxyService implements RequestService {
   constructor(
     @InjectRepository(ProxyEntity)
     private readonly proxyEntityRepository: Repository<ProxyEntity>,
@@ -104,10 +105,6 @@ export class ProxyService {
     return this.proxyEntityRepository.save(proxy);
   }
 
-  // private async torRequest<T>(config: AxiosRequestConfig): Promise<AxiosResponse<T>> {
-  //
-  // }
-
   public async resetProxies() {
     await this.proxyEntityRepository.clear();
     await this.refreshProxies();
@@ -115,14 +112,11 @@ export class ProxyService {
     await this.warmProxies(1000, 10);
   }
 
-  public async request<T>(config: AxiosRequestConfig, { disableProxy = false, useTor = false, isWarming = false, limit = 3, counter = 0 }): Promise<AxiosResponse<T>> {
+  public async request<T>(config: AxiosRequestConfig, { disableProxy = false, isWarming = false, limit = 3, counter = 0 }): Promise<AxiosResponse<T>> {
     config.timeout = 8000;
     if (disableProxy || counter >= limit) {
       return axios.request<T>(config);
     }
-    // if (useTor) {
-    //   return this.torRequest<T>(config);
-    // }
     const start = Date.now();
     let proxy: ProxyEntity;
     if (isWarming) {

@@ -8,6 +8,7 @@ import { DateHelper } from '../../helpers/date.helper';
 import { ShopDto } from '../../shop/dto/shop.dto';
 import { PurchaseDto } from '../../purchase/dto/purchase.dto';
 import { ProxyService } from '../../proxy/proxy.service';
+import { RequestService } from '../../proxy/dto/requestable.interface';
 
 export enum FirstOfdCheckBillStatus {
   EXIST = 1,
@@ -22,7 +23,7 @@ export interface FirstOfdCheckBillResponse {
 export class FirstOfdFetcher extends BaseOfdFetcher {
   private readonly dateHelper: DateHelper;
 
-  private readonly proxyService: ProxyService;
+  private readonly proxyService: RequestService;
 
   private readonly checkBillUrl = 'https://consumer.1-ofd.ru/api/tickets/find-ticket';
 
@@ -81,7 +82,7 @@ export class FirstOfdFetcher extends BaseOfdFetcher {
           fiscalDocumentNumber: this.fiscalDocument,
           fiscalId: this.fiscalProp,
         }
-      });
+      }, {});
       if (data.status === FirstOfdCheckBillStatus.NOT_EXIST) {
         this.notFound();
       }
@@ -97,7 +98,7 @@ export class FirstOfdFetcher extends BaseOfdFetcher {
         const response = await this.proxyService.request<FetchResponse>({
           url: this.fetchBillUrl + this.checkResponse.uid,
           method: 'GET',
-        });
+        }, {});
         this.fetchResponse = response.data;
       } catch (err) {
         Logger.error(err.message, null, `${ FirstOfdFetcher.name }:getBillData`);

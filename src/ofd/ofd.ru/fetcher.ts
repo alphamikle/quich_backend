@@ -6,12 +6,12 @@ import { ShopDto } from '../../shop/dto/shop.dto';
 import { PurchaseDto } from '../../purchase/dto/purchase.dto';
 import { FtsQrDto } from '../../fts/dto/fts-qr.dto';
 import { BillDto } from '../../bill/dto/bill.dto';
-import { ProxyService } from '../../proxy/proxy.service';
+import { RequestService } from '../../proxy/dto/requestable.interface';
 
 export class OfdFetcher extends BaseOfdFetcher {
   private body: HTMLElement;
 
-  private readonly proxyService: ProxyService;
+  private readonly proxyService: RequestService;
 
   constructor(qrDto: FtsQrDto, { proxyService }: FetcherParams) {
     super(qrDto, 'OFD');
