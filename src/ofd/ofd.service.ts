@@ -41,8 +41,8 @@ export class OfdService {
     const billRequestEntities: BillRequestEntity[] = await this.billRequestEntityRepository.query(`
         select *
         from bill_request_entity bre
-        /*where bre."billId" is not null
-          and bre."ftsData" is not null*/
+            /*where bre."billId" is not null
+              and bre."ftsData" is not null*/
         order by random()
         limit 100
     `);

@@ -7,7 +7,6 @@ import { BillDto } from '../../bill/dto/bill.dto';
 import { DateHelper } from '../../helpers/date.helper';
 import { ShopDto } from '../../shop/dto/shop.dto';
 import { PurchaseDto } from '../../purchase/dto/purchase.dto';
-import { ProxyService } from '../../proxy/proxy.service';
 import { RequestService } from '../../proxy/dto/requestable.interface';
 
 export enum FirstOfdCheckBillStatus {
@@ -81,7 +80,7 @@ export class FirstOfdFetcher extends BaseOfdFetcher {
           fiscalDriveId: this.fiscalNumber,
           fiscalDocumentNumber: this.fiscalDocument,
           fiscalId: this.fiscalProp,
-        }
+        },
       }, {});
       if (data.status === FirstOfdCheckBillStatus.NOT_EXIST) {
         this.notFound();

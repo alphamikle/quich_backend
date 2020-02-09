@@ -27,4 +27,6 @@ async function bootstrap() {
   await app.listen(Number(APP_PORT));
 }
 
-bootstrap().then(() => Logger.log(`APP IS STARTED ON PORT ${ APP_PORT }`, `ENV IS ${NODE_ENV}`));
+bootstrap().then(() =>
+  Logger.log(`APP IS STARTED ON PORT ${ APP_PORT }`, `ENV IS ${ NODE_ENV }`),
+);

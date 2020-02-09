@@ -5,16 +5,17 @@ import { ProxyService } from './proxy.service';
 @ApiUseTags('proxy')
 @Controller('proxy')
 export class ProxyController {
-  constructor(
-    private readonly proxyService: ProxyService,
-  ) {
+  constructor(private readonly proxyService: ProxyService) {
   }
 
   @ApiOperation({
-    title: 'Прогрев прокси'
+    title: 'Прогрев прокси',
   })
   @Get('warm')
-  async warmProxies(@Query('limit') limit?: number, @Query('iterations') iterations?: number): Promise<void> {
+  async warmProxies(
+    @Query('limit') limit?: number,
+    @Query('iterations') iterations?: number,
+  ): Promise<void> {
     if (limit !== undefined) {
       limit = Number(limit);
     }

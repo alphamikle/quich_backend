@@ -12,12 +12,16 @@ function child(num: number): string {
 }
 
 async function getInnerText(element: ElementHandle): Promise<string> {
-  const value: string = await (await element.getProperty('innerText')).jsonValue() as string;
+  const value: string = (await (await element.getProperty(
+    'innerText',
+  )).jsonValue()) as string;
   return value;
 }
 
 async function isNextEnabled(nextElement: ElementHandle): Promise<boolean> {
-  const classNames = await (await nextElement.getProperty('className')).jsonValue() as string;
+  const classNames = (await (await nextElement.getProperty(
+    'className',
+  )).jsonValue()) as string;
   return !classNames.includes('disabled');
 }
 
@@ -47,16 +51,19 @@ function readFile(): ProxyParams[] {
   const txtFile = files.find(file => file.includes('txt'));
   const txtPath = resolve(curDir, txtFile);
   const fileBuffer = readFileSync(txtPath);
-  const proxyParams = fileBuffer.toString('utf-8').split('\n').map(row => {
-    const [ ip, port ] = row.replace('\r', '').split(':');
-    const proxyParam: ProxyParams = {
-      isHttps: false,
-      port: Number(port),
-      ip,
-      anonymity: Anonymity.ANON,
-    };
-    return proxyParam;
-  });
+  const proxyParams = fileBuffer
+    .toString('utf-8')
+    .split('\n')
+    .map(row => {
+      const [ ip, port ] = row.replace('\r', '').split(':');
+      const proxyParam: ProxyParams = {
+        isHttps: false,
+        port: Number(port),
+        ip,
+        anonymity: Anonymity.ANON,
+      };
+      return proxyParam;
+    });
   unlinkSync(txtPath);
   return proxyParams.filter(param => !Number.isNaN(param.port));
 }
@@ -80,49 +87,11 @@ export class PuppeteerService {
     args: [ '--window-size=1920,1080' ],
   };
 
-  private async getFreeProxyListTableRowData(rows: ElementHandle[]): Promise<ProxyParams[]> {
-    const data: ProxyParams[] = [];
-    for await (const row of rows) {
-      const proxy: ProxyParams = {
-        ip: '',
-        port: 80,
-        anonymity: Anonymity.TRANSPARENT,
-        isHttps: true,
-      };
-      const ipElement = await row.$(child(1));
-      const portElement = await row.$(child(2));
-      const anonymityElement = await row.$(child(5));
-      const httpsElement = await row.$(child(7));
-
-      proxy.ip = await getInnerText(ipElement);
-      proxy.port = Number(await getInnerText(portElement));
-      proxy.anonymity = await getInnerText(anonymityElement) as Anonymity;
-      proxy.isHttps = (await getInnerText(httpsElement)) === 'yes';
-      data.push(proxy);
-    }
-    return data;
-  }
-
-  private openBrowser(): Promise<Browser> {
-    this.usingCounter += 1;
-    if (this.browser === null) {
-      this.browser = launch(this.options);
-    }
-    return this.browser;
-  }
-
-  private async closeBrowser(): Promise<void> {
-    this.usingCounter -= 1;
-    if (this.usingCounter <= 0) {
-      await (await this.browser).close();
-      this.browser = null;
-    }
-  }
-
   public async getFreeProxyList(): Promise<ProxyParams[]> {
     const limitSelector = '#proxylisttable_length > label > select';
     const tableSelector = '#proxylisttable > tbody';
-    const httpsSelector = '#proxylisttable > tfoot > tr > th.hx.ui-state-default > select';
+    const httpsSelector =
+      '#proxylisttable > tfoot > tr > th.hx.ui-state-default > select';
     const nextButtonSelector = '#proxylisttable_next';
 
     const rowsData: ProxyParams[] = [];
@@ -139,7 +108,7 @@ export class PuppeteerService {
     const getData: () => Promise<void> = async () => {
       const tableBody = await page.$(tableSelector);
       const rows = await tableBody.$$('tr');
-      rowsData.push(...await this.getFreeProxyListTableRowData(rows));
+      rowsData.push(...(await this.getFreeProxyListTableRowData(rows)));
       if (await isNextEnabled(nextElement)) {
         await nextElement.click({ delay: 10 });
         nextElement = await page.$(nextButtonSelector);
@@ -150,7 +119,10 @@ export class PuppeteerService {
     await page.close();
     await this.closeBrowser();
 
-    return rowsData.filter(rowData => rowData.anonymity !== Anonymity.TRANSPARENT && rowData.isHttps === true);
+    return rowsData.filter(
+      rowData =>
+        rowData.anonymity !== Anonymity.TRANSPARENT && rowData.isHttps === true,
+    );
   }
 
   public async getOpenProxyList(): Promise<ProxyParams[]> {
@@ -219,5 +191,46 @@ export class PuppeteerService {
     await page.close();
     await this.closeBrowser();
     return proxyParams;
+  }
+
+  private async getFreeProxyListTableRowData(
+    rows: ElementHandle[],
+  ): Promise<ProxyParams[]> {
+    const data: ProxyParams[] = [];
+    for await (const row of rows) {
+      const proxy: ProxyParams = {
+        ip: '',
+        port: 80,
+        anonymity: Anonymity.TRANSPARENT,
+        isHttps: true,
+      };
+      const ipElement = await row.$(child(1));
+      const portElement = await row.$(child(2));
+      const anonymityElement = await row.$(child(5));
+      const httpsElement = await row.$(child(7));
+
+      proxy.ip = await getInnerText(ipElement);
+      proxy.port = Number(await getInnerText(portElement));
+      proxy.anonymity = (await getInnerText(anonymityElement)) as Anonymity;
+      proxy.isHttps = (await getInnerText(httpsElement)) === 'yes';
+      data.push(proxy);
+    }
+    return data;
+  }
+
+  private openBrowser(): Promise<Browser> {
+    this.usingCounter += 1;
+    if (this.browser === null) {
+      this.browser = launch(this.options);
+    }
+    return this.browser;
+  }
+
+  private async closeBrowser(): Promise<void> {
+    this.usingCounter -= 1;
+    if (this.usingCounter <= 0) {
+      await (await this.browser).close();
+      this.browser = null;
+    }
   }
 }

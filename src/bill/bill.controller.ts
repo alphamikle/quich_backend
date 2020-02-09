@@ -43,8 +43,7 @@ export class BillController {
   @ApiOperation({ title: 'Получение списка чеков пользователя' })
   @ApiResponse({
     status: 201,
-    type: BillEntity,
-    isArray: true,
+    type: [ BillEntity ],
   })
   async getUserBills(@RequestUser() user: UserEntity): Promise<BillEntity[]> {
     return this.billService.getUserBills(user.id);
@@ -58,15 +57,26 @@ export class BillController {
     status: 201,
     type: BillDto,
   })
-  async getBillData(@RequestUser() user: UserEntity, @Body() ftsQrDto: FtsQrDto): Promise<BillDto> {
+  async getBillData(
+    @RequestUser() user: UserEntity,
+    @Body() ftsQrDto: FtsQrDto,
+  ): Promise<BillDto> {
     const billData = await this.getBillDataFromFtsOrOfd(user, ftsQrDto);
     if (typeof billData === 'string') {
       throw new BadRequestException({ push: billData });
     }
     billData.shop = await this.extractShopDtoInfo(billData.shop);
-    billData.purchases = await this.purchaseService.extractCategoriesIdsForPurchaseDtos({ purchaseDtos: billData.purchases, userId: user.id });
-    const billRequestId = this.extractBillRequestIdFromCache({ userId: user.id, ftsQrDto });
-    await this.billRequestService.setRawData({ id: billRequestId, rawData: billData });
+    billData.purchases = await this.purchaseService.extractCategoriesIdsForPurchaseDtos(
+      { purchaseDtos: billData.purchases, userId: user.id },
+    );
+    const billRequestId = this.extractBillRequestIdFromCache({
+      userId: user.id,
+      ftsQrDto,
+    });
+    await this.billRequestService.setRawData({
+      id: billRequestId,
+      rawData: billData,
+    });
     return billData;
   }
 
@@ -78,8 +88,13 @@ export class BillController {
     status: 201,
     type: BillDto,
   })
-  async getBillDataByBillRequestId(@RequestUser() user: UserEntity, @Param('requestId') requestId: string): Promise<BillDto> {
-    const billRequest = await this.billRequestService.getBillRequestById(requestId);
+  async getBillDataByBillRequestId(
+    @RequestUser() user: UserEntity,
+    @Param('requestId') requestId: string,
+  ): Promise<BillDto> {
+    const billRequest = await this.billRequestService.getBillRequestById(
+      requestId,
+    );
     if (!billRequest) {
       throw new BadRequestException({ push: INVALID_ID_ERROR });
     }
@@ -102,8 +117,13 @@ export class BillController {
       throw new BadRequestException({ push: billData });
     }
     billData.shop = await this.extractShopDtoInfo(billData.shop);
-    billData.purchases = await this.purchaseService.extractCategoriesIdsForPurchaseDtos({ purchaseDtos: billData.purchases, userId: user.id });
-    await this.billRequestService.setRawData({ id: requestId, rawData: billData });
+    billData.purchases = await this.purchaseService.extractCategoriesIdsForPurchaseDtos(
+      { purchaseDtos: billData.purchases, userId: user.id },
+    );
+    await this.billRequestService.setRawData({
+      id: requestId,
+      rawData: billData,
+    });
     return billData;
   }
 
@@ -115,19 +135,32 @@ export class BillController {
     status: 201,
     type: BillEntity,
   })
-  async createBill(@RequestUser() user: UserEntity, @Body() billDto: BillDto): Promise<BillEntity> {
+  async createBill(
+    @RequestUser() user: UserEntity,
+    @Body() billDto: BillDto,
+  ): Promise<BillEntity> {
     const shop = await this.shopService.findOrCreateShop(billDto.shop);
-    const bill = await this.billService.createBillForUser({ billDto, shopId: shop.id, userId: user.id });
+    const bill = await this.billService.createBillForUser({
+      billDto,
+      shopId: shop.id,
+      userId: user.id,
+    });
     // ? Пояснение:
     /** Избавился от Promise.all, потому что в одном чеке может
      * быть два продукта с одинаковым названием, но разной ценой
      * и сохранится только один из них
      */
     for await (const purchaseDto of billDto.purchases) {
-      await this.purchaseService.createPurchase({ purchaseDto, billId: bill.id });
+      await this.purchaseService.createPurchase({
+        purchaseDto,
+        billId: bill.id,
+      });
     }
     if (billDto.billRequestId) {
-      await this.billRequestService.setBillIdToBillRequest({ billRequestId: billDto.billRequestId, billId: bill.id });
+      await this.billRequestService.setBillIdToBillRequest({
+        billRequestId: billDto.billRequestId,
+        billId: bill.id,
+      });
     }
     return bill;
   }
@@ -140,12 +173,19 @@ export class BillController {
     status: 200,
     type: BillEntity,
   })
-  async editBill(@RequestUser() user: UserEntity, @Param('billId') billId: string, @Body() billDto: BillDto): Promise<BillEntity> {
+  async editBill(
+    @RequestUser() user: UserEntity,
+    @Param('billId') billId: string,
+    @Body() billDto: BillDto,
+  ): Promise<BillEntity> {
     const billEntity = await this.billService.getBillById(billId);
     const shop = await this.shopService.editShop(billDto.shop);
     billDto.shop.id = shop.id;
     const editedBill = await this.billService.editBill({ billDto, billEntity });
-    await this.purchaseService.editPurchases({ purchases: billDto.purchases, billId: billDto.id });
+    await this.purchaseService.editPurchases({
+      purchases: billDto.purchases,
+      billId: billDto.id,
+    });
     return editedBill;
   }
 
@@ -157,7 +197,10 @@ export class BillController {
     status: 200,
     type: String,
   })
-  async deleteBill(@RequestUser() user: UserEntity, @Param('billId') billId: string): Promise<string> {
+  async deleteBill(
+    @RequestUser() user: UserEntity,
+    @Param('billId') billId: string,
+  ): Promise<string> {
     await this.billService.deleteBill(billId);
     return OK;
   }
@@ -169,13 +212,13 @@ export class BillController {
     return shopDto;
   }
 
-  private async getBillDataFromFtsOrOfd(user: UserEntity, ftsQrDto: FtsQrDto): Promise<string | BillDto> {
+  private async getBillDataFromFtsOrOfd(
+    user: UserEntity,
+    ftsQrDto: FtsQrDto,
+  ): Promise<string | BillDto> {
     const ftsPromise = this.getBillDataFromFts(user, ftsQrDto);
     const ofdPromise = this.ofdService.fetchBillData(ftsQrDto);
-    const promiseArr = [
-      ftsPromise,
-      ofdPromise,
-    ];
+    const promiseArr = [ ftsPromise, ofdPromise ];
     const result = await Promise.race(promiseArr);
     if (result !== null && typeof result !== 'string') {
       return result;
@@ -190,23 +233,54 @@ export class BillController {
     return billFromFts;
   }
 
-  private setBillRequestIdToCache({ userId, ftsQrDto, billRequestId }: { userId: string, ftsQrDto: FtsQrDto, billRequestId: string }) {
-    this.billRequestIdCache.set(this.generateBillRequestCacheKey({ userId, ftsQrDto }), billRequestId);
+  private setBillRequestIdToCache({
+                                    userId,
+                                    ftsQrDto,
+                                    billRequestId,
+                                  }: {
+    userId: string;
+    ftsQrDto: FtsQrDto;
+    billRequestId: string;
+  }) {
+    this.billRequestIdCache.set(
+      this.generateBillRequestCacheKey({ userId, ftsQrDto }),
+      billRequestId,
+    );
   }
 
-  private extractBillRequestIdFromCache({ userId, ftsQrDto }: { userId: string, ftsQrDto: FtsQrDto }) {
+  private extractBillRequestIdFromCache({
+                                          userId,
+                                          ftsQrDto,
+                                        }: {
+    userId: string;
+    ftsQrDto: FtsQrDto;
+  }) {
     const key = this.generateBillRequestCacheKey({ userId, ftsQrDto });
     const billRequestId = this.billRequestIdCache.get(key);
     this.billRequestIdCache.delete(key);
     return billRequestId;
   }
 
-  private generateBillRequestCacheKey({ userId, ftsQrDto }: { userId: string, ftsQrDto: FtsQrDto }) {
-    return `${ userId }${ ftsQrDto.fiscalProp }${ ftsQrDto.fiscalNumber }${ ftsQrDto.fiscalDocument }`;
+  private generateBillRequestCacheKey({
+                                        userId,
+                                        ftsQrDto,
+                                      }: {
+    userId: string;
+    ftsQrDto: FtsQrDto;
+  }) {
+    return `${ userId }${ ftsQrDto.fiscalProp }${ ftsQrDto.fiscalNumber }${
+      ftsQrDto.fiscalDocument
+    }`;
   }
 
-  private async getBillDataFromFts(user: UserEntity, ftsQrDto: FtsQrDto): Promise<string | BillDto> {
-    const billRequest = await this.billRequestService.findOrCreateBillRequest({ userId: user.id, ftsQrDto });
+  private async getBillDataFromFts(
+    user: UserEntity,
+    ftsQrDto: FtsQrDto,
+  ): Promise<string | BillDto> {
+    const billRequest = await this.billRequestService.findOrCreateBillRequest({
+      userId: user.id,
+      ftsQrDto,
+    });
     if (billRequest && billRequest.isFetched && billRequest.billId) {
       return BILL_IS_BEEN_SAVED;
     }
@@ -220,26 +294,42 @@ export class BillController {
     }
     await this.userService.addFtsAccountIdToQueue(ftsAccount.id);
     let checkStatus = billRequest.isChecked;
-    const ftsAccountDto = new FtsAccountDto(ftsAccount.phone, ftsAccount.password);
+    const ftsAccountDto = new FtsAccountDto(
+      ftsAccount.phone,
+      ftsAccount.password,
+    );
     if (!checkStatus) {
-      checkStatus = await this.ftsService.checkBillExistence(ftsQrDto, ftsAccountDto);
+      checkStatus = await this.ftsService.checkBillExistence(
+        ftsQrDto,
+        ftsAccountDto,
+      );
     }
     if (checkStatus || true) {
       const billRequestId = billRequest.id;
       await this.billRequestService.makeBillRequestChecked(billRequestId);
-      const billDataFromFts = await this.ftsService.fetchBillData(ftsQrDto, ftsAccountDto);
+      const billDataFromFts = await this.ftsService.fetchBillData(
+        ftsQrDto,
+        ftsAccountDto,
+      );
       if (typeof billDataFromFts !== 'string') {
-        const billDto = this.ftsTransformer.transformFtsBillToBillDto(billDataFromFts);
+        const billDto = this.ftsTransformer.transformFtsBillToBillDto(
+          billDataFromFts,
+        );
         await Promise.all([
           this.billRequestService.makeBillRequestFetched(billRequestId),
-          this.billRequestService.addFtsDataToBillRequest({ billRequestId, ftsData: billDataFromFts }),
+          this.billRequestService.addFtsDataToBillRequest({
+            billRequestId,
+            ftsData: billDataFromFts,
+          }),
         ]);
-        this.setBillRequestIdToCache({ userId: user.id, ftsQrDto, billRequestId: billRequest.id });
+        this.setBillRequestIdToCache({
+          userId: user.id,
+          ftsQrDto,
+          billRequestId: billRequest.id,
+        });
         return billDto;
       }
       return billDataFromFts;
-
     }
   }
-
 }

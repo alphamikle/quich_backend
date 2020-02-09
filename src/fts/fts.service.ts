@@ -27,11 +27,11 @@ export interface FtsHeaders {
   'Device-Id': string;
   'Device-OS': string;
   'User-Agent'?: 'okhttp/3.0.1';
-  'Authorization'?: string;
-  'Host': string;
-  'Version': string;
-  'ClientVersion': string;
-  'Connection': string;
+  Authorization?: string;
+  Host: string;
+  Version: string;
+  ClientVersion: string;
+  Connection: string;
   'Accept-Encoding': 'gzip';
 }
 
@@ -42,7 +42,8 @@ export class FtsService {
   private baseUrl: string;
 
   constructor(
-    @InjectRepository(FtsAccountEntity) private readonly ftsAccountEntityRepository: Repository<FtsAccountEntity>,
+    @InjectRepository(FtsAccountEntity)
+    private readonly ftsAccountEntityRepository: Repository<FtsAccountEntity>,
     @InjectRepository(FtsAccountToBillRequestEntity)
     private readonly ftsAccountToBillRequestEntityRepository: Repository<FtsAccountToBillRequestEntity>,
     private readonly dateHelper: DateHelper,
@@ -56,16 +57,27 @@ export class FtsService {
     });
   }
 
-  async assignBillRequestWithFtsAccount({ ftsAccountId, billRequestId }: { ftsAccountId: string, billRequestId: string }):
-    Promise<FtsAccountToBillRequestEntity> {
+  async assignBillRequestWithFtsAccount({
+    ftsAccountId,
+    billRequestId,
+  }: {
+    ftsAccountId: string;
+    billRequestId: string;
+  }): Promise<FtsAccountToBillRequestEntity> {
     const ftsAccountToBillRequest = new FtsAccountToBillRequestEntity();
     ftsAccountToBillRequest.billRequestId = billRequestId;
     ftsAccountToBillRequest.ftsAccountId = ftsAccountId;
-    return this.ftsAccountToBillRequestEntityRepository.save(ftsAccountToBillRequest);
+    return this.ftsAccountToBillRequestEntityRepository.save(
+      ftsAccountToBillRequest,
+    );
   }
 
-  async getBillRequestToFtsAccountEntityByBillRequestId(billRequestId: string): Promise<FtsAccountToBillRequestEntity | undefined> {
-    return this.ftsAccountToBillRequestEntityRepository.findOne({ where: { billRequestId } });
+  async getBillRequestToFtsAccountEntityByBillRequestId(
+    billRequestId: string,
+  ): Promise<FtsAccountToBillRequestEntity | undefined> {
+    return this.ftsAccountToBillRequestEntityRepository.findOne({
+      where: { billRequestId },
+    });
   }
 
   setFtsUrl(baseUrl = 'https://proverkacheka.nalog.ru:9999'): void {
@@ -74,7 +86,9 @@ export class FtsService {
 
   async signIn(signInCredentials: FtsAccountDto): Promise<boolean> {
     try {
-      const response = await this.api.get('/v1/mobile/users/login', { headers: this.getHeaders(signInCredentials) });
+      const response = await this.api.get('/v1/mobile/users/login', {
+        headers: this.getHeaders(signInCredentials),
+      });
       return response.status === 200;
     } catch (err) {
       console.error(err);
@@ -84,7 +98,10 @@ export class FtsService {
 
   async signUp(signUpCredentials: FtsRegistrationDto): Promise<string | true> {
     try {
-      const response = await this.api.post('/v1/mobile/users/signup', signUpCredentials);
+      const response = await this.api.post(
+        '/v1/mobile/users/signup',
+        signUpCredentials,
+      );
       console.log(response);
       return true;
     } catch (err) {
@@ -109,17 +126,36 @@ export class FtsService {
     }
   }
 
-  async changeFtsAccountPassword({ password, phone }: { password: string, phone: string }): Promise<FtsAccountEntity> {
-    const ftsAccount: FtsAccountEntity = await this.ftsAccountEntityRepository.findOne({ where: { phone } });
+  async changeFtsAccountPassword({
+    password,
+    phone,
+  }: {
+    password: string;
+    phone: string;
+  }): Promise<FtsAccountEntity> {
+    const ftsAccount: FtsAccountEntity = await this.ftsAccountEntityRepository.findOne(
+      { where: { phone } },
+    );
     ftsAccount.password = password;
     return this.ftsAccountEntityRepository.save(ftsAccount);
   }
 
-  async checkBillExistence({ fiscalNumber: fn, checkType: ct = 1, fiscalDocument: fd, fiscalProp: fp, dateTime, totalSum: ts }: FtsQrDto,
-    userCredentials: FtsAccountDto): Promise<boolean> {
+  async checkBillExistence(
+    {
+      fiscalNumber: fn,
+      checkType: ct = 1,
+      fiscalDocument: fd,
+      fiscalProp: fp,
+      dateTime,
+      totalSum: ts,
+    }: FtsQrDto,
+    userCredentials: FtsAccountDto,
+  ): Promise<boolean> {
     const penny = ts * 100;
     const preUrl = '/v1/ofds/*/inns/*/fss/';
-    const url = encodeURI(`${ preUrl }${ fn }/operations/${ ct }/tickets/${ fd }?fiscalSign=${ fp }&date=${ dateTime }&sum=${ penny }`);
+    const url = encodeURI(
+      `${ preUrl }${ fn }/operations/${ ct }/tickets/${ fd }?fiscalSign=${ fp }&date=${ dateTime }&sum=${ penny }`,
+    );
     try {
       await this.api.get(url, { headers: this.getHeaders(userCredentials) });
       return true;
@@ -129,8 +165,12 @@ export class FtsService {
     }
   }
 
-  async fetchBillData({ fiscalNumber, fiscalDocument, fiscalProp }: FtsQrDto, ftsAccountDto: FtsAccountDto, count = 0, limit = 3):
-    Promise<FtsFetchResponseBill | string> {
+  async fetchBillData(
+    { fiscalNumber, fiscalDocument, fiscalProp }: FtsQrDto,
+    ftsAccountDto: FtsAccountDto,
+    count = 0,
+    limit = 3,
+  ): Promise<FtsFetchResponseBill | string> {
     if (count > 0) {
       await wait(500 * count);
     }
@@ -139,15 +179,25 @@ export class FtsService {
       if (count >= limit) {
         throw new RequestTimeoutException();
       }
-      const response: FtsFetchResponse = await this.api.get(url, { headers: this.getHeaders(ftsAccountDto) });
+      const response: FtsFetchResponse = await this.api.get(url, {
+        headers: this.getHeaders(ftsAccountDto),
+      });
       if (response.status !== 200) {
-        return this.fetchBillData({ fiscalNumber, fiscalDocument, fiscalProp }, ftsAccountDto, count + 1);
+        return this.fetchBillData(
+          { fiscalNumber, fiscalDocument, fiscalProp },
+          ftsAccountDto,
+          count + 1,
+        );
       }
       return response.data.document.receipt;
     } catch (err) {
       console.error('FETCHING ERROR', err.message);
       if (count < limit) {
-        return this.fetchBillData({ fiscalNumber, fiscalDocument, fiscalProp }, ftsAccountDto, count + 1);
+        return this.fetchBillData(
+          { fiscalNumber, fiscalDocument, fiscalProp },
+          ftsAccountDto,
+          count + 1,
+        );
       }
       let error = FTS_TRY_MORE_ERROR;
       if (err.response && err.response.status) {
@@ -168,7 +218,9 @@ export class FtsService {
   }
 
   private generateAuthorizationValue(userCredentials: FtsAccountDto): string {
-    return `Basic ${ Buffer.from(`${ userCredentials.phone }:${ userCredentials.password }`).toString('base64') }`;
+    return `Basic ${ Buffer.from(
+      `${ userCredentials.phone }:${ userCredentials.password }`,
+    ).toString('base64') }`;
   }
 
   private getHeaders(userCredentials?: FtsAccountDto): FtsHeaders {
@@ -176,10 +228,10 @@ export class FtsService {
       'Device-Id': '748036d688ec41c6',
       'User-Agent': 'okhttp/3.0.1',
       'Device-OS': 'Android 9.0',
-      'Version': '2',
-      'ClientVersion': '1.4.4.1',
-      'Host': this.baseUrl,
-      'Connection': this.baseUrl,
+      Version: '2',
+      ClientVersion: '1.4.4.1',
+      Host: this.baseUrl,
+      Connection: this.baseUrl,
       'Accept-Encoding': 'gzip',
     };
     if (userCredentials) {
