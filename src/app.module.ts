@@ -20,6 +20,7 @@ import { SubscriptionModule } from './subscription/subscription.module';
 import { ProxyModule } from './proxy/proxy.module';
 import { PuppeteerModule } from './puppeteer/puppeteer.module';
 import { typeOrmOptions } from './config';
+import { MessageModule } from './message/message.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { typeOrmOptions } from './config';
     SubscriptionModule,
     ProxyModule,
     PuppeteerModule,
+    MessageModule,
   ],
   controllers: [],
   providers: [],

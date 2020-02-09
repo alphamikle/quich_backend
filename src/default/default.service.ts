@@ -19,6 +19,7 @@ import { ProductService } from '../product/product.service';
 import { UserService } from '../user/user.service';
 import { AllUserDataDto } from './dto/AllUserData.dto';
 import { BillRequestService } from '../bill-request/bill-request.service';
+import { MessageService } from '../message/message.service';
 
 @Injectable()
 export class DefaultService {
@@ -50,6 +51,7 @@ export class DefaultService {
     private readonly productService: ProductService,
     private readonly userService: UserService,
     private readonly billRequestService: BillRequestService,
+    private readonly messageService: MessageService,
   ) {
   }
 
@@ -61,7 +63,8 @@ export class DefaultService {
     const products = await this.productService.getUserProducts(userId);
     const accounts = await this.userService.getFtsAccountsByUserId(userId);
     const billsRequests = await this.billRequestService.getUnloadedBillRequestsByUserId(userId);
-    return { bills, categories, shops, purchases, products, accounts, billsRequests };
+    const unreadMessages = await this.messageService.getUnreadUserMessages(userId);
+    return { bills, categories, shops, purchases, products, accounts, billsRequests, unreadMessages };
   }
 
   async doServiceWork() {

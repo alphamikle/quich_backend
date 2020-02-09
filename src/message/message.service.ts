@@ -1,0 +1,22 @@
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { MessageEntity } from './entity/message.entity';
+import { Repository } from 'typeorm';
+
+@Injectable()
+export class MessageService {
+  constructor(
+    @InjectRepository(MessageEntity)
+    private readonly messageEntityRepository: Repository<MessageEntity>,
+  ) {
+  }
+
+  async markMessageRead(messageId: string): Promise<void> {
+    await this.messageEntityRepository.update({ id: messageId }, { isRead: true });
+  }
+
+  async getUnreadUserMessages(userId: string): Promise<MessageEntity[]> {
+    const messages = await this.messageEntityRepository.find({ where: { isRead: false, userId } });
+    return messages;
+  }
+}

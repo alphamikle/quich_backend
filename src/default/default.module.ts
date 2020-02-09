@@ -20,6 +20,7 @@ import { CategoryModule } from '../category/category.module';
 import { ProductModule } from '../product/product.module';
 import { PurchaseModule } from '../purchase/purchase.module';
 import { BillRequestModule } from '../bill-request/bill-request.module';
+import { MessageModule } from '../message/message.module';
 
 @Module({
   controllers: [ DefaultController ],
@@ -44,6 +45,7 @@ import { BillRequestModule } from '../bill-request/bill-request.module';
     ProductModule,
     PurchaseModule,
     BillRequestModule,
+    MessageModule,
   ],
   providers: [ DefaultService ],
 })

@@ -6,6 +6,7 @@ import { ProductEntity } from '../../product/entities/product.entity';
 import { FtsAccountEntity } from '../../user/entities/fts-account.entity';
 import { CategoryDto } from '../../category/dto/category.dto';
 import { BillRequestEntity } from '../../bill-request/entities/bill-request.entity';
+import { MessageEntity } from '../../message/entity/message.entity';
 
 export class AllUserDataDto {
   @ApiModelProperty({ type: [ BillEntity ] })
@@ -28,4 +29,7 @@ export class AllUserDataDto {
 
   @ApiModelProperty({ type: [ BillRequestEntity ] })
   billsRequests: BillRequestEntity[];
+
+  @ApiModelProperty({ type: [ MessageEntity ] })
+  unreadMessages: MessageEntity[];
 }

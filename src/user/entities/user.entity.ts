@@ -6,6 +6,7 @@ import { BillEntity } from '../../bill/entities/bill.entity';
 import { CategoryToUserEntity } from '../../category/entities/category-to-user.entity';
 import { BillRequestEntity } from '../../bill-request/entities/bill-request.entity';
 import { SubscriptionEntity } from '../../subscription/entities/subscription.entity';
+import { MessageEntity } from '../../message/entity/message.entity';
 
 @Entity()
 export class UserEntity {
@@ -42,4 +43,7 @@ export class UserEntity {
 
   @OneToMany(() => SubscriptionEntity, subscription => subscription.user)
   subscriptions?: SubscriptionEntity[];
+
+  @OneToMany(() => MessageEntity, message => message.user)
+  messages?: MessageEntity[];
 }

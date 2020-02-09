@@ -18,3 +18,7 @@ export function toDouble(num: number): number {
   }
   return Math.trunc(asNum * 100) / 100;
 }
+
+export function enumToArray() {
+
+}
