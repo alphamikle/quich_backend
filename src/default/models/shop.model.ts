@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { CartModel } from './cart.model';
+import { CartModel }                                                           from './cart.model';
 
 @Entity({ name: 'shop' })
 export class ShopModel {
@@ -28,7 +28,7 @@ export class ShopModel {
   @CreateDateColumn()
   createdAt: Date;
 
-  @OneToMany(type => CartModel, check => check.shop)
+  @OneToMany(() => CartModel, check => check.shop)
   checks: CartModel[];
 
 }

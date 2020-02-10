@@ -1,8 +1,8 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { CartModel } from './cart.model';
-import { CategoryModel } from './category.model';
-import { CartRequestModel } from './cartRequest.model';
-import { FtsAccountModel } from './ftsAccount.model';
+import { CartModel }                                                           from './cart.model';
+import { CategoryModel }                                                       from './category.model';
+import { CartRequestModel }                                                    from './cartRequest.model';
+import { FtsAccountModel }                                                     from './ftsAccount.model';
 
 @Entity({ name: 'user' })
 export class UserModel {
@@ -22,16 +22,16 @@ export class UserModel {
   @Column({ nullable: true })
   code: string;
 
-  @OneToMany(type => CartModel, check => check.user)
+  @OneToMany(() => CartModel, check => check.user)
   checks: CartModel[];
 
-  @OneToMany(type => CategoryModel, category => category.user)
+  @OneToMany(() => CategoryModel, category => category.user)
   categories: CategoryModel[];
 
-  @OneToMany(type => CartRequestModel, request => request.user)
+  @OneToMany(() => CartRequestModel, request => request.user)
   requests: CartRequestModel[];
 
-  @OneToMany(type => FtsAccountModel, account => account.user)
+  @OneToMany(() => FtsAccountModel, account => account.user)
   ftsAccounts: FtsAccountModel[];
 
   @CreateDateColumn()

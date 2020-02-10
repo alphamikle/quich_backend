@@ -1,10 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { PassportStrategy } from '@nestjs/passport';
-import { IVerifyOptions, Strategy } from 'passport-http-bearer';
-import { AuthValidator } from '../auth.validator';
-import { UNAUTHORIZED } from '../../helpers/text';
-import { UserService } from '../../user/user.service';
-import { UserEntity } from '../../user/entities/user.entity';
+import { PassportStrategy }                  from '@nestjs/passport';
+import { IVerifyOptions, Strategy }          from 'passport-http-bearer';
+import { AuthValidator }                     from '../auth.validator';
+import { UNAUTHORIZED }                      from '../../helpers/text';
+import { UserService }                       from '../../user/user.service';
+import { UserEntity }                        from '../../user/entities/user.entity';
 
 @Injectable()
 export class BearerStrategy extends PassportStrategy(Strategy) {
@@ -15,7 +15,7 @@ export class BearerStrategy extends PassportStrategy(Strategy) {
     super();
   }
 
-  async validate(token: string, done: (error: any, user?: UserEntity, options?: IVerifyOptions | string) => void): Promise<void> {
+  async validate(token: string, done: (error: typeof Error, user?: UserEntity, options?: IVerifyOptions | string) => void): Promise<void> {
     const isTokenValid = await this.authValidator.isTokenValid(token);
     if (!isTokenValid) {
       await this.userService.makeSessionInvalid(token);

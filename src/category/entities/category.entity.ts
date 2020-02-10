@@ -1,7 +1,8 @@
+import 'reflect-metadata';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { ApiModelProperty } from '@nestjs/swagger';
-import { PurchaseEntity } from '../../purchase/entities/purchase.entity';
-import { CategoryToUserEntity } from './category-to-user.entity';
+import { ApiModelProperty }                                  from '@nestjs/swagger';
+import { PurchaseEntity }                                    from '../../purchase/entities/purchase.entity';
+import { CategoryToUserEntity }                              from './category-to-user.entity';
 
 @Entity()
 export class CategoryEntity {

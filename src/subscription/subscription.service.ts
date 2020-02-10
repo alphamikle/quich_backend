@@ -1,14 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { IsNull, MoreThan, Not, Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable }                                        from '@nestjs/common';
+import { IsNull, MoreThan, Not, Repository }                 from 'typeorm';
+import { InjectRepository }                                  from '@nestjs/typeorm';
 import { Market, Platform, Sku, Status, SubscriptionEntity } from './entities/subscription.entity';
-import { GooglePlayHookDto } from './dto/google-play-hook.dto';
-import { GooglePlayDataDto } from './dto/google-play-data.dto';
-import { DateHelper } from '../helpers/date.helper';
-import { GooglePlayProduct } from './dto/google-play-product';
-import { SubscriptionInfoDto } from './dto/subscription-info.dto';
-import { GooglePlayMessageDto } from './dto/google-play-message.dto';
-import { GooglePlaySubscriptionInfo } from './interface/google-api.interface';
+import { GooglePlayHookDto }                                 from './dto/google-play-hook.dto';
+import { GooglePlayDataDto }                                 from './dto/google-play-data.dto';
+import { DateHelper }                                        from '../helpers/date.helper';
+import { GooglePlayProduct }                                 from './dto/google-play-product';
+import { SubscriptionInfoDto }                               from './dto/subscription-info.dto';
+import { GooglePlayMessageDto }                              from './dto/google-play-message.dto';
+import { GooglePlaySubscriptionInfo }                        from './interface/google-api.interface';
 
 export interface CommonSubscriptionConstructorData {
   activeFrom: Date;
@@ -41,7 +41,11 @@ export class SubscriptionService {
   }
 
   generateAndroidSubscription({ activeFrom, activeTo, hookRawBody }: CommonSubscriptionConstructorData) {
-    const subscription = this.generateCommonSubscription({ activeFrom, activeTo, hookRawBody });
+    const subscription = this.generateCommonSubscription({
+      activeFrom,
+      activeTo,
+      hookRawBody,
+    });
     subscription.platform = Platform.ANDROID;
     subscription.market = Market.GOOGLE_PLAY;
     return subscription;
@@ -61,7 +65,11 @@ export class SubscriptionService {
     mockMessage.decodedData = mockData;
     mockHookDto.status = Status.SUBSCRIPTION_IN_GRACE_PERIOD;
     mockHookDto.message = mockMessage;
-    const subscription = this.generateCommonSubscription({ activeFrom, activeTo, hookRawBody: mockHookDto });
+    const subscription = this.generateCommonSubscription({
+      activeFrom,
+      activeTo,
+      hookRawBody: mockHookDto,
+    });
     subscription.market = Market.WEB_SITE;
     subscription.platform = Platform.ALL;
     subscription.orderId = token;
@@ -100,7 +108,13 @@ export class SubscriptionService {
   }
 
   async hasUserActiveSubscriptionForPlatform({ userId, platform }: { userId: string, platform: Platform }): Promise<boolean> {
-    const count = await this.subscriptionRepository.count({ where: { userId, isActive: true, platform } });
+    const count = await this.subscriptionRepository.count({
+      where: {
+        userId,
+        isActive: true,
+        platform,
+      },
+    });
     return count > 0;
   }
 
@@ -108,10 +122,10 @@ export class SubscriptionService {
     subscription,
     subscriptionInfo,
   }:
-                                                     {
-                                                       subscription: SubscriptionEntity,
-                                                       subscriptionInfo: GooglePlaySubscriptionInfo,
-                                                     }): SubscriptionEntity {
+    {
+      subscription: SubscriptionEntity,
+      subscriptionInfo: GooglePlaySubscriptionInfo,
+    }): SubscriptionEntity {
     subscription.orderId = subscriptionInfo.orderId;
     subscription.subscriptionInfoRawBody = subscriptionInfo;
     subscription.price = subscriptionInfo.priceAmountMicros;
@@ -121,7 +135,10 @@ export class SubscriptionService {
   }
 
   async getLastSubscriptionByPurchaseToken(purchaseToken: string): Promise<SubscriptionEntity> {
-    return this.subscriptionRepository.findOne({ where: { purchaseToken }, order: { createdAt: 'DESC' } });
+    return this.subscriptionRepository.findOne({
+      where: { purchaseToken },
+      order: { createdAt: 'DESC' },
+    });
   }
 
   async isSubscriptionActiveAndBelongsToUser({ purchaseToken, userId }: { purchaseToken: string; userId: string }): Promise<boolean> {
@@ -133,7 +150,12 @@ export class SubscriptionService {
   }
 
   async setUserFromOneSubscriptionToAllByToken(purchaseToken: string): Promise<void> {
-    const subscriptionWithUser = await this.subscriptionRepository.findOne({ where: { purchaseToken, userId: Not(IsNull()) } });
+    const subscriptionWithUser = await this.subscriptionRepository.findOne({
+      where: {
+        purchaseToken,
+        userId: Not(IsNull()),
+      },
+    });
     if (subscriptionWithUser) {
       await this.subscriptionRepository.update({ purchaseToken }, { userId: subscriptionWithUser.userId });
     }
@@ -145,7 +167,11 @@ export class SubscriptionService {
 
   async getUserSubscriptionInfo(userId: string): Promise<SubscriptionInfoDto> {
     const activeSubscription = await this.subscriptionRepository.findOne({
-      where: { userId, isActive: true, activeTo: MoreThan(new Date()) },
+      where: {
+        userId,
+        isActive: true,
+        activeTo: MoreThan(new Date()),
+      },
       order: { activeTo: 'DESC' },
     });
     if (!activeSubscription) {
@@ -161,7 +187,10 @@ export class SubscriptionService {
   async addTemporarySubscriptionToUser({ userId, days = 3 }: { userId: string; days?: number }): Promise<SubscriptionEntity> {
     const activeFrom = new Date();
     const activeTo = this.dateHelper.addDays(activeFrom, days);
-    const subscription = this.generateTemporarySubscription({ activeFrom, activeTo });
+    const subscription = this.generateTemporarySubscription({
+      activeFrom,
+      activeTo,
+    });
     subscription.userId = userId;
     return this.subscriptionRepository.save(subscription);
   }

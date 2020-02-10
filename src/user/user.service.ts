@@ -1,13 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
-import { UserEntity } from './entities/user.entity';
-import { SessionEntity } from './entities/session.entity';
-import { DateHelper } from '../helpers/date.helper';
-import { FtsAccountEntity } from './entities/fts-account.entity';
-import { FtsAccountDto } from '../fts/dto/fts-account.dto';
-import { FtsAccountQueueEntity } from './entities/fts-account-queue.entity';
-import { FTS_ACCOUNTS_ALL_BUSY_ERROR } from '../helpers/text';
+import { InjectRepository }                from '@nestjs/typeorm';
+import { In, Repository }                  from 'typeorm';
+import { UserEntity }                      from './entities/user.entity';
+import { SessionEntity }                   from './entities/session.entity';
+import { DateHelper }                      from '../helpers/date.helper';
+import { FtsAccountEntity }                from './entities/fts-account.entity';
+import { FtsAccountDto }                   from '../fts/dto/fts-account.dto';
+import { FtsAccountQueueEntity }           from './entities/fts-account-queue.entity';
+import { FTS_ACCOUNTS_ALL_BUSY_ERROR }     from '../helpers/text';
 
 const { TOKEN_DURATION } = process.env;
 
@@ -51,7 +51,10 @@ export class UserService {
   }
 
   async getUserByToken(token: string): Promise<UserEntity> {
-    const session = await this.sessionEntityRepository.findOne({ where: { token }, relations: [ 'user' ] });
+    const session = await this.sessionEntityRepository.findOne({
+      where: { token },
+      relations: ['user'],
+    });
     if (!session) {
       return undefined;
     }
@@ -81,12 +84,18 @@ export class UserService {
   }
 
   async deleteFtsAccountFromUser({ userId, phone }: { userId: string, phone: string }): Promise<void> {
-    await this.ftsAccountEntityRepository.delete({ userId, phone });
+    await this.ftsAccountEntityRepository.delete({
+      userId,
+      phone,
+    });
   }
 
   async makeFtsAccountMain({ user, phone }: { user: UserEntity, phone: string }): Promise<void> {
     await this.ftsAccountEntityRepository.update({ user }, { isMain: false });
-    await this.ftsAccountEntityRepository.update({ user, phone }, { isMain: true });
+    await this.ftsAccountEntityRepository.update({
+      user,
+      phone,
+    }, { isMain: true });
   }
 
   /**
@@ -125,7 +134,7 @@ export class UserService {
     const pastTwoDaysDate = this.dateHelper.subDays(currentDate, 2);
     const lessUsedFtsAccountsIds: Array<{ ftsAccountId: string, countPerDays: number }> = await this.ftsAccountQueueEntityRepository.query(`
     SELECT ftsAccountId,
-    (SELECT COUNT(ftsAccountId) FROM fts_account_queue_entity subQe WHERE subQe.useDateTime (BETWEEN ${ pastTwoDaysDate } AND ${ currentDate })
+    (SELECT COUNT(ftsAccountId) FROM fts_account_queue_entity subQe WHERE subQe.useDateTime (BETWEEN ${pastTwoDaysDate} AND ${currentDate})
     AND subQe.ftsAccountId = qe.ftsAccountId) as countPerDays
     FROM fts_account_queue_entity qe
     WHERE countPerDays < 10
@@ -135,7 +144,7 @@ export class UserService {
       return null;
     }
     const onlyIds = lessUsedFtsAccountsIds.map(item => item.ftsAccountId);
-    return this.ftsAccountEntityRepository.findOne(onlyIds[ 0 ]);
+    return this.ftsAccountEntityRepository.findOne(onlyIds[0]);
   }
 
   /**
@@ -147,9 +156,9 @@ export class UserService {
     const lastUsedAccountsIds = await this.getFtsAccountsQueue(userFtsAccounts.map(account => account.id));
     const mostUnusedAccounts = userFtsAccounts.filter(account => !lastUsedAccountsIds.some(accountId => account.id === accountId));
     if (mostUnusedAccounts.length === 0) {
-      return userFtsAccounts[ 0 ];
+      return userFtsAccounts[0];
     }
-    return mostUnusedAccounts[ 0 ];
+    return mostUnusedAccounts[0];
   }
 
   async getFtsAccountForUser(userId: string): Promise<FtsAccountEntity> {

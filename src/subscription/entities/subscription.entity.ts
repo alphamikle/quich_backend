@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { UserEntity } from '../../user/entities/user.entity';
-import { GooglePlayHookDto } from '../dto/google-play-hook.dto';
-import { GooglePlaySubscriptionInfo } from '../interface/google-api.interface';
+import { UserEntity }                                        from '../../user/entities/user.entity';
+import { GooglePlayHookDto }                                 from '../dto/google-play-hook.dto';
+import { GooglePlaySubscriptionInfo }                        from '../interface/google-api.interface';
 
 export enum Platform {
   IOS = 'IOS',
@@ -54,16 +54,31 @@ export class SubscriptionEntity {
   @ManyToOne(() => UserEntity, user => user.subscriptions, { nullable: true })
   user?: UserEntity;
 
-  @Column({ type: 'enum', enum: Platform, default: Platform.ANDROID })
+  @Column({
+    type: 'enum',
+    enum: Platform,
+    default: Platform.ANDROID,
+  })
   platform!: Platform;
 
-  @Column({ type: 'enum', enum: Market, default: Market.GOOGLE_PLAY })
+  @Column({
+    type: 'enum',
+    enum: Market,
+    default: Market.GOOGLE_PLAY,
+  })
   market!: Market;
 
-  @Column({ type: 'enum', enum: Status })
+  @Column({
+    type: 'enum',
+    enum: Status,
+  })
   status!: Status;
 
-  @Column({ type: 'enum', enum: Sku, default: Sku.COFFEE_CUP_SUBSCRIPTION })
+  @Column({
+    type: 'enum',
+    enum: Sku,
+    default: Sku.COFFEE_CUP_SUBSCRIPTION,
+  })
   sku!: Sku;
 
   @Column()

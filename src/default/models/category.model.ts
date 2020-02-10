@@ -1,6 +1,7 @@
+import 'reflect-metadata';
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { UserModel } from './user.model';
-import { ProductModel } from './product.model';
+import { UserModel }                                                                      from './user.model';
+import { ProductModel }                                                                   from './product.model';
 
 @Entity({ name: 'category' })
 export class CategoryModel {
@@ -17,10 +18,10 @@ export class CategoryModel {
   @Column({ type: 'integer' })
   userId: number;
 
-  @ManyToOne(type => UserModel, user => user.categories, { onDelete: 'CASCADE' })
+  @ManyToOne(() => UserModel, user => user.categories, { onDelete: 'CASCADE' })
   user: UserModel;
 
-  @OneToMany(type => ProductModel, product => product.category)
+  @OneToMany(() => ProductModel, product => product.category)
   products: ProductModel[];
 
   @CreateDateColumn()

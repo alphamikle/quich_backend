@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { CategoryEntity } from './entities/category.entity';
+import { Injectable }           from '@nestjs/common';
+import { Repository }           from 'typeorm';
+import { InjectRepository }     from '@nestjs/typeorm';
+import { CategoryEntity }       from './entities/category.entity';
 import { CategoryToUserEntity } from './entities/category-to-user.entity';
-import { CategoryDto } from './dto/category.dto';
+import { CategoryDto }          from './dto/category.dto';
 
 @Injectable()
 export class CategoryService {
@@ -19,7 +19,7 @@ export class CategoryService {
     const categories: CategoryDto[] = await this.categoryEntityRepository.query(`
       SELECT ce.id, ce.title, ctue.color FROM category_entity ce
         LEFT JOIN category_to_user_entity ctue on ce.id = ctue."categoryId"
-        WHERE ctue."userId" = '${ userId }'
+        WHERE ctue."userId" = '${userId}'
         ORDER BY ce.title
     `);
     return categories.map((category) => {
@@ -32,11 +32,12 @@ export class CategoryService {
     const categories: CategoryDto[] = await this.categoryEntityRepository.query(`
       SELECT ce.id, ce.title, ctue.color::numeric FROM category_entity ce
         LEFT JOIN category_to_user_entity ctue on ce.id = ctue."categoryId"
-        WHERE ctue."userId" = '${ userId }' AND ctue."categoryId" = '${ categoryId }'
+        WHERE ctue."userId" = '${userId}' AND ctue."categoryId" = '${categoryId}'
     `);
     let category: CategoryDto;
     if (categories.length > 0) {
-      category = categories[ 0 ];
+      // eslint-disable-next-line prefer-destructuring
+      category = categories[0];
       category.color = Number(category.color);
     }
     return category;
@@ -46,11 +47,11 @@ export class CategoryService {
     const categories: CategoryDto[] = await this.categoryEntityRepository.query(`
       SELECT ce.id, ce.title, ctue.color FROM category_entity ce
         LEFT JOIN category_to_user_entity ctue on ce.id = ctue."categoryId"
-        WHERE ctue."userId" = '${ userId }' AND ce."title" = '${ title }'
+        WHERE ctue."userId" = '${userId}' AND ce."title" = '${title}'
     `);
     let category: CategoryDto;
     if (categories.length > 0) {
-      category = categories[ 0 ];
+      category = categories[0];
     }
     return category;
   }
@@ -70,7 +71,12 @@ export class CategoryService {
       category.title = categoryDto.title;
       category = await this.categoryEntityRepository.save(category);
     }
-    let categoryToUserEntity = await this.categoryToUserEntityRepository.findOne({ where: { userId, categoryId: category.id } });
+    let categoryToUserEntity = await this.categoryToUserEntityRepository.findOne({
+      where: {
+        userId,
+        categoryId: category.id,
+      },
+    });
     if (!categoryToUserEntity) {
       categoryToUserEntity = new CategoryToUserEntity();
       categoryToUserEntity.userId = userId;
@@ -78,11 +84,13 @@ export class CategoryService {
       categoryToUserEntity.color = categoryDto.color;
       await this.categoryToUserEntityRepository.save(categoryToUserEntity);
     }
-    return this.getCategoryForUserById({ categoryId: category.id, userId });
+    return this.getCategoryForUserById({
+      categoryId: category.id,
+      userId,
+    });
   }
 
-  async changeUserCategoryColor({ categoryDto, userId }:
-                                  { categoryDto: CategoryDto, userId: string }): Promise<CategoryToUserEntity> {
+  async changeUserCategoryColor({ categoryDto, userId }: { categoryDto: CategoryDto, userId: string }): Promise<CategoryToUserEntity> {
     const categoryToUserEntity = await this.categoryToUserEntityRepository.findOne({
       where: {
         categoryId: categoryDto.id,
@@ -99,9 +107,11 @@ export class CategoryService {
     return this.categoryEntityRepository.save(category);
   }
 
-  async replaceUserCategoryByOther({ oldCategoryId, newCategoryId, userId }:
-                                     { oldCategoryId: string, newCategoryId: string, userId: string }): Promise<void> {
-    await this.categoryToUserEntityRepository.update({ userId, categoryId: oldCategoryId }, { categoryId: newCategoryId });
+  async replaceUserCategoryByOther({ oldCategoryId, newCategoryId, userId }: { oldCategoryId: string, newCategoryId: string, userId: string }): Promise<void> {
+    await this.categoryToUserEntityRepository.update({
+      userId,
+      categoryId: oldCategoryId,
+    }, { categoryId: newCategoryId });
   }
 
   async editCategory({ categoryDto, userId }: { categoryDto: CategoryDto, userId: string }): Promise<CategoryDto> {
@@ -111,17 +121,37 @@ export class CategoryService {
       if (!categoryByTitle) {
         categoryByTitle = await this.createCategoryEntity(categoryDto);
       }
-      await this.replaceUserCategoryByOther({ oldCategoryId: categoryEntity.id, newCategoryId: categoryByTitle.id, userId });
+      await this.replaceUserCategoryByOther({
+        oldCategoryId: categoryEntity.id,
+        newCategoryId: categoryByTitle.id,
+        userId,
+      });
       categoryEntity = categoryByTitle;
     }
-    const category = await this.getCategoryForUserById({ categoryId: categoryEntity.id, userId });
+    const category = await this.getCategoryForUserById({
+      categoryId: categoryEntity.id,
+      userId,
+    });
     if (category.color !== categoryDto.color) {
-      await this.changeUserCategoryColor({ categoryDto: { id: categoryEntity.id, color: categoryDto.color, title: categoryDto.title }, userId });
+      await this.changeUserCategoryColor({
+        categoryDto: {
+          id: categoryEntity.id,
+          color: categoryDto.color,
+          title: categoryDto.title,
+        },
+        userId,
+      });
     }
-    return this.getCategoryForUserById({ categoryId: categoryEntity.id, userId });
+    return this.getCategoryForUserById({
+      categoryId: categoryEntity.id,
+      userId,
+    });
   }
 
   async deleteCategoryFromUser({ categoryId, userId }: { categoryId: string, userId: string }) {
-    await this.categoryToUserEntityRepository.delete({ categoryId, userId });
+    await this.categoryToUserEntityRepository.delete({
+      categoryId,
+      userId,
+    });
   }
 }

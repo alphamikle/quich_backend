@@ -1,5 +1,6 @@
-import leven from 'leven';
+import leven      from 'leven';
 import { Logger } from '@nestjs/common';
+import { v4 }     from 'uuid';
 
 export async function wait(delay = 500) {
   await new Promise(resolve => setTimeout(resolve, delay));
@@ -14,7 +15,7 @@ export function toDouble(num: number): number {
   const asNum = Number(num);
   if (Number.isNaN(asNum)) {
     Logger.error(
-      `Not number provided in toDouble function ${ num }`,
+      `Not number provided in toDouble function ${num}`,
       null,
       'common.helper:toDouble',
     );
@@ -23,5 +24,40 @@ export function toDouble(num: number): number {
   return Math.trunc(asNum * 100) / 100;
 }
 
-export function enumToArray() {
+export function randomInt(min = 0, max = 10): number {
+  return Math.floor(Math.random() * max) + min;
+}
+
+export function randomBoolean(): boolean {
+  return Boolean(Math.round(Math.random()));
+}
+
+function randomAndroid(): string {
+  const android = [
+    '5.0',
+    '5.1',
+    '6.0',
+    '7.0',
+    '7.1',
+    '8.0.0',
+    '8.1.0',
+    '9',
+    '10',
+  ];
+  return `Android ${android[randomInt(0, android.length - 1)]}`;
+}
+
+function randomIOS(): string {
+  return `IOS ${randomInt(8, 13)}`;
+}
+
+export function randomOS(): string {
+  if (randomInt(0, 100) > 70) {
+    return randomIOS();
+  }
+  return randomAndroid();
+}
+
+export function randomUUID() {
+  return v4();
 }

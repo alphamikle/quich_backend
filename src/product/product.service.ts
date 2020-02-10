@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable }       from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { ProductEntity } from './entities/product.entity';
+import { Repository }       from 'typeorm';
+import { ProductEntity }    from './entities/product.entity';
 import { getWordsDistance } from '../helpers/common.helper';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class ProductService {
         SELECT * FROM product_entity pe WHERE pe.id IN (
             SELECT pue."productId" FROM purchase_entity pue
             LEFT JOIN bill_entity be on pue."billId" = be.id
-            WHERE be."userId" = '${ userId }'
+            WHERE be."userId" = '${userId}'
         )
     `);
     return products;
@@ -52,11 +52,14 @@ export class ProductService {
     let min = Infinity;
     let target: ProductEntity = null;
     title = title.toLowerCase();
-    const subTitles = title.split(separator).filter(t => t).map(t => t.trim()).filter(t => t.length > 2);
+    const subTitles = title.split(separator)
+      .filter(t => t)
+      .map(t => t.trim())
+      .filter(t => t.length > 2);
     const subTitlesLength = subTitles.length;
     for (let i = 0, l = products.length; i < l; i++) {
       let isLess = false;
-      const product = products[ i ];
+      const product = products[i];
       const productTitle = product.title.toLowerCase();
       const distance = getWordsDistance(title, productTitle);
       // ? Дистанция должна быть больше 1|5 от суммы длин строк названий
@@ -74,12 +77,15 @@ export class ProductService {
       if (!isLess && distance < smallestTitleLength) {
         let subCount = 0;
         let hasEqualityWords = false;
-        const productSubTitles = productTitle.split(separator).filter(t => t).map(t => t.trim()).filter(t => t.length > 2);
+        const productSubTitles = productTitle.split(separator)
+          .filter(t => t)
+          .map(t => t.trim())
+          .filter(t => t.length > 2);
         const productSubTitlesLength = productSubTitles.length;
         for (let k = 0; k < subTitlesLength; k++) {
-          const subTitle = subTitles[ k ];
+          const subTitle = subTitles[k];
           for (let x = 0; x < productSubTitlesLength; x++) {
-            const productSubTitle = productSubTitles[ x ];
+            const productSubTitle = productSubTitles[x];
             const subDistance = getWordsDistance(subTitle, productSubTitle);
             if (subDistance === 0) {
               hasEqualityWords = true;

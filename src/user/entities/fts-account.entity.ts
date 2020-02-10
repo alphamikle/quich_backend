@@ -1,6 +1,6 @@
 import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { ApiModelProperty } from '@nestjs/swagger';
-import { UserEntity } from './user.entity';
+import { ApiModelProperty }                                                              from '@nestjs/swagger';
+import { UserEntity }                                                                    from './user.entity';
 
 @Entity()
 export class FtsAccountEntity {

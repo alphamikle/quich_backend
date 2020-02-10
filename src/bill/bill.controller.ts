@@ -1,26 +1,24 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
-import { Guards } from '../helpers/guards';
-import { RequestUser } from '../user/user.decorator';
-import { UserEntity } from '../user/entities/user.entity';
-import { FtsQrDto } from '../fts/dto/fts-qr.dto';
-import { BillRequestService } from '../bill-request/bill-request.service';
-import { FtsService } from '../fts/fts.service';
-import { UserService } from '../user/user.service';
-import { FtsAccountDto } from '../fts/dto/fts-account.dto';
-import { FtsTransformer } from '../fts/fts.transformer';
-import { BillDto } from './dto/bill.dto';
-import { OfdService } from '../ofd/ofd.service';
-import { ShopService } from '../shop/shop.service';
-import { PurchaseService } from '../purchase/purchase.service';
-import { BillService } from './bill.service';
-import { BillEntity } from './entities/bill.entity';
-import { ShopDto } from '../shop/dto/shop.dto';
-import { BILL_IS_BEEN_SAVED, INVALID_ID_ERROR, INVALID_USER_ERROR, NOT_FOUND_FTS_ACCOUNT, OK } from '../helpers/text';
-import { DateHelper } from '../helpers/date.helper';
+import { BadRequestException, Body, Param }                                                                                from '@nestjs/common';
+import { RequestUser }                                                                                                     from '../user/user.decorator';
+import { UserEntity }                                                                                                      from '../user/entities/user.entity';
+import { FtsQrDto }                                                                                                        from '../fts/dto/fts-qr.dto';
+import { BillRequestService }                                                                                              from '../bill-request/bill-request.service';
+import { FtsService }                                                                                                      from '../fts/fts.service';
+import { UserService }                                                                                                     from '../user/user.service';
+import { FtsAccountDto }                                                                                                   from '../fts/dto/fts-account.dto';
+import { FtsTransformer }                                                                                                  from '../fts/fts.transformer';
+import { BillDto }                                                                                                         from './dto/bill.dto';
+import { OfdService }                                                                                                      from '../ofd/ofd.service';
+import { ShopService }                                                                                                     from '../shop/shop.service';
+import { PurchaseService }                                                                                                 from '../purchase/purchase.service';
+import { BillService }                                                                                                     from './bill.service';
+import { BillEntity }                                                                                                      from './entities/bill.entity';
+import { ShopDto }                                                                                                         from '../shop/dto/shop.dto';
+import { BILL_IS_BEEN_SAVED, FTS_UNKNOWN_FETCHING_ERROR, INVALID_ID_ERROR, INVALID_USER_ERROR, NOT_FOUND_FTS_ACCOUNT, OK } from '../helpers/text';
+import { DateHelper }                                                                                                      from '../helpers/date.helper';
+import { SecureDeleteAction, SecureGetAction, SecurePatchAction, SecurePostAction, TagController }                         from '../helpers/decorators';
 
-@ApiUseTags('bill')
-@Controller('bill')
+@TagController('bill')
 export class BillController {
   private billRequestIdCache: Map<string, string> = new Map();
 
@@ -37,38 +35,22 @@ export class BillController {
   ) {
   }
 
-  @UseGuards(Guards)
-  @ApiBearerAuth()
-  @Get()
-  @ApiOperation({ title: 'Получение списка чеков пользователя' })
-  @ApiResponse({
-    status: 201,
-    type: [ BillEntity ],
-  })
+  @SecureGetAction('Получение списка чеков пользователя', [BillEntity])
   async getUserBills(@RequestUser() user: UserEntity): Promise<BillEntity[]> {
     return this.billService.getUserBills(user.id);
   }
 
-  @UseGuards(Guards)
-  @ApiBearerAuth()
-  @Post('data')
-  @ApiOperation({ title: 'Получение информации о чеке' })
-  @ApiResponse({
-    status: 201,
-    type: BillDto,
-  })
-  async getBillData(
-    @RequestUser() user: UserEntity,
-    @Body() ftsQrDto: FtsQrDto,
-  ): Promise<BillDto> {
+  @SecurePostAction('Получение информации о чеке', BillDto, 'data')
+  async getBillData(@RequestUser() user: UserEntity, @Body() ftsQrDto: FtsQrDto): Promise<BillDto> {
     const billData = await this.getBillDataFromFtsOrOfd(user, ftsQrDto);
     if (typeof billData === 'string') {
       throw new BadRequestException({ push: billData });
     }
     billData.shop = await this.extractShopDtoInfo(billData.shop);
-    billData.purchases = await this.purchaseService.extractCategoriesIdsForPurchaseDtos(
-      { purchaseDtos: billData.purchases, userId: user.id },
-    );
+    billData.purchases = await this.purchaseService.extractCategoriesIdsForPurchaseDtos({
+      purchaseDtos: billData.purchases,
+      userId: user.id,
+    });
     const billRequestId = this.extractBillRequestIdFromCache({
       userId: user.id,
       ftsQrDto,
@@ -80,21 +62,9 @@ export class BillController {
     return billData;
   }
 
-  @UseGuards(Guards)
-  @ApiBearerAuth()
-  @Post('data/request/:requestId')
-  @ApiOperation({ title: 'Получение информации о чеке по id BillRequest' })
-  @ApiResponse({
-    status: 201,
-    type: BillDto,
-  })
-  async getBillDataByBillRequestId(
-    @RequestUser() user: UserEntity,
-    @Param('requestId') requestId: string,
-  ): Promise<BillDto> {
-    const billRequest = await this.billRequestService.getBillRequestById(
-      requestId,
-    );
+  @SecurePostAction('Получение информации о чеке по id BillRequest', BillDto, 'data/request/:requestId')
+  async getBillDataByBillRequestId(@RequestUser() user: UserEntity, @Param('requestId') requestId: string): Promise<BillDto> {
+    const billRequest = await this.billRequestService.getBillRequestById(requestId);
     if (!billRequest) {
       throw new BadRequestException({ push: INVALID_ID_ERROR });
     }
@@ -117,9 +87,10 @@ export class BillController {
       throw new BadRequestException({ push: billData });
     }
     billData.shop = await this.extractShopDtoInfo(billData.shop);
-    billData.purchases = await this.purchaseService.extractCategoriesIdsForPurchaseDtos(
-      { purchaseDtos: billData.purchases, userId: user.id },
-    );
+    billData.purchases = await this.purchaseService.extractCategoriesIdsForPurchaseDtos({
+      purchaseDtos: billData.purchases,
+      userId: user.id,
+    });
     await this.billRequestService.setRawData({
       id: requestId,
       rawData: billData,
@@ -127,18 +98,8 @@ export class BillController {
     return billData;
   }
 
-  @UseGuards(Guards)
-  @ApiBearerAuth()
-  @Post()
-  @ApiOperation({ title: 'Создание формы чека' })
-  @ApiResponse({
-    status: 201,
-    type: BillEntity,
-  })
-  async createBill(
-    @RequestUser() user: UserEntity,
-    @Body() billDto: BillDto,
-  ): Promise<BillEntity> {
+  @SecurePostAction('Создание формы чека', BillEntity)
+  async createBill(@RequestUser() user: UserEntity, @Body() billDto: BillDto): Promise<BillEntity> {
     const shop = await this.shopService.findOrCreateShop(billDto.shop);
     const bill = await this.billService.createBillForUser({
       billDto,
@@ -165,23 +126,15 @@ export class BillController {
     return bill;
   }
 
-  @UseGuards(Guards)
-  @ApiBearerAuth()
-  @Patch(':billId')
-  @ApiOperation({ title: 'Редактирование формы чека' })
-  @ApiResponse({
-    status: 200,
-    type: BillEntity,
-  })
-  async editBill(
-    @RequestUser() user: UserEntity,
-    @Param('billId') billId: string,
-    @Body() billDto: BillDto,
-  ): Promise<BillEntity> {
+  @SecurePatchAction('Редактирование формы чека', BillEntity, ':billId')
+  async editBill(@RequestUser() user: UserEntity, @Param('billId') billId: string, @Body() billDto: BillDto): Promise<BillEntity> {
     const billEntity = await this.billService.getBillById(billId);
     const shop = await this.shopService.editShop(billDto.shop);
     billDto.shop.id = shop.id;
-    const editedBill = await this.billService.editBill({ billDto, billEntity });
+    const editedBill = await this.billService.editBill({
+      billDto,
+      billEntity,
+    });
     await this.purchaseService.editPurchases({
       purchases: billDto.purchases,
       billId: billDto.id,
@@ -189,18 +142,8 @@ export class BillController {
     return editedBill;
   }
 
-  @UseGuards(Guards)
-  @ApiBearerAuth()
-  @Delete(':billId')
-  @ApiOperation({ title: 'Удаление чека' })
-  @ApiResponse({
-    status: 200,
-    type: String,
-  })
-  async deleteBill(
-    @RequestUser() user: UserEntity,
-    @Param('billId') billId: string,
-  ): Promise<string> {
+  @SecureDeleteAction('Удаление чека', String, ':billId')
+  async deleteBill(@RequestUser() user: UserEntity, @Param('billId') billId: string): Promise<string> {
     await this.billService.deleteBill(billId);
     return OK;
   }
@@ -212,18 +155,19 @@ export class BillController {
     return shopDto;
   }
 
-  private async getBillDataFromFtsOrOfd(
-    user: UserEntity,
-    ftsQrDto: FtsQrDto,
-  ): Promise<string | BillDto> {
+  private async getBillDataFromFtsOrOfd(user: UserEntity, ftsQrDto: FtsQrDto): Promise<string | BillDto> {
     const ftsPromise = this.getBillDataFromFts(user, ftsQrDto);
     const ofdPromise = this.ofdService.fetchBillData(ftsQrDto);
-    const promiseArr = [ ftsPromise, ofdPromise ];
+    const promiseArr = [
+      ftsPromise,
+      ofdPromise,
+    ];
+    // TODO: Исправить логику, чтобы в race участвовали все запросы в ОФД а не их комплекс
     const result = await Promise.race(promiseArr);
     if (result !== null && typeof result !== 'string') {
       return result;
     }
-    const [ billFromFts, billFromOfd ] = await Promise.all(promiseArr);
+    const [billFromFts, billFromOfd] = await Promise.all(promiseArr);
     if (billFromOfd === null && typeof billFromFts === 'string') {
       return billFromFts;
     }
@@ -233,50 +177,33 @@ export class BillController {
     return billFromFts;
   }
 
-  private setBillRequestIdToCache({
-                                    userId,
-                                    ftsQrDto,
-                                    billRequestId,
-                                  }: {
-    userId: string;
-    ftsQrDto: FtsQrDto;
-    billRequestId: string;
-  }) {
+  private setBillRequestIdToCache({ userId, ftsQrDto, billRequestId }: { userId: string; ftsQrDto: FtsQrDto; billRequestId: string }) {
     this.billRequestIdCache.set(
-      this.generateBillRequestCacheKey({ userId, ftsQrDto }),
+      this.generateBillRequestCacheKey({
+        userId,
+        ftsQrDto,
+      }),
       billRequestId,
     );
   }
 
-  private extractBillRequestIdFromCache({
-                                          userId,
-                                          ftsQrDto,
-                                        }: {
-    userId: string;
-    ftsQrDto: FtsQrDto;
-  }) {
-    const key = this.generateBillRequestCacheKey({ userId, ftsQrDto });
+  private extractBillRequestIdFromCache({ userId, ftsQrDto }: { userId: string; ftsQrDto: FtsQrDto; }) {
+    const key = this.generateBillRequestCacheKey({
+      userId,
+      ftsQrDto,
+    });
     const billRequestId = this.billRequestIdCache.get(key);
     this.billRequestIdCache.delete(key);
     return billRequestId;
   }
 
-  private generateBillRequestCacheKey({
-                                        userId,
-                                        ftsQrDto,
-                                      }: {
-    userId: string;
-    ftsQrDto: FtsQrDto;
-  }) {
-    return `${ userId }${ ftsQrDto.fiscalProp }${ ftsQrDto.fiscalNumber }${
+  private generateBillRequestCacheKey({ userId, ftsQrDto }: { userId: string; ftsQrDto: FtsQrDto }) {
+    return `${userId}${ftsQrDto.fiscalProp}${ftsQrDto.fiscalNumber}${
       ftsQrDto.fiscalDocument
     }`;
   }
 
-  private async getBillDataFromFts(
-    user: UserEntity,
-    ftsQrDto: FtsQrDto,
-  ): Promise<string | BillDto> {
+  private async getBillDataFromFts(user: UserEntity, ftsQrDto: FtsQrDto): Promise<string | BillDto> {
     const billRequest = await this.billRequestService.findOrCreateBillRequest({
       userId: user.id,
       ftsQrDto,
@@ -294,27 +221,16 @@ export class BillController {
     }
     await this.userService.addFtsAccountIdToQueue(ftsAccount.id);
     let checkStatus = billRequest.isChecked;
-    const ftsAccountDto = new FtsAccountDto(
-      ftsAccount.phone,
-      ftsAccount.password,
-    );
+    const ftsAccountDto = new FtsAccountDto(ftsAccount.phone, ftsAccount.password);
     if (!checkStatus) {
-      checkStatus = await this.ftsService.checkBillExistence(
-        ftsQrDto,
-        ftsAccountDto,
-      );
+      checkStatus = await this.ftsService.checkBillExistence(ftsQrDto, ftsAccountDto);
     }
-    if (checkStatus || true) {
+    if (checkStatus) {
       const billRequestId = billRequest.id;
       await this.billRequestService.makeBillRequestChecked(billRequestId);
-      const billDataFromFts = await this.ftsService.fetchBillData(
-        ftsQrDto,
-        ftsAccountDto,
-      );
+      const billDataFromFts = await this.ftsService.fetchBillData(ftsQrDto, ftsAccountDto);
       if (typeof billDataFromFts !== 'string') {
-        const billDto = this.ftsTransformer.transformFtsBillToBillDto(
-          billDataFromFts,
-        );
+        const billDto = this.ftsTransformer.transformFtsBillToBillDto(billDataFromFts);
         await Promise.all([
           this.billRequestService.makeBillRequestFetched(billRequestId),
           this.billRequestService.addFtsDataToBillRequest({
@@ -331,5 +247,6 @@ export class BillController {
       }
       return billDataFromFts;
     }
+    return FTS_UNKNOWN_FETCHING_ERROR;
   }
 }

@@ -1,12 +1,12 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { ApiModelProperty } from '@nestjs/swagger';
-import { FtsAccountEntity } from './fts-account.entity';
-import { SessionEntity } from './session.entity';
-import { BillEntity } from '../../bill/entities/bill.entity';
-import { CategoryToUserEntity } from '../../category/entities/category-to-user.entity';
-import { BillRequestEntity } from '../../bill-request/entities/bill-request.entity';
-import { SubscriptionEntity } from '../../subscription/entities/subscription.entity';
-import { MessageEntity } from '../../message/entity/message.entity';
+import { ApiModelProperty }                                                    from '@nestjs/swagger';
+import { FtsAccountEntity }                                                    from './fts-account.entity';
+import { SessionEntity }                                                       from './session.entity';
+import { BillEntity }                                                          from '../../bill/entities/bill.entity';
+import { CategoryToUserEntity }                                                from '../../category/entities/category-to-user.entity';
+import { BillRequestEntity }                                                   from '../../bill-request/entities/bill-request.entity';
+import { SubscriptionEntity }                                                  from '../../subscription/entities/subscription.entity';
+import { MessageEntity }                                                       from '../../message/entity/message.entity';
 
 @Entity()
 export class UserEntity {
@@ -22,7 +22,10 @@ export class UserEntity {
   @Column()
   password!: string;
 
-  @ApiModelProperty({ type: String, format: 'date-time' })
+  @ApiModelProperty({
+    type: String,
+    format: 'date-time',
+  })
   @CreateDateColumn()
   createdAt!: Date;
 

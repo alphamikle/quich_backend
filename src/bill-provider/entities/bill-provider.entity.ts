@@ -1,13 +1,13 @@
+import 'reflect-metadata';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { BillRequestEntity } from '../../bill-request/entities/bill-request.entity';
+import { BillRequestEntity }                                 from '../../bill-request/entities/bill-request.entity';
 
+// TODO: Прописать провайдеров для всех ОФД
 /**
  * @description Справочник провайдеров данных о чеках - ФНС и различные ОФД
  */
 @Entity()
 export class BillProviderEntity {
-  static FTS = 'fts';
-
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 

@@ -1,15 +1,12 @@
-import { Controller, Get } from '@nestjs/common';
-import { ApiOperation, ApiUseTags } from '@nestjs/swagger';
-import { OfdService } from './ofd.service';
+import { OfdService }               from './ofd.service';
+import { GetAction, TagController } from '../helpers/decorators';
 
-@ApiUseTags('ofd')
-@Controller('ofd')
+@TagController('ofd')
 export class OfdController {
   constructor(private readonly ofdService: OfdService) {
   }
 
-  @ApiOperation({ title: 'Проверка списка ОФД' })
-  @Get()
+  @GetAction('Проверка списка ОФД', null)
   async checkOfdAvailability() {
     return this.ofdService.checkOfd();
   }

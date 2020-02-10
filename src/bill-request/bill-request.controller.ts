@@ -1,14 +1,12 @@
-import { BadRequestException, Controller, Delete, Param, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
-import { BillRequestService } from './bill-request.service';
-import { Guards } from '../helpers/guards';
-import { RequestUser } from '../user/user.decorator';
-import { UserEntity } from '../user/entities/user.entity';
-import { BillRequestValidator } from './bill-request.validator';
-import { OK } from '../helpers/text';
+import { BadRequestException, Param }        from '@nestjs/common';
+import { BillRequestService }                from './bill-request.service';
+import { RequestUser }                       from '../user/user.decorator';
+import { UserEntity }                        from '../user/entities/user.entity';
+import { BillRequestValidator }              from './bill-request.validator';
+import { OK }                                from '../helpers/text';
+import { SecureDeleteAction, TagController } from '../helpers/decorators';
 
-@ApiUseTags('bill-request')
-@Controller('bill-request')
+@TagController('bill-request')
 export class BillRequestController {
   constructor(
     private readonly billRequestService: BillRequestService,
@@ -16,16 +14,12 @@ export class BillRequestController {
   ) {
   }
 
-  @UseGuards(Guards)
-  @ApiBearerAuth()
-  @Delete(':billRequestId')
-  @ApiOperation({ title: 'Удаление запроса на получение чека из ФНС' })
-  @ApiResponse({
-    status: 200,
-    type: String,
-  })
+  @SecureDeleteAction('Удаление запроса на получение чека из ФНС', String, ':billRequestId')
   async deleteBillRequest(@RequestUser() user: UserEntity, @Param('billRequestId') billRequestId: string) {
-    const validationResult = await this.billRequestValidator.isBillRequestExistToUser({ userId: user.id, billRequestId });
+    const validationResult = await this.billRequestValidator.isBillRequestExistToUser({
+      userId: user.id,
+      billRequestId,
+    });
     if (validationResult) {
       throw new BadRequestException({ push: validationResult });
     }

@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/camelcase
 import { androidpublisher_v3 as v3 } from 'googleapis';
-import { Sku } from '../entities/subscription.entity';
+import { Sku }                       from '../entities/subscription.entity';
 
 export class GooglePlayProduct {
   packageName: string;
@@ -13,7 +13,7 @@ export class GooglePlayProduct {
 
   defaultPrice: Price;
 
-  prices: { [ key: string ]: Price };
+  prices: { [key: string]: Price };
 
   listings: Listings;
 
@@ -32,7 +32,7 @@ export class GooglePlayProduct {
     product.defaultPrice = data.defaultPrice as Price;
     product.gracePeriod = data.gracePeriod;
     product.listings = data.listings as Listings;
-    product.prices = data.prices as { [ key: string ]: Price };
+    product.prices = data.prices as { [key: string]: Price };
     product.sku = data.sku as Sku;
     product.status = data.status;
     product.packageName = data.packageName;
@@ -48,7 +48,7 @@ export interface Price {
 }
 
 export interface Listings {
-  [ languageCode: string ]: LanguageContent;
+  [languageCode: string]: LanguageContent;
 }
 
 export interface LanguageContent {

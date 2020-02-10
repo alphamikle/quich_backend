@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { RequestService } from '../proxy/dto/requestable.interface';
-import { OfdFetcher } from './ofd.ru/fetcher';
+import { RequestService }                           from '../proxy/dto/requestable.interface';
+import { OfdFetcher }                               from './ofd.ru/fetcher';
 
 class TestRequestService implements RequestService {
   request<T>(config: AxiosRequestConfig): Promise<AxiosResponse<T>> {
@@ -28,6 +28,7 @@ describe('Ofd service test', () => {
     };
     const ofdFetcher = new OfdFetcher(qrDto, { proxyService: requestService });
     const response = await ofdFetcher.fetchBill();
-    expect(response.purchases.length).toBeGreaterThan(0);
+    expect(response.purchases.length)
+      .toBeGreaterThan(0);
   });
 });

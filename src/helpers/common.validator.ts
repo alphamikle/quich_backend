@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable }                                                from '@nestjs/common';
 import { INVALID_EMAIL_ERROR, INVALID_PHONE_ERROR, NOT_EMPTY_ERROR } from './text';
 
 @Injectable()
@@ -37,7 +37,8 @@ export class CommonValidator {
     return true;
   }
 
-  isErrorsEmpty(errors: { [ field: string ]: string }): boolean {
-    return Object.values(errors).filter(value => !this.isEmpty(value)).length === 0;
+  isErrorsEmpty(errors: { [field: string]: string }): boolean {
+    return Object.values(errors)
+      .filter(value => !this.isEmpty(value)).length === 0;
   }
 }

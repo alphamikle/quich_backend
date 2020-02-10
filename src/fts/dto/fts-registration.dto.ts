@@ -14,7 +14,7 @@ export class FtsRegistrationDto {
     this.email = email;
     this.phone = phone;
     if (!name) {
-      this.name = email.split('@')[ 0 ];
+      this.name = email.split('@')[0];
     } else {
       this.name = name;
     }

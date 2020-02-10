@@ -1,12 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, Repository } from 'typeorm';
-import { BillRequestEntity } from './entities/bill-request.entity';
+import { Injectable }             from '@nestjs/common';
+import { InjectRepository }       from '@nestjs/typeorm';
+import { IsNull, Repository }     from 'typeorm';
+import { BillRequestEntity }      from './entities/bill-request.entity';
 import { BillRequestCreatingDto } from './dto/bill-request-creating.dto';
-import { FtsQrDto } from '../fts/dto/fts-qr.dto';
-import { FtsFetchResponseBill } from '../fts/dto/fts-fetch-response/bill.dto';
-import { DateHelper } from '../helpers/date.helper';
-import { BillDto } from '../bill/dto/bill.dto';
+import { FtsQrDto }               from '../fts/dto/fts-qr.dto';
+import { FtsFetchResponseBill }   from '../fts/dto/fts-fetch-response/bill.dto';
+import { DateHelper }             from '../helpers/date.helper';
+import { BillDto }                from '../bill/dto/bill.dto';
 
 @Injectable()
 export class BillRequestService {
@@ -17,9 +17,14 @@ export class BillRequestService {
   ) {
   }
 
-  async getBillRequestByProps({ fiscalDocument, fiscalNumber, fiscalProp }:
-                                { fiscalDocument: string, fiscalNumber: string, fiscalProp: string }): Promise<BillRequestEntity> {
-    return this.billRequestEntityRepository.findOne({ where: { fiscalDocument, fiscalNumber, fiscalProp } });
+  async getBillRequestByProps({ fiscalDocument, fiscalNumber, fiscalProp }: { fiscalDocument: string, fiscalNumber: string, fiscalProp: string }): Promise<BillRequestEntity> {
+    return this.billRequestEntityRepository.findOne({
+      where: {
+        fiscalDocument,
+        fiscalNumber,
+        fiscalProp,
+      },
+    });
   }
 
   async deleteBillRequestById(id: string) {
@@ -36,7 +41,10 @@ export class BillRequestService {
 
   async setRawData({ id, rawData }: { id: string, rawData: BillDto }): Promise<void> {
     rawData.billRequestId = id;
-    await this.billRequestEntityRepository.update({ id }, { isFetched: true, rawData });
+    await this.billRequestEntityRepository.update({ id }, {
+      isFetched: true,
+      rawData,
+    });
   }
 
   async setBillIdToBillRequest({ billRequestId, billId }: { billRequestId: string, billId: string }): Promise<void> {
@@ -88,6 +96,12 @@ export class BillRequestService {
   }
 
   async getUnloadedBillRequestsByUserId(userId: string): Promise<BillRequestEntity[]> {
-    return this.billRequestEntityRepository.find({ where: { billId: IsNull(), userId }, order: { billDate: 'DESC' } });
+    return this.billRequestEntityRepository.find({
+      where: {
+        billId: IsNull(),
+        userId,
+      },
+      order: { billDate: 'DESC' },
+    });
   }
 }

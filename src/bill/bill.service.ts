@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable }       from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { BillEntity } from './entities/bill.entity';
-import { BillDto } from './dto/bill.dto';
+import { Repository }       from 'typeorm';
+import { BillEntity }       from './entities/bill.entity';
+import { BillDto }          from './dto/bill.dto';
 
 @Injectable()
 export class BillService {
@@ -13,7 +13,10 @@ export class BillService {
   }
 
   async getUserBills(userId: string) {
-    return this.billEntityRepository.find({ where: { userId }, order: { billDate: 'DESC' } });
+    return this.billEntityRepository.find({
+      where: { userId },
+      order: { billDate: 'DESC' },
+    });
   }
 
   async createBillForUser({ billDto, shopId, userId }: { billDto: BillDto, shopId: string, userId: string }) {

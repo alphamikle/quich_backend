@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
-import { BillEntity } from '../../bill/entities/bill.entity';
+import { ApiModelProperty, ApiModelPropertyOptional }                          from '@nestjs/swagger';
+import { BillEntity }                                                          from '../../bill/entities/bill.entity';
 
 @Entity()
 export class ShopEntity {
@@ -17,18 +17,27 @@ export class ShopEntity {
   address?: string;
 
   @ApiModelPropertyOptional({ format: 'double' })
-  @Column({ type: 'float', nullable: true })
+  @Column({
+    type: 'float',
+    nullable: true,
+  })
   longitude?: number;
 
   @ApiModelPropertyOptional({ format: 'double' })
-  @Column({ type: 'float', nullable: true })
+  @Column({
+    type: 'float',
+    nullable: true,
+  })
   latitude?: number;
 
   @ApiModelPropertyOptional()
   @Column({ nullable: true })
   tin?: string;
 
-  @ApiModelProperty({ type: String, format: 'date-time' })
+  @ApiModelProperty({
+    type: String,
+    format: 'date-time',
+  })
   @CreateDateColumn()
   createdAt!: Date;
 

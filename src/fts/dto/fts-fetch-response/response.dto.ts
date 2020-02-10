@@ -1,4 +1,4 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiModelProperty }         from '@nestjs/swagger';
 import { FtsFetchResponseDocument } from './document.dto';
 
 export class FtsFetchResponse {

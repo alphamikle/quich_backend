@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { ApiModelProperty } from '@nestjs/swagger';
-import { PurchaseEntity } from '../../purchase/entities/purchase.entity';
+import { ApiModelProperty }                                  from '@nestjs/swagger';
+import { PurchaseEntity }                                    from '../../purchase/entities/purchase.entity';
 
 @Entity()
 export class ProductEntity {
@@ -15,7 +15,10 @@ export class ProductEntity {
   @OneToMany(() => PurchaseEntity, purchase => purchase.product)
   purchases?: PurchaseEntity[];
 
-  @ApiModelProperty({ type: String, format: 'date-time' })
+  @ApiModelProperty({
+    type: String,
+    format: 'date-time',
+  })
   @Column({ default: () => 'now()' })
   createdAt!: Date;
 }

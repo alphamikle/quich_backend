@@ -1,6 +1,6 @@
 import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
-import { ShopDto } from '../../shop/dto/shop.dto';
-import { PurchaseDto } from '../../purchase/dto/purchase.dto';
+import { ShopDto }                                    from '../../shop/dto/shop.dto';
+import { PurchaseDto }                                from '../../purchase/dto/purchase.dto';
 
 export class BillDto {
   @ApiModelPropertyOptional()
@@ -9,7 +9,10 @@ export class BillDto {
   @ApiModelProperty()
   shop!: ShopDto;
 
-  @ApiModelProperty({ type: String, format: 'date-time' })
+  @ApiModelProperty({
+    type: String,
+    format: 'date-time',
+  })
   billDate!: Date;
 
   @ApiModelPropertyOptional()
@@ -24,7 +27,7 @@ export class BillDto {
   @ApiModelProperty({ format: 'double' })
   totalSum!: number;
 
-  @ApiModelProperty({ type: [ PurchaseDto ] })
+  @ApiModelProperty({ type: [PurchaseDto] })
   purchases!: PurchaseDto[];
 
   @ApiModelPropertyOptional({ default: false })

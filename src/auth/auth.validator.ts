@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { UserEntity } from '../user/entities/user.entity';
+import { Injectable }  from '@nestjs/common';
+import { UserEntity }  from '../user/entities/user.entity';
 import { AuthService } from './auth.service';
-import { DateHelper } from '../helpers/date.helper';
+import { DateHelper }  from '../helpers/date.helper';
 
 @Injectable()
 export class AuthValidator {

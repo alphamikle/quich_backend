@@ -1,25 +1,25 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { BillEntity } from '../bill/entities/bill.entity';
-import { BillProviderEntity } from '../bill-provider/entities/bill-provider.entity';
-import { BillRequestEntity } from '../bill-request/entities/bill-request.entity';
-import { CategoryEntity } from '../category/entities/category.entity';
+import { Injectable }           from '@nestjs/common';
+import { InjectRepository }     from '@nestjs/typeorm';
+import { Repository }           from 'typeorm';
+import { BillEntity }           from '../bill/entities/bill.entity';
+import { BillProviderEntity }   from '../bill-provider/entities/bill-provider.entity';
+import { BillRequestEntity }    from '../bill-request/entities/bill-request.entity';
+import { CategoryEntity }       from '../category/entities/category.entity';
 import { CategoryToUserEntity } from '../category/entities/category-to-user.entity';
-import { ProductEntity } from '../product/entities/product.entity';
-import { PurchaseEntity } from '../purchase/entities/purchase.entity';
-import { ShopEntity } from '../shop/entities/shop.entity';
-import { FtsAccountEntity } from '../user/entities/fts-account.entity';
-import { UserEntity } from '../user/entities/user.entity';
-import { ShopService } from '../shop/shop.service';
-import { BillService } from '../bill/bill.service';
-import { CategoryService } from '../category/category.service';
-import { PurchaseService } from '../purchase/purchase.service';
-import { ProductService } from '../product/product.service';
-import { UserService } from '../user/user.service';
-import { AllUserDataDto } from './dto/AllUserData.dto';
-import { BillRequestService } from '../bill-request/bill-request.service';
-import { MessageService } from '../message/message.service';
+import { ProductEntity }        from '../product/entities/product.entity';
+import { PurchaseEntity }       from '../purchase/entities/purchase.entity';
+import { ShopEntity }           from '../shop/entities/shop.entity';
+import { FtsAccountEntity }     from '../user/entities/fts-account.entity';
+import { UserEntity }           from '../user/entities/user.entity';
+import { ShopService }          from '../shop/shop.service';
+import { BillService }          from '../bill/bill.service';
+import { CategoryService }      from '../category/category.service';
+import { PurchaseService }      from '../purchase/purchase.service';
+import { ProductService }       from '../product/product.service';
+import { UserService }          from '../user/user.service';
+import { AllUserDataDto }       from './dto/AllUserData.dto';
+import { BillRequestService }   from '../bill-request/bill-request.service';
+import { MessageService }       from '../message/message.service';
 
 @Injectable()
 export class DefaultService {
@@ -64,7 +64,16 @@ export class DefaultService {
     const accounts = await this.userService.getFtsAccountsByUserId(userId);
     const billsRequests = await this.billRequestService.getUnloadedBillRequestsByUserId(userId);
     const unreadMessages = await this.messageService.getUnreadUserMessages(userId);
-    return { bills, categories, shops, purchases, products, accounts, billsRequests, unreadMessages };
+    return {
+      bills,
+      categories,
+      shops,
+      purchases,
+      products,
+      accounts,
+      billsRequests,
+      unreadMessages,
+    };
   }
 
   async doServiceWork() {

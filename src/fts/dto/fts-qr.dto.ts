@@ -16,6 +16,9 @@ export class FtsQrDto {
   @ApiModelPropertyOptional({ format: 'double' })
   totalSum?: number; // ? Используется не для всех запросов
 
-  @ApiModelProperty({ type: 'integer', example: 1 })
+  @ApiModelProperty({
+    type: 'integer',
+    example: 1,
+  })
   checkType?: number;
 }

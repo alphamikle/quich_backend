@@ -1,21 +1,14 @@
-import { Controller, Get, Query } from '@nestjs/common';
-import { ApiOperation, ApiUseTags } from '@nestjs/swagger';
-import { ProxyService } from './proxy.service';
+import { Query }                    from '@nestjs/common';
+import { ProxyService }             from './proxy.service';
+import { GetAction, TagController } from '../helpers/decorators';
 
-@ApiUseTags('proxy')
-@Controller('proxy')
+@TagController('proxy')
 export class ProxyController {
   constructor(private readonly proxyService: ProxyService) {
   }
 
-  @ApiOperation({
-    title: 'Прогрев прокси',
-  })
-  @Get('warm')
-  async warmProxies(
-    @Query('limit') limit?: number,
-    @Query('iterations') iterations?: number,
-  ): Promise<void> {
+  @GetAction('Прогрев прокси', null, 'warm')
+  async warmProxies(@Query('limit') limit?: number, @Query('iterations') iterations?: number): Promise<void> {
     if (limit !== undefined) {
       limit = Number(limit);
     }

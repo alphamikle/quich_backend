@@ -1,5 +1,6 @@
+import 'reflect-metadata';
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { UserModel } from './user.model';
+import { UserModel }                                                           from './user.model';
 
 @Entity({ name: 'fts_account' })
 export class FtsAccountModel {
@@ -19,7 +20,7 @@ export class FtsAccountModel {
   @Column({ type: 'integer' })
   userId: number;
 
-  @ManyToOne(type => UserModel, user => user.ftsAccounts, { onDelete: 'CASCADE' })
+  @ManyToOne(() => UserModel, user => user.ftsAccounts, { onDelete: 'CASCADE' })
   user: UserModel;
 
   @CreateDateColumn()

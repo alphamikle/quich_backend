@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { BillRequestEntity } from '../../bill-request/entities/bill-request.entity';
-import { FtsAccountEntity } from '../../user/entities/fts-account.entity';
+import { BillRequestEntity }                                 from '../../bill-request/entities/bill-request.entity';
+import { FtsAccountEntity }                                  from '../../user/entities/fts-account.entity';
 
 @Entity()
 export class FtsAccountToBillRequestEntity {

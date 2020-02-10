@@ -1,6 +1,7 @@
+import 'reflect-metadata';
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { CartModel } from './cart.model';
-import { UserModel } from './user.model';
+import { CartModel }                                                                                 from './cart.model';
+import { UserModel }                                                                                 from './user.model';
 
 @Entity({ name: 'cart_request' })
 export class CartRequestModel {
@@ -11,7 +12,10 @@ export class CartRequestModel {
   @Column({ unique: true })
   checkUrl: string;
 
-  @Column({ unique: true, nullable: true })
+  @Column({
+    unique: true,
+    nullable: true,
+  })
   fetchUrl: string;
 
   @Column()
@@ -26,7 +30,10 @@ export class CartRequestModel {
   @Column()
   hash: string;
 
-  @Column({ type: 'int', default: 0 })
+  @Column({
+    type: 'int',
+    default: 0,
+  })
   fetchingIterations: number;
 
   @Column({ default: false })
@@ -38,23 +45,29 @@ export class CartRequestModel {
   @Column({ type: 'real' })
   cartSum: number;
 
-  @Column({ type: 'jsonb', nullable: true })
+  @Column({
+    type: 'jsonb',
+    nullable: true,
+  })
   cartResult: any;
 
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column({ type: 'integer', nullable: true })
+  @Column({
+    type: 'integer',
+    nullable: true,
+  })
   cartId: number;
 
-  @OneToOne(type => CartModel, { onDelete: 'SET NULL' })
+  @OneToOne(() => CartModel, { onDelete: 'SET NULL' })
   @JoinColumn()
   cart: CartModel;
 
   @Column({ type: 'integer' })
   userId: number;
 
-  @ManyToOne(type => UserModel, user => user.requests, { onDelete: 'CASCADE' })
+  @ManyToOne(() => UserModel, user => user.requests, { onDelete: 'CASCADE' })
   user: UserModel;
 
 }

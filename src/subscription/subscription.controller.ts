@@ -1,19 +1,17 @@
-import { BadRequestException, Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
-import { SubscriptionService } from './subscription.service';
-import { GooglePlayHookDto } from './dto/google-play-hook.dto';
-import { GoogleApiService } from './google-api.service';
-import { Sku } from './entities/subscription.entity';
-import { SubscriptionValidator } from './subscription.validator';
-import { Guards } from '../helpers/guards';
-import { RequestUser } from '../user/user.decorator';
-import { UserEntity } from '../user/entities/user.entity';
-import { UserPurchaseAssignDto } from './dto/user-purchase-assign.dto';
-import { SubscriptionInfoDto } from './dto/subscription-info.dto';
-import { INCORRECT_GOOGLE_PLAY_HOOK_DATA } from '../helpers/text';
+import { BadRequestException, Body, Param }                                         from '@nestjs/common';
+import { SubscriptionService }                                                      from './subscription.service';
+import { GooglePlayHookDto }                                                        from './dto/google-play-hook.dto';
+import { GoogleApiService }                                                         from './google-api.service';
+import { Sku }                                                                      from './entities/subscription.entity';
+import { SubscriptionValidator }                                                    from './subscription.validator';
+import { RequestUser }                                                              from '../user/user.decorator';
+import { UserEntity }                                                               from '../user/entities/user.entity';
+import { UserPurchaseAssignDto }                                                    from './dto/user-purchase-assign.dto';
+import { SubscriptionInfoDto }                                                      from './dto/subscription-info.dto';
+import { INCORRECT_GOOGLE_PLAY_HOOK_DATA }                                          from '../helpers/text';
+import { GetAction, PostAction, SecureGetAction, SecurePatchAction, TagController } from '../helpers/decorators';
 
-@ApiUseTags('subscription')
-@Controller('subscription')
+@TagController('subscription')
 export class SubscriptionController {
   constructor(
     private readonly subscriptionService: SubscriptionService,
@@ -22,12 +20,7 @@ export class SubscriptionController {
   ) {
   }
 
-  @Post()
-  @ApiOperation({ title: 'Роут для получения web-хуков о статусе платежей от Google Play' })
-  @ApiResponse({
-    status: 201,
-    type: String,
-  })
+  @PostAction('Роут для получения web-хуков о статусе платежей от Google Play', String)
   async googleSubscriptionHook(@Body() hookDto: GooglePlayHookDto) {
     const validationResult = this.subscriptionValidator.validateHokDto(hookDto);
     if (validationResult !== true) {
@@ -43,21 +36,20 @@ export class SubscriptionController {
       hookRawBody: hookDto,
     });
 
-    const subscriptionInfo = await this.googleApiService.getSubscriptionInfo({ token: subscription.purchaseToken, sku: hookDto.sku });
-    subscription = this.subscriptionService.assignSubscriptionWithGooglePlaySubscriptionInfo({ subscription, subscriptionInfo });
+    const subscriptionInfo = await this.googleApiService.getSubscriptionInfo({
+      token: subscription.purchaseToken,
+      sku: hookDto.sku,
+    });
+    subscription = this.subscriptionService.assignSubscriptionWithGooglePlaySubscriptionInfo({
+      subscription,
+      subscriptionInfo,
+    });
 
     await this.subscriptionService.createSubscription(subscription);
     await this.subscriptionService.setUserFromOneSubscriptionToAllByToken(subscription.purchaseToken);
   }
 
-  @UseGuards(Guards)
-  @ApiBearerAuth()
-  @Patch()
-  @ApiOperation({ title: 'Связывание данных подписки и пользователя' })
-  @ApiResponse({
-    status: 200,
-    type: String,
-  })
+  @SecurePatchAction('Связывание данных подписки и пользователя', String)
   async addUserToSubscriptionData(@RequestUser() user: UserEntity, @Body() purchaseAssignDto: UserPurchaseAssignDto) {
     const { purchaseToken } = purchaseAssignDto;
     const validationResult = await this.subscriptionValidator.isSubscriptionExist(purchaseToken);
@@ -71,15 +63,13 @@ export class SubscriptionController {
     //
     //   }
     // }
-    await this.subscriptionService.setUserIdToSubscriptionsByToken({ userId: user.id, purchaseToken });
+    await this.subscriptionService.setUserIdToSubscriptionsByToken({
+      userId: user.id,
+      purchaseToken,
+    });
   }
 
-  @Get('product')
-  @ApiOperation({ title: 'Получение информации о продукте по Sku' })
-  @ApiResponse({
-    status: 200,
-    type: String,
-  })
+  @GetAction('Получение информации о продукте по Sku', String, 'product')
   async getGooglePlayProductInfo(@Param('sku') sku: Sku) {
     const validationResult = this.subscriptionValidator.validateProductInfo(sku);
     if (validationResult !== true) {
@@ -88,28 +78,22 @@ export class SubscriptionController {
     return this.googleApiService.getProductInfoBySku(sku);
   }
 
-  @Get('subscription/:token/:sku')
-  @ApiOperation({ title: 'Получение информации о подписке' })
-  @ApiResponse({
-    status: 200,
-    type: String,
-  })
+  @GetAction('Получение информации о подписке', String, 'subscription/:token/:sku')
   async getGooglePlaySubscriptionInfo(@Param('token') token: string, @Param('sku') sku: Sku) {
-    const validationResult = await this.subscriptionValidator.validateSubscriptionInfo({ token, sku });
+    const validationResult = await this.subscriptionValidator.validateSubscriptionInfo({
+      token,
+      sku,
+    });
     if (validationResult !== true) {
       throw new BadRequestException(validationResult);
     }
-    return this.googleApiService.getSubscriptionInfo({ token, sku });
+    return this.googleApiService.getSubscriptionInfo({
+      token,
+      sku,
+    });
   }
 
-  @UseGuards(Guards)
-  @ApiBearerAuth()
-  @Get('subscription/is-active')
-  @ApiOperation({ title: 'Проверка наличия у пользователя активной подписки' })
-  @ApiResponse({
-    status: 200,
-    type: SubscriptionInfoDto,
-  })
+  @SecureGetAction('Проверка наличия у пользователя активной подписки', SubscriptionInfoDto, 'subscription/is-active')
   async hasUserSubscriptionWithoutGooglePlay(@RequestUser() user: UserEntity) {
     const activeSubscription = await this.subscriptionService.getUserSubscriptionInfo(user.id);
     if (!activeSubscription) {

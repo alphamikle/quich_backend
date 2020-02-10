@@ -15,15 +15,15 @@ module.exports = {
   },
   plugins: [
     '@typescript-eslint',
-    'prettier'
+    'prettier',
   ],
   overrides: [
     {
       files: [
         '*.ts',
-        '.eslintrc.js'
+        '.eslintrc.js',
       ],
-    }
+    },
   ],
   rules: {
     'import/no-extraneous-dependencies': [
@@ -34,17 +34,35 @@ module.exports = {
     '@typescript-eslint/no-useless-constructor': 'error',
     '@typescript-eslint/explicit-function-return-type': 'off',
     'no-param-reassign': 'off',
-    'quotes': ['error', 'single'],
+    'quotes': [
+      'error',
+      'single',
+    ],
     'import/prefer-default-export': 'off',
     'complexity': 'error',
     'object-curly-spacing': 'error',
     'class-methods-use-this': 'off',
-    'array-bracket-spacing': ['error', 'always'],
-    'indent': ['error', 2],
+    'array-bracket-spacing': [
+      'error',
+      'never',
+    ],
+    'indent': [
+      'error',
+      2,
+    ],
     'import/no-cycle': 'off',
-    'semi': ['error', 'always'],
-    'no-multiple-empty-lines': ['error', { max: 1, maxEOF: 1 }],
+    'semi': [
+      'error',
+      'always',
+    ],
+    'no-multiple-empty-lines': [
+      'error',
+      {
+        max: 1,
+        maxEOF: 1,
+      },
+    ],
     'no-restricted-syntax': 'off',
-    'no-await-in-loop': 'off'
+    'no-await-in-loop': 'off',
   },
 };

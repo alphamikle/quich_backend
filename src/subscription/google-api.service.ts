@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable }                  from '@nestjs/common';
 import { androidpublisher_v3, google } from 'googleapis';
-import { JWT, JWTInput } from 'google-auth-library';
-import { readFileSync } from 'fs';
-import { GooglePlayProduct } from './dto/google-play-product';
-import { Sku } from './entities/subscription.entity';
-import { GooglePlaySubscriptionInfo } from './interface/google-api.interface';
+import { JWT, JWTInput }               from 'google-auth-library';
+import { readFileSync }                from 'fs';
+import { GooglePlayProduct }           from './dto/google-play-product';
+import { Sku }                         from './entities/subscription.entity';
+import { GooglePlaySubscriptionInfo }  from './interface/google-api.interface';
 
 import AndroidPublisher = androidpublisher_v3.Androidpublisher;
 
@@ -25,10 +25,11 @@ export class GoogleApiService {
   constructor() {
     this.packageName = APP_PACKAGE_NAME;
     this.publisher = google.androidpublisher('v3');
-    this.credentials = JSON.parse(readFileSync(GOOGLE_API_CREDENTIALS_PATH).toString('utf8'));
+    this.credentials = JSON.parse(readFileSync(GOOGLE_API_CREDENTIALS_PATH)
+      .toString('utf8'));
     const jwt = new JWT();
     jwt.fromJSON(this.credentials);
-    jwt.scopes = [ 'https://www.googleapis.com/auth/androidpublisher' ];
+    jwt.scopes = ['https://www.googleapis.com/auth/androidpublisher'];
     this.jwt = jwt;
   }
 
@@ -64,9 +65,13 @@ export class GoogleApiService {
     const transformedData = data as unknown as GooglePlaySubscriptionInfo;
     transformedData.startTimeMillis = Number.parseInt(data.startTimeMillis, 10);
     transformedData.expiryTimeMillis = Number.parseInt(data.expiryTimeMillis, 10);
-    transformedData.autoResumeTimeMillis = data.autoResumeTimeMillis ? Number.parseInt(data.autoResumeTimeMillis, 10) : undefined;
+    transformedData.autoResumeTimeMillis = data.autoResumeTimeMillis ?
+      Number.parseInt(data.autoResumeTimeMillis, 10) :
+      undefined;
     transformedData.priceAmountMicros = Number.parseInt(data.priceAmountMicros, 10);
-    transformedData.userCancellationTimeMillis = data.userCancellationTimeMillis ? Number.parseInt(data.userCancellationTimeMillis, 10) : undefined;
+    transformedData.userCancellationTimeMillis = data.userCancellationTimeMillis ?
+      Number.parseInt(data.userCancellationTimeMillis, 10) :
+      undefined;
     return transformedData;
   }
 }

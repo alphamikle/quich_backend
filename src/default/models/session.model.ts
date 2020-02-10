@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'session' })

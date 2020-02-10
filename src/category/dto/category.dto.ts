@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
 
 export class CategoryDto {

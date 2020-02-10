@@ -1,6 +1,6 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiModelProperty }     from '@nestjs/swagger';
 import { GooglePlayMessageDto } from './google-play-message.dto';
-import { Sku, Status } from '../entities/subscription.entity';
+import { Sku, Status }          from '../entities/subscription.entity';
 
 export class GooglePlayHookDto {
   @ApiModelProperty()

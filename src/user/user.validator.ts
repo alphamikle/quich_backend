@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable }       from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { UserEntity } from './entities/user.entity';
+import { Repository }       from 'typeorm';
+import { UserEntity }       from './entities/user.entity';
 import { FtsAccountEntity } from './entities/fts-account.entity';
 
 @Injectable()
@@ -18,7 +18,12 @@ export class UserValidator {
   }
 
   async isFtsAccountExistOnUser({ user, phone }: { user: UserEntity, phone: string }): Promise<boolean> {
-    const count: number = await this.ftsAccountEntityRepository.count({ where: { user, phone } });
+    const count: number = await this.ftsAccountEntityRepository.count({
+      where: {
+        user,
+        phone,
+      },
+    });
     return count > 0;
   }
 

@@ -1,13 +1,13 @@
-import { Logger } from '@nestjs/common';
-import * as assert from 'assert';
-import { FtsQrDto } from '../../fts/dto/fts-qr.dto';
+import { Logger }                        from '@nestjs/common';
+import * as assert                       from 'assert';
+import { FtsQrDto }                      from '../../fts/dto/fts-qr.dto';
 import { BaseOfdFetcher, FetcherParams } from '../base-ofd-fetcher';
-import { FetchResponse, Item } from './interfaces';
-import { BillDto } from '../../bill/dto/bill.dto';
-import { DateHelper } from '../../helpers/date.helper';
-import { ShopDto } from '../../shop/dto/shop.dto';
-import { PurchaseDto } from '../../purchase/dto/purchase.dto';
-import { RequestService } from '../../proxy/dto/requestable.interface';
+import { FetchResponse, Item }           from './interfaces';
+import { BillDto }                       from '../../bill/dto/bill.dto';
+import { DateHelper }                    from '../../helpers/date.helper';
+import { ShopDto }                       from '../../shop/dto/shop.dto';
+import { PurchaseDto }                   from '../../purchase/dto/purchase.dto';
+import { RequestService }                from '../../proxy/dto/requestable.interface';
 
 export enum FirstOfdCheckBillStatus {
   EXIST = 1,
@@ -100,7 +100,7 @@ export class FirstOfdFetcher extends BaseOfdFetcher {
         }, {});
         this.fetchResponse = response.data;
       } catch (err) {
-        Logger.error(err.message, null, `${ FirstOfdFetcher.name }:getBillData`);
+        Logger.error(err.message, null, `${FirstOfdFetcher.name}:getBillData`);
       }
     }
   }

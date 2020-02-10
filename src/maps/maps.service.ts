@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger }                             from '@nestjs/common';
 import { AxiosInstance, AxiosResponse, default as axios } from 'axios';
-import { GeocoderResponse } from './dto/response.interface';
+import { GeocoderResponse }                               from './dto/response.interface';
 
 const { YANDEX_TOKEN } = process.env;
 
@@ -25,11 +25,14 @@ export class MapsService {
           },
         },
       );
-      const coordsString = response.data.response.GeoObjectCollection.featureMember[ 0 ].GeoObject.Point.pos;
-      const [ latitude, longitude ] = coordsString.split(' ');
-      return { latitude: Number(latitude), longitude: Number(longitude) };
+      const coordsString = response.data.response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos;
+      const [latitude, longitude] = coordsString.split(' ');
+      return {
+        latitude: Number(latitude),
+        longitude: Number(longitude),
+      };
     } catch (err) {
-      console.error(err);
+      Logger.error(err);
       return null;
     }
   }

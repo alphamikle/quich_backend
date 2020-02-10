@@ -1,5 +1,5 @@
 import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
-import { FtsFetchResponsePurchase } from './purchase.dto';
+import { FtsFetchResponsePurchase }                   from './purchase.dto';
 
 export class FtsFetchResponseBill {
   @ApiModelPropertyOptional()

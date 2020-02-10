@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { FtsService } from './fts.service';
-import { FtsAccountDto } from './dto/fts-account.dto';
-import { FtsRegistrationDto } from './dto/fts-registration.dto';
-import { CommonValidator } from '../helpers/common.validator';
+import { Injectable }                            from '@nestjs/common';
+import { FtsService }                            from './fts.service';
+import { FtsAccountDto }                         from './dto/fts-account.dto';
+import { FtsRegistrationDto }                    from './dto/fts-registration.dto';
+import { CommonValidator }                       from '../helpers/common.validator';
 import { BAD_FTS_SIGN_IN_DATA, NOT_EMPTY_ERROR } from '../helpers/text';
-import { FtsRemindDto } from './dto/fts-remind.dto';
+import { FtsRemindDto }                          from './dto/fts-remind.dto';
 
 @Injectable()
 export class FtsValidator {
@@ -51,7 +51,10 @@ export class FtsValidator {
       errors.phone = phoneValidation;
       return errors;
     }
-    const isSignInDataValid = await this.isSignInDataValid({ phone, password });
+    const isSignInDataValid = await this.isSignInDataValid({
+      phone,
+      password,
+    });
     if (!isSignInDataValid) {
       errors.password = BAD_FTS_SIGN_IN_DATA;
       errors.phone = BAD_FTS_SIGN_IN_DATA;

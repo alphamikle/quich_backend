@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable }       from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { MessageEntity } from './entity/message.entity';
+import { Repository }       from 'typeorm';
+import { MessageEntity }    from './entity/message.entity';
 
 @Injectable()
 export class MessageService {
@@ -16,7 +16,12 @@ export class MessageService {
   }
 
   async getUnreadUserMessages(userId: string): Promise<MessageEntity[]> {
-    const messages = await this.messageEntityRepository.find({ where: { isRead: false, userId } });
+    const messages = await this.messageEntityRepository.find({
+      where: {
+        isRead: false,
+        userId,
+      },
+    });
     return messages;
   }
 }

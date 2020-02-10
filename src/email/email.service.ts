@@ -1,8 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { createTransport, Transporter } from 'nodemailer';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { EmailContentEntity } from './entities/email-content.entity';
+import { Injectable, Logger }                                        from '@nestjs/common';
+import { createTransport, Transporter }                              from 'nodemailer';
+import { InjectRepository }                                          from '@nestjs/typeorm';
+import { Repository }                                                from 'typeorm';
+import { EmailContentEntity }                                        from './entities/email-content.entity';
 import { PASSWORD_VARIABLE, REQUIRED_ENTITIES, RESTORE_ENTITY_CODE } from './content/mock-content';
 
 export interface EmailCredentials {
@@ -114,8 +114,10 @@ export class EmailService {
     const dbDefaults = (await Promise.all(defaults.map(defaultEntity => this.getEmailContentEntityByCode(defaultEntity.code))))
       .filter(dbDefault => dbDefault !== undefined);
     const notSyncedDefaults = dbDefaults.length
-      ? defaults.filter(defaultEntity => !dbDefaults.some(dbDefault => dbDefault.code === defaultEntity.code))
-      : defaults;
+      ?
+      defaults.filter(defaultEntity => !dbDefaults.some(dbDefault => dbDefault.code === defaultEntity.code))
+      :
+      defaults;
     await Promise.all(notSyncedDefaults.map(defaultEntity => this.createEmailContentEntity(defaultEntity)));
   }
 

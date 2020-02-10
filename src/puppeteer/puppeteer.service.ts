@@ -1,14 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable }                                          from '@nestjs/common';
 import { Browser, ElementHandle, launch, LaunchOptions, Page } from 'puppeteer';
-import { resolve } from 'path';
-import { readdirSync, readFileSync, unlinkSync } from 'fs';
+import { resolve }                                             from 'path';
+import { readdirSync, readFileSync, unlinkSync }               from 'fs';
 
 const isDev = process.env.NODE_ENV === 'development';
 
 const curDir = resolve(__dirname);
 
 function child(num: number): string {
-  return `:nth-child(${ num })`;
+  return `:nth-child(${num})`;
 }
 
 async function getInnerText(element: ElementHandle): Promise<string> {
@@ -26,7 +26,8 @@ async function isNextEnabled(nextElement: ElementHandle): Promise<boolean> {
 }
 
 async function sendToClient(page: Page): Promise<void> {
-  const client = await page.target().createCDPSession();
+  const client = await page.target()
+    .createCDPSession();
   await client.send('Page.setDownloadBehavior', {
     behavior: 'allow',
     downloadPath: curDir,
@@ -55,7 +56,8 @@ function readFile(): ProxyParams[] {
     .toString('utf-8')
     .split('\n')
     .map(row => {
-      const [ ip, port ] = row.replace('\r', '').split(':');
+      const [ip, port] = row.replace('\r', '')
+        .split(':');
       const proxyParam: ProxyParams = {
         isHttps: false,
         port: Number(port),
@@ -84,7 +86,7 @@ export class PuppeteerService {
   private readonly options: LaunchOptions = {
     headless: isDev,
     defaultViewport: null,
-    args: [ '--window-size=1920,1080' ],
+    args: ['--window-size=1920,1080'],
   };
 
   public async getFreeProxyList(): Promise<ProxyParams[]> {

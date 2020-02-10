@@ -1,10 +1,11 @@
+import 'reflect-metadata';
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
-import { UserEntity } from '../../user/entities/user.entity';
-import { BillEntity } from '../../bill/entities/bill.entity';
-import { BillProviderEntity } from '../../bill-provider/entities/bill-provider.entity';
-import { FtsFetchResponseBill } from '../../fts/dto/fts-fetch-response/bill.dto';
-import { BillDto } from '../../bill/dto/bill.dto';
+import { ApiModelProperty, ApiModelPropertyOptional }                                            from '@nestjs/swagger';
+import { UserEntity }                                                                            from '../../user/entities/user.entity';
+import { BillEntity }                                                                            from '../../bill/entities/bill.entity';
+import { BillProviderEntity }                                                                    from '../../bill-provider/entities/bill-provider.entity';
+import { FtsFetchResponseBill }                                                                  from '../../fts/dto/fts-fetch-response/bill.dto';
+import { BillDto }                                                                               from '../../bill/dto/bill.dto';
 
 @Entity()
 export class BillRequestEntity {
@@ -25,10 +26,16 @@ export class BillRequestEntity {
   fiscalDocument!: string;
 
   @ApiModelProperty({ type: 'integer' })
-  @Column({ default: 1, type: 'int' })
+  @Column({
+    default: 1,
+    type: 'int',
+  })
   fetchingIterations!: number;
 
-  @ApiModelProperty({ type: String, format: 'date-time' })
+  @ApiModelProperty({
+    type: String,
+    format: 'date-time',
+  })
   @Column()
   billDate!: Date;
 
@@ -37,10 +44,16 @@ export class BillRequestEntity {
   totalSum!: number;
 
   @ApiModelProperty({ type: BillDto })
-  @Column({ type: 'jsonb', nullable: true })
+  @Column({
+    type: 'jsonb',
+    nullable: true,
+  })
   rawData?: BillDto;
 
-  @Column({ type: 'jsonb', nullable: true })
+  @Column({
+    type: 'jsonb',
+    nullable: true,
+  })
   ftsData?: FtsFetchResponseBill;
 
   @ApiModelProperty()
@@ -51,11 +64,17 @@ export class BillRequestEntity {
   @Column({ default: false })
   isChecked!: boolean;
 
-  @ApiModelProperty({ type: String, format: 'date-time' })
+  @ApiModelProperty({
+    type: String,
+    format: 'date-time',
+  })
   @CreateDateColumn()
   createdAt!: Date;
 
-  @ApiModelProperty({ type: String, format: 'date-time' })
+  @ApiModelProperty({
+    type: String,
+    format: 'date-time',
+  })
   @UpdateDateColumn()
   updateAt!: Date;
 

@@ -1,8 +1,8 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { ApiModelProperty } from '@nestjs/swagger';
-import { ProductEntity } from '../../product/entities/product.entity';
-import { BillEntity } from '../../bill/entities/bill.entity';
-import { CategoryEntity } from '../../category/entities/category.entity';
+import { ApiModelProperty }                                  from '@nestjs/swagger';
+import { ProductEntity }                                     from '../../product/entities/product.entity';
+import { BillEntity }                                        from '../../bill/entities/bill.entity';
+import { CategoryEntity }                                    from '../../category/entities/category.entity';
 
 @Entity()
 export class PurchaseEntity {
@@ -19,7 +19,10 @@ export class PurchaseEntity {
   quantity!: number;
 
   @ApiModelProperty({ format: 'double' })
-  @Column({ type: 'float', nullable: true })
+  @Column({
+    type: 'float',
+    nullable: true,
+  })
   rate!: number;
 
   @ApiModelProperty()
@@ -43,7 +46,10 @@ export class PurchaseEntity {
   @ManyToOne(() => BillEntity, bill => bill.purchases, { onDelete: 'CASCADE' })
   bill?: BillEntity;
 
-  @ApiModelProperty({ type: String, format: 'date-time' })
+  @ApiModelProperty({
+    type: String,
+    format: 'date-time',
+  })
   @Column({ default: () => 'now()' })
   createdAt!: Date;
 }

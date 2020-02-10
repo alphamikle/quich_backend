@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PuppeteerService } from './puppeteer.service';
+import { PuppeteerService }    from './puppeteer.service';
 
 jest.setTimeout(60 * 1000);
 
@@ -8,8 +8,9 @@ describe('PuppeteerService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ PuppeteerService ],
-    }).compile();
+      providers: [PuppeteerService],
+    })
+      .compile();
 
     service = module.get<PuppeteerService>(PuppeteerService);
   });

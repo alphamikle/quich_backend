@@ -1,12 +1,12 @@
-import { HTMLElement, NodeType, parse } from 'node-html-parser';
-import { AllHtmlEntities } from 'html-entities';
-import * as assert from 'assert';
+import { HTMLElement, NodeType, parse }  from 'node-html-parser';
+import { AllHtmlEntities }               from 'html-entities';
+import * as assert                       from 'assert';
 import { BaseOfdFetcher, FetcherParams } from '../base-ofd-fetcher';
-import { ShopDto } from '../../shop/dto/shop.dto';
-import { PurchaseDto } from '../../purchase/dto/purchase.dto';
-import { FtsQrDto } from '../../fts/dto/fts-qr.dto';
-import { BillDto } from '../../bill/dto/bill.dto';
-import { RequestService } from '../../proxy/dto/requestable.interface';
+import { ShopDto }                       from '../../shop/dto/shop.dto';
+import { PurchaseDto }                   from '../../purchase/dto/purchase.dto';
+import { FtsQrDto }                      from '../../fts/dto/fts-qr.dto';
+import { BillDto }                       from '../../bill/dto/bill.dto';
+import { RequestService }                from '../../proxy/dto/requestable.interface';
 
 export class OfdFetcher extends BaseOfdFetcher {
   private body: HTMLElement;
@@ -45,10 +45,10 @@ export class OfdFetcher extends BaseOfdFetcher {
 
   protected getPurchases(): PurchaseDto[] {
     const allBlocks = this.body.querySelectorAll('.margin-top-10');
-    const blocksLength = [ ...allBlocks ].length;
+    const blocksLength = [...allBlocks].length;
     const productsBlock = this.getNthBlock(blocksLength - 1);
     const productsSubBlocks = productsBlock.querySelectorAll('.ifw-bill-item');
-    const productsWithoutQR = [ ...productsSubBlocks ].slice(0, productsSubBlocks.length - 1);
+    const productsWithoutQR = [...productsSubBlocks].slice(0, productsSubBlocks.length - 1);
     const products: PurchaseDto[] = [];
     for (const productBlock of productsWithoutQR) {
       products.push(this.getPurchase(productBlock));
@@ -59,8 +59,10 @@ export class OfdFetcher extends BaseOfdFetcher {
   protected getPurchase(productNode: HTMLElement): PurchaseDto {
     const productTitle = productNode.querySelector('.text-left').rawText;
     const productPriceBlock = productNode.querySelector('.text-right');
-    const productQuantity = productPriceBlock.querySelector('div').querySelectorAll('span')[ 0 ].rawText;
-    const productPrice = productPriceBlock.querySelector('div').querySelectorAll('span')[ 2 ].rawText;
+    const productQuantity = productPriceBlock.querySelector('div')
+      .querySelectorAll('span')[0].rawText;
+    const productPrice = productPriceBlock.querySelector('div')
+      .querySelectorAll('span')[2].rawText;
     const quantity = Math.trunc(Number(productQuantity.replace(',', '.')) * 100) / 100;
     const price = Math.trunc(Number(productPrice.replace(',', '.')) * 100) / 100;
     const sum = quantity * price;
@@ -73,7 +75,7 @@ export class OfdFetcher extends BaseOfdFetcher {
   }
 
   private async getRawData(): Promise<string> {
-    const url = `https://check.ofd.ru/rec/${ this.fiscalNumber }/${ this.fiscalDocument }/${ this.fiscalProp }`;
+    const url = `https://check.ofd.ru/rec/${this.fiscalNumber}/${this.fiscalDocument}/${this.fiscalProp}`;
     const rawResponse = await this.proxyService.request<string>({
       url,
       method: 'GET',
@@ -82,7 +84,11 @@ export class OfdFetcher extends BaseOfdFetcher {
   }
 
   private async getParsedData(rawData: string): Promise<BillDto> {
-    const parsedData = parse(rawData, { style: false, script: false, lowerCaseTagName: true });
+    const parsedData = parse(rawData, {
+      style: false,
+      script: false,
+      lowerCaseTagName: true,
+    });
     if (parsedData.nodeType === NodeType.ELEMENT_NODE) {
       const node = parsedData as HTMLElement;
       this.body = node.querySelector('.ifw-card-body');
@@ -101,7 +107,7 @@ export class OfdFetcher extends BaseOfdFetcher {
   }
 
   private getNthBlock(val = 0): HTMLElement {
-    return this.body.querySelectorAll('.margin-top-10')[ val ];
+    return this.body.querySelectorAll('.margin-top-10')[val];
   }
 
   private getRightBlockOf(val = 0): string {
@@ -110,15 +116,16 @@ export class OfdFetcher extends BaseOfdFetcher {
   }
 
   private getShopTitle(): string {
-    return this.decodeEntities(this.getNthBlock(0).querySelector('.text-align-center').firstChild.childNodes[ 0 ].rawText);
+    return this.decodeEntities(this.getNthBlock(0)
+      .querySelector('.text-align-center').firstChild.childNodes[0].rawText);
   }
 
   private getCartDateTime(): Date {
     const stringDate = this.getRightBlockOf(2);
-    const [ date, time ] = stringDate.split(' ');
-    const [ day, month, year ] = date.split('.');
-    const [ hours, minutes ] = time.split(':');
-    return new Date(Number(`20${ year }`), Number(month) - 1, Number(day), Number(hours), Number(minutes));
+    const [date, time] = stringDate.split(' ');
+    const [day, month, year] = date.split('.');
+    const [hours, minutes] = time.split(':');
+    return new Date(Number(`20${year}`), Number(month) - 1, Number(day), Number(hours), Number(minutes));
   }
 
   private getShopAddress(): string {

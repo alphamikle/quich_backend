@@ -1,27 +1,19 @@
-import { Injectable, RequestTimeoutException } from '@nestjs/common';
-import { AxiosInstance, default as axios } from 'axios';
-import * as https from 'https';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { FtsAccountDto } from './dto/fts-account.dto';
-import { FtsRegistrationDto } from './dto/fts-registration.dto';
-import {
-  FTS_BILL_NOT_SEND_ERROR,
-  FTS_TRY_MORE_ERROR,
-  FTS_UNKNOWN_FETCHING_ERROR,
-  FTS_USER_EXIST_ERROR,
-  FTS_USER_NOT_EXIST_ERROR,
-  INVALID_PHONE_ERROR,
-  UNKNOWN_ERROR,
-} from '../helpers/text';
-import { FtsRemindDto } from './dto/fts-remind.dto';
-import { FtsAccountEntity } from '../user/entities/fts-account.entity';
-import { FtsQrDto } from './dto/fts-qr.dto';
-import { FtsAccountToBillRequestEntity } from './entities/fts-account-to-bill-request.entity';
-import { DateHelper } from '../helpers/date.helper';
-import { FtsFetchResponse } from './dto/fts-fetch-response/response.dto';
-import { FtsFetchResponseBill } from './dto/fts-fetch-response/bill.dto';
-import { wait } from '../helpers/common.helper';
+import { Injectable, Logger, RequestTimeoutException }                                                                                                                 from '@nestjs/common';
+import { AxiosInstance, default as axios }                                                                                                                             from 'axios';
+import * as https                                                                                                                                                      from 'https';
+import { InjectRepository }                                                                                                                                            from '@nestjs/typeorm';
+import { Repository }                                                                                                                                                  from 'typeorm';
+import { FtsAccountDto }                                                                                                                                               from './dto/fts-account.dto';
+import { FtsRegistrationDto }                                                                                                                                          from './dto/fts-registration.dto';
+import { FTS_BILL_NOT_SEND_ERROR, FTS_TRY_MORE_ERROR, FTS_UNKNOWN_FETCHING_ERROR, FTS_USER_EXIST_ERROR, FTS_USER_NOT_EXIST_ERROR, INVALID_PHONE_ERROR, UNKNOWN_ERROR } from '../helpers/text';
+import { FtsRemindDto }                                                                                                                                                from './dto/fts-remind.dto';
+import { FtsAccountEntity }                                                                                                                                            from '../user/entities/fts-account.entity';
+import { FtsQrDto }                                                                                                                                                    from './dto/fts-qr.dto';
+import { FtsAccountToBillRequestEntity }                                                                                                                               from './entities/fts-account-to-bill-request.entity';
+import { DateHelper }                                                                                                                                                  from '../helpers/date.helper';
+import { FtsFetchResponse }                                                                                                                                            from './dto/fts-fetch-response/response.dto';
+import { FtsFetchResponseBill }                                                                                                                                        from './dto/fts-fetch-response/bill.dto';
+import { randomOS, randomUUID, wait }                                                                                                                                  from '../helpers/common.helper';
 
 export interface FtsHeaders {
   'Device-Id': string;
@@ -57,24 +49,14 @@ export class FtsService {
     });
   }
 
-  async assignBillRequestWithFtsAccount({
-    ftsAccountId,
-    billRequestId,
-  }: {
-    ftsAccountId: string;
-    billRequestId: string;
-  }): Promise<FtsAccountToBillRequestEntity> {
+  async assignBillRequestWithFtsAccount({ ftsAccountId, billRequestId }: { ftsAccountId: string; billRequestId: string; }): Promise<FtsAccountToBillRequestEntity> {
     const ftsAccountToBillRequest = new FtsAccountToBillRequestEntity();
     ftsAccountToBillRequest.billRequestId = billRequestId;
     ftsAccountToBillRequest.ftsAccountId = ftsAccountId;
-    return this.ftsAccountToBillRequestEntityRepository.save(
-      ftsAccountToBillRequest,
-    );
+    return this.ftsAccountToBillRequestEntityRepository.save(ftsAccountToBillRequest);
   }
 
-  async getBillRequestToFtsAccountEntityByBillRequestId(
-    billRequestId: string,
-  ): Promise<FtsAccountToBillRequestEntity | undefined> {
+  async getBillRequestToFtsAccountEntityByBillRequestId(billRequestId: string): Promise<FtsAccountToBillRequestEntity> {
     return this.ftsAccountToBillRequestEntityRepository.findOne({
       where: { billRequestId },
     });
@@ -91,21 +73,15 @@ export class FtsService {
       });
       return response.status === 200;
     } catch (err) {
-      console.error(err);
       return false;
     }
   }
 
   async signUp(signUpCredentials: FtsRegistrationDto): Promise<string | true> {
     try {
-      const response = await this.api.post(
-        '/v1/mobile/users/signup',
-        signUpCredentials,
-      );
-      console.log(response);
+      await this.api.post('/v1/mobile/users/signup', signUpCredentials);
       return true;
     } catch (err) {
-      console.error(err.response);
       const { response } = err;
       if (response.status === 409) {
         return FTS_USER_EXIST_ERROR;
@@ -126,35 +102,17 @@ export class FtsService {
     }
   }
 
-  async changeFtsAccountPassword({
-    password,
-    phone,
-  }: {
-    password: string;
-    phone: string;
-  }): Promise<FtsAccountEntity> {
-    const ftsAccount: FtsAccountEntity = await this.ftsAccountEntityRepository.findOne(
-      { where: { phone } },
-    );
+  async changeFtsAccountPassword({ password, phone }: { password: string; phone: string; }): Promise<FtsAccountEntity> {
+    const ftsAccount: FtsAccountEntity = await this.ftsAccountEntityRepository.findOne({ where: { phone } });
     ftsAccount.password = password;
     return this.ftsAccountEntityRepository.save(ftsAccount);
   }
 
-  async checkBillExistence(
-    {
-      fiscalNumber: fn,
-      checkType: ct = 1,
-      fiscalDocument: fd,
-      fiscalProp: fp,
-      dateTime,
-      totalSum: ts,
-    }: FtsQrDto,
-    userCredentials: FtsAccountDto,
-  ): Promise<boolean> {
+  async checkBillExistence({ fiscalNumber: fn, checkType: ct = 1, fiscalDocument: fd, fiscalProp: fp, dateTime, totalSum: ts }: FtsQrDto, userCredentials: FtsAccountDto): Promise<boolean> {
     const penny = ts * 100;
     const preUrl = '/v1/ofds/*/inns/*/fss/';
     const url = encodeURI(
-      `${ preUrl }${ fn }/operations/${ ct }/tickets/${ fd }?fiscalSign=${ fp }&date=${ dateTime }&sum=${ penny }`,
+      `${preUrl}${fn}/operations/${ct}/tickets/${fd}?fiscalSign=${fp}&date=${dateTime}&sum=${penny}`,
     );
     try {
       await this.api.get(url, { headers: this.getHeaders(userCredentials) });
@@ -165,16 +123,11 @@ export class FtsService {
     }
   }
 
-  async fetchBillData(
-    { fiscalNumber, fiscalDocument, fiscalProp }: FtsQrDto,
-    ftsAccountDto: FtsAccountDto,
-    count = 0,
-    limit = 3,
-  ): Promise<FtsFetchResponseBill | string> {
+  async fetchBillData({ fiscalNumber, fiscalDocument, fiscalProp }: FtsQrDto, ftsAccountDto: FtsAccountDto, count = 0, limit = 3): Promise<FtsFetchResponseBill | string> {
     if (count > 0) {
       await wait(500 * count);
     }
-    const url = `/v1/inns/*/kkts/*/fss/${ fiscalNumber }/tickets/${ fiscalDocument }?fiscalSign=${ fiscalProp }&sendToEmail=no`;
+    const url = `/v1/inns/*/kkts/*/fss/${fiscalNumber}/tickets/${fiscalDocument}?fiscalSign=${fiscalProp}&sendToEmail=no`;
     try {
       if (count >= limit) {
         throw new RequestTimeoutException();
@@ -184,17 +137,25 @@ export class FtsService {
       });
       if (response.status !== 200) {
         return this.fetchBillData(
-          { fiscalNumber, fiscalDocument, fiscalProp },
+          {
+            fiscalNumber,
+            fiscalDocument,
+            fiscalProp,
+          },
           ftsAccountDto,
           count + 1,
         );
       }
       return response.data.document.receipt;
     } catch (err) {
-      console.error('FETCHING ERROR', err.message);
+      Logger.error(`FETCHING ERROR ${err.message}`);
       if (count < limit) {
         return this.fetchBillData(
-          { fiscalNumber, fiscalDocument, fiscalProp },
+          {
+            fiscalNumber,
+            fiscalDocument,
+            fiscalProp,
+          },
           ftsAccountDto,
           count + 1,
         );
@@ -218,18 +179,20 @@ export class FtsService {
   }
 
   private generateAuthorizationValue(userCredentials: FtsAccountDto): string {
-    return `Basic ${ Buffer.from(
-      `${ userCredentials.phone }:${ userCredentials.password }`,
-    ).toString('base64') }`;
+    return `Basic ${Buffer.from(`${userCredentials.phone}:${userCredentials.password}`)
+      .toString('base64')}`;
   }
 
   private getHeaders(userCredentials?: FtsAccountDto): FtsHeaders {
+    const uuid = randomUUID()
+      .replace('-', '')
+      .slice(0, 16);
     const headers: FtsHeaders = {
-      'Device-Id': '748036d688ec41c6',
+      'Device-Id': uuid,
       'User-Agent': 'okhttp/3.0.1',
-      'Device-OS': 'Android 9.0',
+      'Device-OS': randomOS(),
       Version: '2',
-      ClientVersion: '1.4.4.1',
+      ClientVersion: '1.4.5',
       Host: this.baseUrl,
       Connection: this.baseUrl,
       'Accept-Encoding': 'gzip',

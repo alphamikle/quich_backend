@@ -1,16 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { writeFileSync } from 'fs';
-import { resolve } from 'path';
-import { FtsQrDto } from '../fts/dto/fts-qr.dto';
-import { OfdFetcher } from './ofd.ru/fetcher';
-import { BillDto } from '../bill/dto/bill.dto';
-import { BillRequestEntity } from '../bill-request/entities/bill-request.entity';
-import { DateHelper } from '../helpers/date.helper';
-import { FirstOfdFetcher } from './1-ofd.ru/fetcher';
-import { OfdFetcherClass } from './base-ofd-fetcher';
-import { ProxyService } from '../proxy/proxy.service';
+import { Repository }         from 'typeorm';
+import { InjectRepository }   from '@nestjs/typeorm';
+import { writeFileSync }      from 'fs';
+import { resolve }            from 'path';
+import { FtsQrDto }           from '../fts/dto/fts-qr.dto';
+import { OfdFetcher }         from './ofd.ru/fetcher';
+import { BillDto }            from '../bill/dto/bill.dto';
+import { BillRequestEntity }  from '../bill-request/entities/bill-request.entity';
+import { DateHelper }         from '../helpers/date.helper';
+import { FirstOfdFetcher }    from './1-ofd.ru/fetcher';
+import { OfdFetcherClass }    from './base-ofd-fetcher';
+import { ProxyService }       from '../proxy/proxy.service';
 
 @Injectable()
 export class OfdService {
@@ -24,7 +24,10 @@ export class OfdService {
 
   async fetchBillData(qrData: FtsQrDto) {
     const ofdFetcher = new OfdFetcher(qrData, { proxyService: this.proxyService });
-    const firstOfdFetcher = new FirstOfdFetcher(qrData, { proxyService: this.proxyService, dateHelper: this.dateHelper });
+    const firstOfdFetcher = new FirstOfdFetcher(qrData, {
+      proxyService: this.proxyService,
+      dateHelper: this.dateHelper,
+    });
 
     const responses: BillDto[] = await Promise.all([
       ofdFetcher.fetchBill(),
@@ -32,7 +35,7 @@ export class OfdService {
     ]);
     const results = responses.filter(response => response !== null);
     if (results.length > 0) {
-      return results[ 0 ];
+      return results[0];
     }
     return null;
   }
@@ -46,7 +49,7 @@ export class OfdService {
         order by random()
         limit 100
     `);
-    Logger.log(`Found ${ billRequestEntities.length } billRequestEntities`);
+    Logger.log(`Found ${billRequestEntities.length} billRequestEntities`);
     const ftsQrDtos: FtsQrDto[] = billRequestEntities.map(billRequest => {
       const qrDto = new FtsQrDto();
       qrDto.checkType = 1;
@@ -57,13 +60,19 @@ export class OfdService {
       qrDto.totalSum = billRequest.totalSum;
       return qrDto;
     });
-    const ofds: OfdFetcherClass[] = [ OfdFetcher, FirstOfdFetcher ];
+    const ofds: OfdFetcherClass[] = [
+      OfdFetcher,
+      FirstOfdFetcher,
+    ];
     const data: any[] = [];
     let i = 0;
     await Promise.all(ftsQrDtos.map(async qrDto => {
       await Promise.all(ofds.map(async OfdClass => {
         const start = Date.now();
-        const fetcher = new OfdClass(qrDto, { dateHelper: this.dateHelper, proxyService: this.proxyService });
+        const fetcher = new OfdClass(qrDto, {
+          dateHelper: this.dateHelper,
+          proxyService: this.proxyService,
+        });
         const response: BillDto = await fetcher.fetchBill();
         const info = {
           name: OfdClass.name,
@@ -71,7 +80,7 @@ export class OfdService {
           response,
         };
         data.push(info);
-        Logger.debug(`Iteration: ${ i }, Fetcher: ${ OfdClass.name }, QrDto: ${ JSON.stringify(qrDto) }, Duration: ${ Date.now() - start }ms`);
+        Logger.debug(`Iteration: ${i}, Fetcher: ${OfdClass.name}, QrDto: ${JSON.stringify(qrDto)}, Duration: ${Date.now() - start}ms`);
       }));
       i += 1;
     }));

@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable }                                     from '@nestjs/common';
 import { AxiosInstance, AxiosResponse, default as axios } from 'axios';
-import { DadataResponse, Suggestion } from './dto/response.interface';
+import { DadataResponse, Suggestion }                     from './dto/response.interface';
 
 const { DADATA_TOKEN } = process.env;
 
@@ -12,7 +12,7 @@ export class DadataService {
     this.api = axios.create({
       baseURL: 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/',
       headers: {
-        Authorization: `Token ${ DADATA_TOKEN }`,
+        Authorization: `Token ${DADATA_TOKEN}`,
       },
     });
   }
@@ -21,9 +21,10 @@ export class DadataService {
     try {
       const response: AxiosResponse<DadataResponse> = await this.api.post('findById/party', {
         query: tin,
+        // eslint-disable-next-line @typescript-eslint/camelcase
         branch_type: 'MAIN',
       });
-      return response.data.suggestions[ 0 ];
+      return response.data.suggestions[0];
     } catch (err) {
       console.error(err);
       return null;
@@ -35,7 +36,7 @@ export class DadataService {
       const response: AxiosResponse<DadataResponse> = await this.api.post('suggest/party', {
         query,
       });
-      return response.data.suggestions[ 0 ];
+      return response.data.suggestions[0];
     } catch (err) {
       console.error(err);
       return null;

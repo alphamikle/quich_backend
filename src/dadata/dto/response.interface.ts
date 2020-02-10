@@ -43,7 +43,7 @@ export interface Data {
 export interface Address {
   value: string;
   unrestricted_value: string;
-  data: { [ key: string ]: null | string };
+  data: { [key: string]: null | string };
 }
 
 export interface Name {
