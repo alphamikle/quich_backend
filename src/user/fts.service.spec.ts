@@ -22,6 +22,7 @@ jest.setTimeout(600000);
 describe('user service test', () => {
   let service: UserService;
   const hasAccountUserId = 'c7d1285c-31f2-4265-939e-c733a19372d4';
+  const hasNotAccountUser = '69e76165-f185-4a94-bae4-24250fa1ed7c';
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -69,5 +70,13 @@ describe('user service test', () => {
     expect(account)
       .toHaveProperty('id');
     Logger.log(account.id);
+  });
+
+  it('Get account for user without accounts', async () => {
+    const account = await service.getFtsAccountForUser(hasNotAccountUser);
+    Logger.log(account.phone);
+    expect(account)
+      .not
+      .toBe(undefined);
   });
 });

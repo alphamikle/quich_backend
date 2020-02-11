@@ -103,9 +103,9 @@ export class UserService {
     const lessUsedFtsAccountsIds: Array<{ id: string }> = await this.ftsAccountEntityRepository.query(`
     SELECT fe.id
     FROM fts_account_entity fe
-    RIGHT JOIN fts_account_usings_entity us ON us.phone = fe.phone
-    WHERE (us.uses < 15 or not exists (select id from fts_account_usings_entity us2 where us2.phone = fe.phone))
-    ORDER BY random()
+    FULL JOIN fts_account_usings_entity us ON us.phone = fe.phone
+    WHERE (not exists (select id from fts_account_usings_entity us2 where us2.phone = us.phone) or us.uses < 15)
+    ORDER BY fe."lastUsingDate" asc
     `);
     if (lessUsedFtsAccountsIds.length === 0) {
       return null;
