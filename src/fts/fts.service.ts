@@ -1,19 +1,19 @@
 import { Injectable, Logger, RequestTimeoutException }                                                                                                                 from '@nestjs/common';
-import { AxiosInstance, default as axios }                                                                                                                             from 'axios';
+import axios, { AxiosInstance }                                                                                                                                        from 'axios';
 import * as https                                                                                                                                                      from 'https';
 import { InjectRepository }                                                                                                                                            from '@nestjs/typeorm';
-import { Repository }                                                                                                                                                  from 'typeorm';
+import { Between, Repository }                                                                                                                                         from 'typeorm';
 import { FtsAccountDto }                                                                                                                                               from './dto/fts-account.dto';
 import { FtsRegistrationDto }                                                                                                                                          from './dto/fts-registration.dto';
 import { FTS_BILL_NOT_SEND_ERROR, FTS_TRY_MORE_ERROR, FTS_UNKNOWN_FETCHING_ERROR, FTS_USER_EXIST_ERROR, FTS_USER_NOT_EXIST_ERROR, INVALID_PHONE_ERROR, UNKNOWN_ERROR } from '../helpers/text';
 import { FtsRemindDto }                                                                                                                                                from './dto/fts-remind.dto';
 import { FtsAccountEntity }                                                                                                                                            from '../user/entities/fts-account.entity';
 import { FtsQrDto }                                                                                                                                                    from './dto/fts-qr.dto';
-import { FtsAccountToBillRequestEntity }                                                                                                                               from './entities/fts-account-to-bill-request.entity';
 import { DateHelper }                                                                                                                                                  from '../helpers/date.helper';
 import { FtsFetchResponse }                                                                                                                                            from './dto/fts-fetch-response/response.dto';
 import { FtsFetchResponseBill }                                                                                                                                        from './dto/fts-fetch-response/bill.dto';
 import { randomOS, randomUUID, wait }                                                                                                                                  from '../helpers/common.helper';
+import { FtsAccountUsingsEntity }                                                                                                                                      from './entities/fts-account-usings.entity';
 
 export interface FtsHeaders {
   'Device-Id': string;
@@ -36,8 +36,8 @@ export class FtsService {
   constructor(
     @InjectRepository(FtsAccountEntity)
     private readonly ftsAccountEntityRepository: Repository<FtsAccountEntity>,
-    @InjectRepository(FtsAccountToBillRequestEntity)
-    private readonly ftsAccountToBillRequestEntityRepository: Repository<FtsAccountToBillRequestEntity>,
+    @InjectRepository(FtsAccountUsingsEntity)
+    private readonly ftsAccountUsingsRepository: Repository<FtsAccountUsingsEntity>,
     private readonly dateHelper: DateHelper,
   ) {
     this.setFtsUrl();
@@ -46,19 +46,6 @@ export class FtsService {
         rejectUnauthorized: false,
       }),
       baseURL: this.baseUrl,
-    });
-  }
-
-  async assignBillRequestWithFtsAccount({ ftsAccountId, billRequestId }: { ftsAccountId: string; billRequestId: string; }): Promise<FtsAccountToBillRequestEntity> {
-    const ftsAccountToBillRequest = new FtsAccountToBillRequestEntity();
-    ftsAccountToBillRequest.billRequestId = billRequestId;
-    ftsAccountToBillRequest.ftsAccountId = ftsAccountId;
-    return this.ftsAccountToBillRequestEntityRepository.save(ftsAccountToBillRequest);
-  }
-
-  async getBillRequestToFtsAccountEntityByBillRequestId(billRequestId: string): Promise<FtsAccountToBillRequestEntity> {
-    return this.ftsAccountToBillRequestEntityRepository.findOne({
-      where: { billRequestId },
     });
   }
 
@@ -164,18 +151,37 @@ export class FtsService {
       if (err.response && err.response.status) {
         const { status } = err.response;
         switch (status) {
-        case 406: {
-          error = FTS_BILL_NOT_SEND_ERROR;
-          break;
-        }
-        default: {
-          error = FTS_UNKNOWN_FETCHING_ERROR;
-          break;
-        }
+          case 406: {
+            error = FTS_BILL_NOT_SEND_ERROR;
+            break;
+          }
+          default: {
+            error = FTS_UNKNOWN_FETCHING_ERROR;
+            break;
+          }
         }
       }
       return error;
     }
+  }
+
+  async incrementUsesOfFtsAccount(phone: string): Promise<void> {
+    const currentDate = new Date();
+    const nextDate = this.dateHelper.addDays(currentDate, 1);
+    let currentDateUses = await this.ftsAccountUsingsRepository.findOne({
+      where: {
+        phone,
+        usingDay: Between(currentDate, nextDate),
+      },
+    });
+    if (currentDateUses === undefined) {
+      currentDateUses = new FtsAccountUsingsEntity();
+      currentDateUses.phone = phone;
+      currentDateUses.usingDay = currentDate;
+      currentDateUses.uses = 0;
+    }
+    currentDateUses.uses += 1;
+    await this.ftsAccountUsingsRepository.save(currentDateUses);
   }
 
   private generateAuthorizationValue(userCredentials: FtsAccountDto): string {

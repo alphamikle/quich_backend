@@ -142,7 +142,7 @@ export class UserController {
   }
 
   @SecurePatchAction('Изменение данных аккаунта ФНС', FtsAccountEntity, 'fts-accounts')
-  async modifyFtsAccount(@RequestUser() user: UserEntity, @Body() { isMain, password, phone }: FtsAccountModifyDto): Promise<FtsAccountEntity> {
+  async modifyFtsAccount(@RequestUser() user: UserEntity, @Body() { password, phone }: FtsAccountModifyDto): Promise<FtsAccountEntity> {
     const isAccountExist = await this.userValidator.isFtsAccountExistOnUser({
       user,
       phone,
@@ -156,12 +156,6 @@ export class UserController {
     });
     if (ftsAccountValidation !== true) {
       throw new BadRequestException(ftsAccountValidation);
-    }
-    if (isMain) {
-      await this.userService.makeFtsAccountMain({
-        user,
-        phone,
-      });
     }
     return this.ftsService.changeFtsAccountPassword({
       password,

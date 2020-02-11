@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository }                from '@nestjs/typeorm';
-import { In, Repository }                  from 'typeorm';
+import { Repository }                      from 'typeorm';
 import { UserEntity }                      from './entities/user.entity';
 import { SessionEntity }                   from './entities/session.entity';
 import { DateHelper }                      from '../helpers/date.helper';
@@ -14,10 +14,14 @@ const { TOKEN_DURATION } = process.env;
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(UserEntity) private readonly userEntityRepository: Repository<UserEntity>,
-    @InjectRepository(SessionEntity) private readonly sessionEntityRepository: Repository<SessionEntity>,
-    @InjectRepository(FtsAccountEntity) private readonly ftsAccountEntityRepository: Repository<FtsAccountEntity>,
-    @InjectRepository(FtsAccountQueueEntity) private readonly ftsAccountQueueEntityRepository: Repository<FtsAccountQueueEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userEntityRepository: Repository<UserEntity>,
+    @InjectRepository(SessionEntity)
+    private readonly sessionEntityRepository: Repository<SessionEntity>,
+    @InjectRepository(FtsAccountEntity)
+    private readonly ftsAccountEntityRepository: Repository<FtsAccountEntity>,
+    @InjectRepository(FtsAccountQueueEntity)
+    private readonly ftsAccountQueueEntityRepository: Repository<FtsAccountQueueEntity>,
     private readonly dateHelper: DateHelper,
   ) {
   }
@@ -25,10 +29,6 @@ export class UserService {
   async setUserPassword({ user, password }: { user: UserEntity, password: string }): Promise<UserEntity> {
     user.password = password;
     return this.userEntityRepository.save(user);
-  }
-
-  async getFtsAccountById(ftsAccountId: string): Promise<FtsAccountEntity> {
-    return this.ftsAccountEntityRepository.findOne(ftsAccountId);
   }
 
   async createUser({ email, passwordHash }: { email: string, passwordHash: string }): Promise<UserEntity> {
@@ -78,8 +78,6 @@ export class UserService {
     ftsAccount.phone = ftsAccountData.phone;
     ftsAccount.password = ftsAccountData.password;
     ftsAccount.userId = user.id;
-    const otherAccounts = await this.getFtsAccountsByUserId(user.id);
-    ftsAccount.isMain = otherAccounts.length === 0;
     return this.ftsAccountEntityRepository.save(ftsAccount);
   }
 
@@ -88,30 +86,6 @@ export class UserService {
       userId,
       phone,
     });
-  }
-
-  async makeFtsAccountMain({ user, phone }: { user: UserEntity, phone: string }): Promise<void> {
-    await this.ftsAccountEntityRepository.update({ user }, { isMain: false });
-    await this.ftsAccountEntityRepository.update({
-      user,
-      phone,
-    }, { isMain: true });
-  }
-
-  /**
-   * @description Возвращает последние N элементов из очереди использования аккаунтов ФНС
-   * @param ftsAccountsIds
-   */
-  async getFtsAccountsQueue(ftsAccountsIds: string[]): Promise<string[]> {
-    if (ftsAccountsIds.length === 0) {
-      return [];
-    }
-    const lastUsedAccounts = await this.ftsAccountQueueEntityRepository.find({
-      where: { ftsAccountId: In(ftsAccountsIds) },
-      take: ftsAccountsIds.length - 1,
-      order: { useDateTime: 'DESC' },
-    });
-    return lastUsedAccounts.map(account => account.ftsAccountId);
   }
 
   async addFtsAccountIdToQueue(ftsAccountId: string): Promise<void> {
@@ -125,26 +99,20 @@ export class UserService {
     return count > 0;
   }
 
-  /**
-   * @description Выбирает рандомный аккаунт ФНС, у которого менее 10 использований за последние 2 дня
-   * и наименьшее количество использований за эти 2 дня
-   */
   async getRandomFtsAccount(): Promise<FtsAccountEntity | null> {
-    const currentDate = new Date();
-    const pastTwoDaysDate = this.dateHelper.subDays(currentDate, 2);
-    const lessUsedFtsAccountsIds: Array<{ ftsAccountId: string, countPerDays: number }> = await this.ftsAccountQueueEntityRepository.query(`
-    SELECT ftsAccountId,
-    (SELECT COUNT(ftsAccountId) FROM fts_account_queue_entity subQe WHERE subQe.useDateTime (BETWEEN ${pastTwoDaysDate} AND ${currentDate})
-    AND subQe.ftsAccountId = qe.ftsAccountId) as countPerDays
-    FROM fts_account_queue_entity qe
-    WHERE countPerDays < 10
-    ORDER BY countPerDays ASC
+    const lessUsedFtsAccountsIds: Array<{ id: string }> = await this.ftsAccountEntityRepository.query(`
+    SELECT fe.id
+    FROM fts_account_entity fe
+    RIGHT JOIN fts_account_usings_entity us ON us.phone = fe.phone
+    WHERE (us.uses < 15 or not exists (select id from fts_account_usings_entity us2 where us2.phone = fe.phone))
+    ORDER BY random()
     `);
     if (lessUsedFtsAccountsIds.length === 0) {
       return null;
     }
-    const onlyIds = lessUsedFtsAccountsIds.map(item => item.ftsAccountId);
-    return this.ftsAccountEntityRepository.findOne(onlyIds[0]);
+    const account = await this.ftsAccountEntityRepository.findOne(lessUsedFtsAccountsIds[0].id);
+    await this.ftsAccountEntityRepository.save(account);
+    return account;
   }
 
   /**
@@ -152,13 +120,12 @@ export class UserService {
    * @param userId
    */
   async getNextFtsAccountByUserId(userId: string): Promise<FtsAccountEntity> {
-    const userFtsAccounts = await this.getFtsAccountsByUserId(userId);
-    const lastUsedAccountsIds = await this.getFtsAccountsQueue(userFtsAccounts.map(account => account.id));
-    const mostUnusedAccounts = userFtsAccounts.filter(account => !lastUsedAccountsIds.some(accountId => account.id === accountId));
-    if (mostUnusedAccounts.length === 0) {
-      return userFtsAccounts[0];
-    }
-    return mostUnusedAccounts[0];
+    const account = await this.ftsAccountEntityRepository.findOne({
+      where: { userId },
+      order: { lastUsingDate: 'ASC' },
+    });
+    await this.ftsAccountEntityRepository.save(account);
+    return account;
   }
 
   async getFtsAccountForUser(userId: string): Promise<FtsAccountEntity> {

@@ -4,7 +4,6 @@ import { Guards }                                                             fr
 
 function Action(title: string, type: any): MethodDecorator {
   return (target: Record<string, any>, key: string | symbol, descriptor: PropertyDescriptor): any => {
-    setTimeout(() => Logger.debug(`Changed ${target.constructor.name}\`s method "${String(key)}"`), 600);
     const operationDescriptor = ApiOperation({
       title,
       operationId: String(key),

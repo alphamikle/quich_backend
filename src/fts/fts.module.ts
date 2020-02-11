@@ -1,28 +1,26 @@
-import { forwardRef, Module }            from '@nestjs/common';
-import { TypeOrmModule }                 from '@nestjs/typeorm';
-import { FtsService }                    from './fts.service';
-import { FtsValidator }                  from './fts.validator';
-import { CommonValidator }               from '../helpers/common.validator';
-import { FtsController }                 from './fts.controller';
-import { FtsAccountEntity }              from '../user/entities/fts-account.entity';
-import { UserModule }                    from '../user/user.module';
-import { FtsAccountToBillRequestEntity } from './entities/fts-account-to-bill-request.entity';
-import { BillRequestEntity }             from '../bill-request/entities/bill-request.entity';
-import { BillRequestModule }             from '../bill-request/bill-request.module';
-import { DateHelper }                    from '../helpers/date.helper';
-import { FtsTransformer }                from './fts.transformer';
+import { forwardRef, Module }     from '@nestjs/common';
+import { TypeOrmModule }          from '@nestjs/typeorm';
+import { FtsService }             from './fts.service';
+import { FtsValidator }           from './fts.validator';
+import { CommonValidator }        from '../helpers/common.validator';
+import { FtsAccountEntity }       from '../user/entities/fts-account.entity';
+import { UserModule }             from '../user/user.module';
+import { BillRequestEntity }      from '../bill-request/entities/bill-request.entity';
+import { BillRequestModule }      from '../bill-request/bill-request.module';
+import { FtsTransformer }         from './fts.transformer';
+import { DateHelper }             from '../helpers/date.helper';
+import { FtsAccountUsingsEntity } from './entities/fts-account-usings.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       FtsAccountEntity,
-      FtsAccountToBillRequestEntity,
       BillRequestEntity,
+      FtsAccountUsingsEntity,
     ]),
     forwardRef(() => UserModule),
     BillRequestModule,
   ],
-  controllers: [FtsController],
   providers: [
     FtsService,
     FtsValidator,

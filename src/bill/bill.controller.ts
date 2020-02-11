@@ -237,6 +237,8 @@ export class BillController {
             billRequestId,
             ftsData: billDataFromFts,
           }),
+          // ! TODO: С течением времени убедиться, что счетчик в ФНС увеличивается только на успешные попытки, а не на все подряд
+          this.ftsService.incrementUsesOfFtsAccount(ftsAccount.phone),
         ]);
         this.setBillRequestIdToCache({
           userId: user.id,

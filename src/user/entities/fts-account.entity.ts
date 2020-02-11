@@ -1,6 +1,6 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { ApiModelProperty }                                                              from '@nestjs/swagger';
-import { UserEntity }                                                                    from './user.entity';
+import { AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { ApiModelProperty }                                                                         from '@nestjs/swagger';
+import { UserEntity }                                                                               from './user.entity';
 
 @Entity()
 export class FtsAccountEntity {
@@ -17,12 +17,11 @@ export class FtsAccountEntity {
   password!: string;
 
   @ApiModelProperty()
-  @Column({ default: false })
-  isMain!: boolean;
-
-  @ApiModelProperty()
   @Column()
   userId!: string;
+
+  @Column({ default: () => 'now()' })
+  lastUsingDate!: Date;
 
   @ManyToOne(() => UserEntity, user => user.ftsAccounts, { onDelete: 'CASCADE' })
   user?: UserEntity;
@@ -35,5 +34,10 @@ export class FtsAccountEntity {
       .replace(/^8/, '7')
       .replace(/^7/, '+7')
     ;
+  }
+
+  @AfterLoad()
+  updateLastUsingDate() {
+    this.lastUsingDate = new Date();
   }
 }
