@@ -135,7 +135,7 @@ export class FtsService {
       }
       return response.data.document.receipt;
     } catch (err) {
-      Logger.error(`FETCHING ERROR ${err.message}`);
+      Logger.error(`FETCHING ERROR ${JSON.stringify(err.message)}`);
       if (count < limit) {
         return this.fetchBillData(
           {

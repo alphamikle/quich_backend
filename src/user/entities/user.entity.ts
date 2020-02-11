@@ -53,4 +53,8 @@ export class UserEntity {
 
   @OneToMany(() => UserQueryLimitEntity, uses => uses.user)
   queryLimits?: UserQueryLimitEntity[];
+
+  hasPurchase!: boolean;
+
+  queryUses!: number;
 }

@@ -17,6 +17,7 @@ import { ShopDto }                                                              
 import { BILL_IS_BEEN_SAVED, FTS_UNKNOWN_FETCHING_ERROR, INVALID_ID_ERROR, INVALID_USER_ERROR, NOT_FOUND_FTS_ACCOUNT, OK } from '../helpers/text';
 import { DateHelper }                                                                                                      from '../helpers/date.helper';
 import { SecureDeleteAction, SecureGetAction, SecurePatchAction, SecurePostAction, TagController }                         from '../helpers/decorators';
+import { SubscriptionValidator }                                                                                           from '../subscription/subscription.validator';
 
 @TagController('bill')
 export class BillController {
@@ -32,6 +33,7 @@ export class BillController {
     private readonly purchaseService: PurchaseService,
     private readonly billService: BillService,
     private readonly dateHelper: DateHelper,
+    private readonly subscriptionValidator: SubscriptionValidator,
   ) {
   }
 
@@ -42,6 +44,7 @@ export class BillController {
 
   @SecurePostAction('Получение информации о чеке', BillDto, 'data')
   async getBillData(@RequestUser() user: UserEntity, @Body() ftsQrDto: FtsQrDto): Promise<BillDto> {
+    this.validateLimits(user);
     const billData = await this.getBillDataFromFtsOrOfd(user, ftsQrDto);
     if (typeof billData === 'string') {
       throw new BadRequestException({ push: billData });
@@ -64,6 +67,7 @@ export class BillController {
 
   @SecurePostAction('Получение информации о чеке по id BillRequest', BillDto, 'data/request/:requestId')
   async getBillDataByBillRequestId(@RequestUser() user: UserEntity, @Param('requestId') requestId: string): Promise<BillDto> {
+    this.validateLimits(user);
     const billRequest = await this.billRequestService.getBillRequestById(requestId);
     if (!billRequest) {
       throw new BadRequestException({ push: INVALID_ID_ERROR });
@@ -162,19 +166,23 @@ export class BillController {
       ftsPromise,
       ofdPromise,
     ];
-    // TODO: Исправить логику, чтобы в race участвовали все запросы в ОФД а не их комплекс
     const result = await Promise.race(promiseArr);
     if (result !== null && typeof result !== 'string') {
+      await this.userService.incrementUserQueriesLimit({
+        userId: user.id,
+        accountId: null,
+      });
       return result;
     }
     const [billFromFts, billFromOfd] = await Promise.all(promiseArr);
-    if (billFromOfd === null && typeof billFromFts === 'string') {
+    if (billFromOfd === null) {
       return billFromFts;
     }
-    if (billFromOfd !== null) {
-      return billFromOfd;
-    }
-    return billFromFts;
+    await this.userService.incrementUserQueriesLimit({
+      userId: user.id,
+      accountId: null,
+    });
+    return billFromOfd;
   }
 
   private setBillRequestIdToCache({ userId, ftsQrDto, billRequestId }: { userId: string; ftsQrDto: FtsQrDto; billRequestId: string }) {
@@ -235,7 +243,10 @@ export class BillController {
           }),
           // ! TODO: С течением времени убедиться, что счетчик в ФНС увеличивается только на успешные попытки, а не на все подряд
           this.ftsService.incrementUsesOfFtsAccount(ftsAccount.phone),
-          this.userService.incrementUserQueriesLimit({ userId: user.id, accountId: ftsAccount.id })
+          await this.userService.incrementUserQueriesLimit({
+            userId: user.id,
+            accountId: ftsAccount.id,
+          }),
         ]);
         this.setBillRequestIdToCache({
           userId: user.id,
@@ -247,5 +258,12 @@ export class BillController {
       return billDataFromFts;
     }
     return FTS_UNKNOWN_FETCHING_ERROR;
+  }
+
+  private validateLimits(user: UserEntity): void {
+    const validateResult = this.subscriptionValidator.validateUserUsingLimits(user);
+    if (validateResult !== true) {
+      throw new BadRequestException(validateResult);
+    }
   }
 }

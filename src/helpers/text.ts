@@ -31,8 +31,9 @@ export const NOT_FOUND_FTS_ACCOUNT = 'Не найден аккаунт ФНС!';
 export const NOT_FOUND_BILL_REQUEST = 'Не найден запрос чека с таким ID';
 export const INCORRECT_USER_ID = 'Некорректные данные пользователя';
 export const SENDING_FTS_SMS = 'Ожидайте СМС с кодом для входа';
-export const BILL_IS_BEEN_SAVED = 'Данный чек был сохранен вами ранее';
+export const BILL_IS_BEEN_SAVED = 'Данный чек уже сохранен';
 export const INCORRECT_GOOGLE_PLAY_HOOK_DATA = 'Некорректные данные подписки';
 export const SUBSCRIPTION_NOT_EXIST = 'Подписки с таким ID не существует';
 // # OTHERS:
 export const UNDEFINED_CATEGORY_TITLE = 'НЕОПРЕДЕЛЕННОЕ';
+export const YOU_NEED_TO_BUY_SUBSCRIPTION = 'Вы исчерпали лимит сканирований на сегодня, купите подписку или воспользуйтесь приложением завтра';

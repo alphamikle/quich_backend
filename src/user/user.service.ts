@@ -1,13 +1,13 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { BadRequestException, Injectable }              from '@nestjs/common';
+import { InjectRepository }                             from '@nestjs/typeorm';
 import { Between, FindConditions, In, Not, Repository } from 'typeorm';
-import { UserEntity } from './entities/user.entity';
-import { SessionEntity } from './entities/session.entity';
-import { DateHelper } from '../helpers/date.helper';
-import { FtsAccountEntity } from './entities/fts-account.entity';
-import { FtsAccountDto } from '../fts/dto/fts-account.dto';
-import { FTS_ACCOUNTS_ALL_BUSY_ERROR } from '../helpers/text';
-import { UserQueryLimitEntity } from './entities/user-query-limit.entity';
+import { UserEntity }                                   from './entities/user.entity';
+import { SessionEntity }                                from './entities/session.entity';
+import { DateHelper }                                   from '../helpers/date.helper';
+import { FtsAccountEntity }                             from './entities/fts-account.entity';
+import { FtsAccountDto }                                from '../fts/dto/fts-account.dto';
+import { FTS_ACCOUNTS_ALL_BUSY_ERROR }                  from '../helpers/text';
+import { UserQueryLimitEntity }                         from './entities/user-query-limit.entity';
 
 const { TOKEN_DURATION } = process.env;
 
@@ -152,14 +152,7 @@ export class UserService {
   }
 
   async incrementUserQueriesLimit({ userId, accountId }: { userId: string; accountId: string }): Promise<void> {
-    const currentDate = new Date();
-    const nextDate = this.dateHelper.addDays(currentDate, 1);
-    let query = await this.userQueryLimitEntityRepository.findOne({
-      where: {
-        userId,
-        usingDay: Between(currentDate, nextDate),
-      },
-    });
+    let query = await this.getUserQueryUses(userId);
     if (query === undefined) {
       query = new UserQueryLimitEntity();
       query.usingDay = new Date();
@@ -171,6 +164,17 @@ export class UserService {
     query.usingHistory.push({
       accountId,
       dateTime: new Date(),
+    });
+  }
+
+  async getUserQueryUses(userId: string): Promise<UserQueryLimitEntity | undefined> {
+    const currentDate = new Date();
+    const nextDate = this.dateHelper.addDays(currentDate, 1);
+    return this.userQueryLimitEntityRepository.findOne({
+      where: {
+        userId,
+        usingDay: Between(currentDate, nextDate),
+      },
     });
   }
 }

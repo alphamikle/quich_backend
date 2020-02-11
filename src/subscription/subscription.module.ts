@@ -16,7 +16,10 @@ import { SubscriptionValidator }  from './subscription.validator';
     DateHelper,
     SubscriptionValidator,
   ],
-  exports: [SubscriptionService],
+  exports: [
+    SubscriptionService,
+    SubscriptionValidator,
+  ],
 })
 export class SubscriptionModule {
 }

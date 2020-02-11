@@ -22,17 +22,24 @@ export class OfdService {
   ) {
   }
 
-  async fetchBillData(qrData: FtsQrDto) {
+  async fetchBillData(qrData: FtsQrDto): Promise<BillDto | null> {
     const ofdFetcher = new OfdFetcher(qrData, { proxyService: this.proxyService });
     const firstOfdFetcher = new FirstOfdFetcher(qrData, {
       proxyService: this.proxyService,
       dateHelper: this.dateHelper,
     });
 
-    const responses: BillDto[] = await Promise.all([
+    const promisesArr: Promise<BillDto>[] = [
       ofdFetcher.fetchBill(),
       firstOfdFetcher.fetchBill(),
-    ]);
+    ];
+
+    const firstResponse = await Promise.race(promisesArr);
+    if (firstResponse !== null) {
+      return firstResponse;
+    }
+
+    const responses: BillDto[] = await Promise.all(promisesArr);
     const results = responses.filter(response => response !== null);
     if (results.length > 0) {
       return results[0];

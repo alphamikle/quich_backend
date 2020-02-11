@@ -1,9 +1,10 @@
-import { Injectable }                                                             from '@nestjs/common';
-import { InjectRepository }                                                       from '@nestjs/typeorm';
-import { Repository }                                                             from 'typeorm';
-import { GooglePlayHookDto }                                                      from './dto/google-play-hook.dto';
-import { INCORRECT_GOOGLE_PLAY_HOOK_DATA, SUBSCRIPTION_NOT_EXIST, UNKNOWN_ERROR } from '../helpers/text';
-import { Sku, SubscriptionEntity }                                                from './entities/subscription.entity';
+import { Injectable }                                                                                           from '@nestjs/common';
+import { InjectRepository }                                                                                     from '@nestjs/typeorm';
+import { Repository }                                                                                           from 'typeorm';
+import { GooglePlayHookDto }                                                                                    from './dto/google-play-hook.dto';
+import { INCORRECT_GOOGLE_PLAY_HOOK_DATA, SUBSCRIPTION_NOT_EXIST, UNKNOWN_ERROR, YOU_NEED_TO_BUY_SUBSCRIPTION } from '../helpers/text';
+import { Sku, SubscriptionEntity }                                                                              from './entities/subscription.entity';
+import { UserEntity }                                                                                           from '../user/entities/user.entity';
 
 const { GOOGLE_PLAY_HOOK_THEME } = process.env;
 
@@ -41,5 +42,14 @@ export class SubscriptionValidator {
     const isSkuExist = this.validateProductInfo(sku) === true;
     const isTokenExist = await this.isSubscriptionExist(token);
     return isSkuExist && isTokenExist === true || error;
+  }
+
+  validateUserUsingLimits(user: UserEntity): true | { push: string } {
+    if (!user.hasPurchase && user.queryUses >= 2) {
+      return {
+        push: YOU_NEED_TO_BUY_SUBSCRIPTION,
+      };
+    }
+    return true;
   }
 }

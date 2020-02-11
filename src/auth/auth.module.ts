@@ -7,12 +7,14 @@ import { BearerStrategy }     from './strategies/bearer.strategy';
 import { UserModule }         from '../user/user.module';
 import { SessionEntity }      from '../user/entities/session.entity';
 import { DateHelper }         from '../helpers/date.helper';
+import { SubscriptionModule } from '../subscription/subscription.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([SessionEntity]),
     forwardRef(() => UserModule),
     PassportModule,
+    SubscriptionModule,
   ],
   providers: [
     AuthService,

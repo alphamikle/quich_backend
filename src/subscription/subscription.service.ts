@@ -158,7 +158,7 @@ export class SubscriptionService {
     await this.subscriptionRepository.update({ purchaseToken }, { userId });
   }
 
-  async getUserSubscriptionInfo(userId: string): Promise<SubscriptionInfoDto> {
+  async getUserSubscriptionInfo(userId: string): Promise<SubscriptionInfoDto | null> {
     const activeSubscription = await this.subscriptionRepository.findOne({
       where: {
         userId,

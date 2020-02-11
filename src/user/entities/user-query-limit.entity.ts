@@ -27,5 +27,5 @@ export class UserQueryLimitEntity {
   @Column({
     type: 'jsonb',
   })
-  usingHistory!: Array<{ dateTime: Date; accountId: string }>;
+  usingHistory!: Array<{ dateTime: Date; accountId: string | null }>;
 }
