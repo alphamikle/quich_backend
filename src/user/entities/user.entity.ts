@@ -7,6 +7,7 @@ import { CategoryToUserEntity }                                                f
 import { BillRequestEntity }                                                   from '../../bill-request/entities/bill-request.entity';
 import { SubscriptionEntity }                                                  from '../../subscription/entities/subscription.entity';
 import { MessageEntity }                                                       from '../../message/entity/message.entity';
+import { UserQueryLimitEntity }                                                from './user-query-limit.entity';
 
 @Entity()
 export class UserEntity {
@@ -49,4 +50,7 @@ export class UserEntity {
 
   @OneToMany(() => MessageEntity, message => message.user)
   messages?: MessageEntity[];
+
+  @OneToMany(() => UserQueryLimitEntity, uses => uses.user)
+  queryLimits?: UserQueryLimitEntity[];
 }

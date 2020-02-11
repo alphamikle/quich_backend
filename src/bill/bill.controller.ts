@@ -211,15 +211,11 @@ export class BillController {
     if (billRequest && billRequest.isFetched && billRequest.billId) {
       return BILL_IS_BEEN_SAVED;
     }
-    let ftsAccount = await this.userService.getNextFtsAccountByUserId(user.id);
-    if (!ftsAccount) {
-      ftsAccount = await this.userService.getRandomFtsAccount();
-    }
+    const ftsAccount = await this.userService.getFtsAccountForUser(user.id);
     if (!ftsAccount) {
       // ? Ждем до получения чека от ОФД
       return NOT_FOUND_FTS_ACCOUNT;
     }
-    await this.userService.addFtsAccountIdToQueue(ftsAccount.id);
     let checkStatus = billRequest.isChecked;
     const ftsAccountDto = new FtsAccountDto(ftsAccount.phone, ftsAccount.password);
     if (!checkStatus) {
@@ -239,6 +235,7 @@ export class BillController {
           }),
           // ! TODO: С течением времени убедиться, что счетчик в ФНС увеличивается только на успешные попытки, а не на все подряд
           this.ftsService.incrementUsesOfFtsAccount(ftsAccount.phone),
+          this.userService.incrementUserQueriesLimit({ userId: user.id, accountId: ftsAccount.id })
         ]);
         this.setBillRequestIdToCache({
           userId: user.id,

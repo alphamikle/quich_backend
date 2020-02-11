@@ -1,21 +1,20 @@
-import { Test, TestingModule }   from '@nestjs/testing';
-import { TypeOrmModule }         from '@nestjs/typeorm';
-import { forwardRef, Logger }    from '@nestjs/common';
-import { UserService }           from './user.service';
-import { typeOrmOptions }        from '../config';
-import { UserValidator }         from './user.validator';
-import { DateHelper }            from '../helpers/date.helper';
-import { UserEntity }            from './entities/user.entity';
-import { SessionEntity }         from './entities/session.entity';
-import { FtsAccountEntity }      from './entities/fts-account.entity';
-import { BillEntity }            from '../bill/entities/bill.entity';
-import { CategoryToUserEntity }  from '../category/entities/category-to-user.entity';
-import { BillRequestEntity }     from '../bill-request/entities/bill-request.entity';
-import { FtsAccountQueueEntity } from './entities/fts-account-queue.entity';
-import { AuthModule }            from '../auth/auth.module';
-import { FtsModule }             from '../fts/fts.module';
-import { EmailModule }           from '../email/email.module';
-import { SubscriptionModule }    from '../subscription/subscription.module';
+import { Test, TestingModule }  from '@nestjs/testing';
+import { TypeOrmModule }        from '@nestjs/typeorm';
+import { forwardRef, Logger }   from '@nestjs/common';
+import { UserService }          from './user.service';
+import { typeOrmOptions }       from '../config';
+import { UserValidator }        from './user.validator';
+import { DateHelper }           from '../helpers/date.helper';
+import { UserEntity }           from './entities/user.entity';
+import { SessionEntity }        from './entities/session.entity';
+import { FtsAccountEntity }     from './entities/fts-account.entity';
+import { BillEntity }           from '../bill/entities/bill.entity';
+import { CategoryToUserEntity } from '../category/entities/category-to-user.entity';
+import { BillRequestEntity }    from '../bill-request/entities/bill-request.entity';
+import { AuthModule }           from '../auth/auth.module';
+import { FtsModule }            from '../fts/fts.module';
+import { EmailModule }          from '../email/email.module';
+import { SubscriptionModule }   from '../subscription/subscription.module';
 
 jest.setTimeout(600000);
 
@@ -35,7 +34,6 @@ describe('user service test', () => {
           BillEntity,
           CategoryToUserEntity,
           BillRequestEntity,
-          FtsAccountQueueEntity,
         ]),
         forwardRef(() => AuthModule),
         forwardRef(() => FtsModule),

@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Param }                                         from '@nestjs/common';
+import { BadRequestException, Body, Logger, Param }                                 from '@nestjs/common';
 import { SubscriptionService }                                                      from './subscription.service';
 import { GooglePlayHookDto }                                                        from './dto/google-play-hook.dto';
 import { GoogleApiService }                                                         from './google-api.service';
@@ -24,6 +24,7 @@ export class SubscriptionController {
   async googleSubscriptionHook(@Body() hookDto: GooglePlayHookDto) {
     const validationResult = this.subscriptionValidator.validateHokDto(hookDto);
     if (validationResult !== true) {
+      Logger.error(`Invalid GooglePlay hook dto: ${JSON.stringify(hookDto)}`, null, SubscriptionController.name);
       throw new BadRequestException(validationResult);
     }
     hookDto = this.subscriptionService.extractAdditionalData(hookDto);
@@ -56,13 +57,6 @@ export class SubscriptionController {
     if (validationResult !== true) {
       throw new BadRequestException(validationResult);
     }
-    // const haveUserThisSubscription = await this.subscriptionService.isSubscriptionActiveAndBelongsToUser({ userId: user.id, purchaseToken });
-    // if (!haveUserThisSubscription) {
-    //   const subscription = await this.subscriptionService.getLastSubscriptionByPurchaseToken(purchaseToken);
-    //   if (subscription.isActive) {
-    //
-    //   }
-    // }
     await this.subscriptionService.setUserIdToSubscriptionsByToken({
       userId: user.id,
       purchaseToken,

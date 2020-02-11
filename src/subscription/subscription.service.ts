@@ -118,14 +118,7 @@ export class SubscriptionService {
     return count > 0;
   }
 
-  assignSubscriptionWithGooglePlaySubscriptionInfo({
-    subscription,
-    subscriptionInfo,
-  }:
-    {
-      subscription: SubscriptionEntity,
-      subscriptionInfo: GooglePlaySubscriptionInfo,
-    }): SubscriptionEntity {
+  assignSubscriptionWithGooglePlaySubscriptionInfo({ subscription, subscriptionInfo }: { subscription: SubscriptionEntity, subscriptionInfo: GooglePlaySubscriptionInfo, }): SubscriptionEntity {
     subscription.orderId = subscriptionInfo.orderId;
     subscription.subscriptionInfoRawBody = subscriptionInfo;
     subscription.price = subscriptionInfo.priceAmountMicros;
