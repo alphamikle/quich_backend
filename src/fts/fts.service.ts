@@ -95,7 +95,8 @@ export class FtsService {
     return this.ftsAccountEntityRepository.save(ftsAccount);
   }
 
-  async checkBillExistence({ fiscalNumber: fn, checkType: ct = 1, fiscalDocument: fd, fiscalProp: fp, dateTime, totalSum: ts }: FtsQrDto, userCredentials: FtsAccountDto): Promise<boolean> {
+  async checkBillExistence(qrDto: FtsQrDto, userCredentials: FtsAccountDto): Promise<boolean> {
+    const { fiscalNumber: fn, checkType: ct = 1, fiscalDocument: fd, fiscalProp: fp, dateTime, totalSum: ts } = qrDto;
     const penny = ts * 100;
     const preUrl = '/v1/ofds/*/inns/*/fss/';
     const url = encodeURI(
@@ -103,9 +104,10 @@ export class FtsService {
     );
     try {
       await this.api.get(url, { headers: this.getHeaders(userCredentials) });
+      Logger.log(`Check bill existence was correct with data ${JSON.stringify(qrDto)} and credentials ${JSON.stringify(userCredentials)}`, FtsService.name);
       return true;
     } catch (err) {
-      console.error(err);
+      Logger.error(err.message ?? err, err.stack, FtsService.name);
       return false;
     }
   }
@@ -117,7 +119,7 @@ export class FtsService {
     const url = `/v1/inns/*/kkts/*/fss/${fiscalNumber}/tickets/${fiscalDocument}?fiscalSign=${fiscalProp}&sendToEmail=no`;
     try {
       if (count >= limit) {
-        throw new RequestTimeoutException();
+        throw new RequestTimeoutException(`Manual request timeout  exception with ${count} tries`);
       }
       const response: FtsFetchResponse = await this.api.get(url, {
         headers: this.getHeaders(ftsAccountDto),
@@ -135,7 +137,7 @@ export class FtsService {
       }
       return response.data.document.receipt;
     } catch (err) {
-      Logger.error(`FETCHING ERROR ${JSON.stringify(err.message)}`);
+      Logger.error(`FETCHING ERROR ${JSON.stringify(err.message)}`, err.stack, FtsService.name);
       if (count < limit) {
         return this.fetchBillData(
           {

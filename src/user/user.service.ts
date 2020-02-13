@@ -165,6 +165,7 @@ export class UserService {
       accountId,
       dateTime: new Date(),
     });
+    await this.userQueryLimitEntityRepository.save(query);
   }
 
   async getUserQueryUses(userId: string): Promise<UserQueryLimitEntity | undefined> {

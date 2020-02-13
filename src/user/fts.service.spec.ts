@@ -15,6 +15,7 @@ import { AuthModule }           from '../auth/auth.module';
 import { FtsModule }            from '../fts/fts.module';
 import { EmailModule }          from '../email/email.module';
 import { SubscriptionModule }   from '../subscription/subscription.module';
+import { UserQueryLimitEntity } from './entities/user-query-limit.entity';
 
 jest.setTimeout(600000);
 
@@ -22,6 +23,7 @@ describe('user service test', () => {
   let service: UserService;
   const hasAccountUserId = 'c7d1285c-31f2-4265-939e-c733a19372d4';
   const hasNotAccountUser = '69e76165-f185-4a94-bae4-24250fa1ed7c';
+  const accountId = 'aa9caf09-66db-419d-9ea9-a4f866b74b22';
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -34,6 +36,7 @@ describe('user service test', () => {
           BillEntity,
           CategoryToUserEntity,
           BillRequestEntity,
+          UserQueryLimitEntity,
         ]),
         forwardRef(() => AuthModule),
         forwardRef(() => FtsModule),
@@ -76,5 +79,12 @@ describe('user service test', () => {
     expect(account)
       .not
       .toBe(undefined);
+  });
+
+  it('Increment usings of account for user', async () => {
+    await service.incrementUserQueriesLimit({
+      userId: hasAccountUserId,
+      accountId,
+    });
   });
 });
