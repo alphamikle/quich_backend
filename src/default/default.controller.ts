@@ -11,7 +11,7 @@ export class DefaultController {
   ) {
   }
 
-  @GetAction('URL для проверки работоспособности сервера', String)
+  @GetAction('URL для проверки работоспособности сервера', String, 'ping')
   pingAction(): string {
     return 'PONG';
   }
