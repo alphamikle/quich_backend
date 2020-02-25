@@ -64,6 +64,11 @@ export class DefaultService {
     const accounts = await this.userService.getFtsAccountsByUserId(userId);
     const billsRequests = await this.billRequestService.getUnloadedBillRequestsByUserId(userId);
     const unreadMessages = await this.messageService.getUnreadUserMessages(userId);
+    const userQueries = await this.userService.getUserQueryUses(userId);
+    let queries = 0;
+    if (userQueries) {
+      queries = userQueries.queries;
+    }
     return {
       bills,
       categories,
@@ -73,6 +78,7 @@ export class DefaultService {
       accounts,
       billsRequests,
       unreadMessages,
+      queries,
     };
   }
 

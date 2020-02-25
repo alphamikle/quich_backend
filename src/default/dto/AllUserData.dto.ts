@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { ApiModelProperty }  from '@nestjs/swagger';
 import { BillEntity }        from '../../bill/entities/bill.entity';
 import { ShopEntity }        from '../../shop/entities/shop.entity';
@@ -32,4 +33,7 @@ export class AllUserDataDto {
 
   @ApiModelProperty({ type: [MessageEntity] })
   unreadMessages: MessageEntity[];
+
+  @ApiModelProperty()
+  queries: number;
 }
