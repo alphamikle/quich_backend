@@ -14,7 +14,6 @@ import { FtsAccountModifyDto }                                                  
 import { FtsService }                                                                                                                                                                                             from '../fts/fts.service';
 import { EmailService, RestoreEmailCredentials }                                                                                                                                                                  from '../email/email.service';
 import { FtsRegistrationDto }                                                                                                                                                                                     from '../fts/dto/fts-registration.dto';
-import { SubscriptionService }                                                                                                                                                                                    from '../subscription/subscription.service';
 import { GetAction, PostAction, SecureDeleteAction, SecureGetAction, SecurePatchAction, SecurePostAction, TagController }                                                                                         from '../helpers/decorators';
 
 @TagController('user')
@@ -31,7 +30,6 @@ export class UserController {
     @Inject(forwardRef(() => FtsService))
     private readonly ftsService: FtsService,
     private readonly emailService: EmailService,
-    private readonly subscriptionService: SubscriptionService,
   ) {
   }
 
@@ -45,7 +43,6 @@ export class UserController {
       email,
       password,
     });
-    await this.subscriptionService.addTemporarySubscriptionToUser({ userId: user.id });
     return SIGN_UP_SUCCESS;
   }
 

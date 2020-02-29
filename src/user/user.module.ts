@@ -13,7 +13,6 @@ import { BillEntity }           from '../bill/entities/bill.entity';
 import { CategoryToUserEntity } from '../category/entities/category-to-user.entity';
 import { BillRequestEntity }    from '../bill-request/entities/bill-request.entity';
 import { EmailModule }          from '../email/email.module';
-import { SubscriptionModule }   from '../subscription/subscription.module';
 import { UserQueryLimitEntity } from './entities/user-query-limit.entity';
 
 @Module({
@@ -30,7 +29,6 @@ import { UserQueryLimitEntity } from './entities/user-query-limit.entity';
     forwardRef(() => AuthModule),
     forwardRef(() => FtsModule),
     EmailModule,
-    SubscriptionModule,
   ],
   controllers: [UserController],
   providers: [
