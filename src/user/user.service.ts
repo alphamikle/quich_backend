@@ -8,6 +8,8 @@ import { FtsAccountEntity }                             from './entities/fts-acc
 import { FtsAccountDto }                                from '../fts/dto/fts-account.dto';
 import { FTS_ACCOUNTS_ALL_BUSY_ERROR }                  from '../helpers/text';
 import { UserQueryLimitEntity }                         from './entities/user-query-limit.entity';
+import { FtsQrDto }                                     from '../fts/dto/fts-qr.dto';
+import { getHash }                                      from '../helpers/common.helper';
 
 const { TOKEN_DURATION } = process.env;
 
@@ -151,7 +153,7 @@ export class UserService {
     return ftsAccount;
   }
 
-  async incrementUserQueriesLimit({ userId, accountId }: { userId: string; accountId: string }): Promise<void> {
+  async incrementUserQueriesLimit({ userId, accountId, qrDto }: { userId: string; accountId: string; qrDto: FtsQrDto }): Promise<void> {
     let query = await this.getUserQueryUses(userId);
     if (query === undefined) {
       query = new UserQueryLimitEntity();
@@ -161,10 +163,15 @@ export class UserService {
       query.usingHistory = [];
     }
     query.queries += 1;
+    const billHash = getHash(qrDto);
     query.usingHistory.push({
       accountId,
       dateTime: new Date(),
+      billHash,
     });
+    if (query.usingHistory.filter(item => item.billHash === billHash).length > 1) {
+      return;
+    }
     await this.userQueryLimitEntityRepository.save(query);
   }
 

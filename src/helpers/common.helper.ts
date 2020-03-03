@@ -2,6 +2,9 @@ import leven               from 'leven';
 import { Logger }          from '@nestjs/common';
 import { v4 }              from 'uuid';
 import { AllHtmlEntities } from 'html-entities';
+import { createHash }      from 'crypto';
+
+const md5 = () => createHash('md5');
 
 export async function wait(delay = 500) {
   await new Promise(resolve => setTimeout(resolve, delay));
@@ -65,4 +68,21 @@ export function randomUUID() {
 
 export function decodeHtmlEntities(val: string) {
   return (new AllHtmlEntities()).decode(val);
+}
+
+type Hashable = string | number | [] | {};
+
+export function getHash(data: Hashable) {
+  let string = '';
+  const isObject = typeof data === 'object' && Object.keys(data);
+  const isArray = typeof data === 'object' && Array.isArray(data) && data.length > 0;
+  if (isObject || isArray) {
+    string = JSON.stringify(data);
+  } else {
+    string = String(data);
+  }
+  console.log(string);
+  return md5()
+    .update(string)
+    .digest('hex');
 }

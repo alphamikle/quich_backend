@@ -171,6 +171,7 @@ export class BillController {
       await this.userService.incrementUserQueriesLimit({
         userId: user.id,
         accountId: null,
+        qrDto: ftsQrDto,
       });
       return result;
     }
@@ -181,6 +182,7 @@ export class BillController {
     await this.userService.incrementUserQueriesLimit({
       userId: user.id,
       accountId: null,
+      qrDto: ftsQrDto,
     });
     return billFromOfd;
   }
@@ -246,6 +248,7 @@ export class BillController {
           await this.userService.incrementUserQueriesLimit({
             userId: user.id,
             accountId: ftsAccount.id,
+            qrDto: ftsQrDto,
           }),
         ]);
         this.setBillRequestIdToCache({
