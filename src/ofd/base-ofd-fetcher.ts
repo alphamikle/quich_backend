@@ -52,6 +52,10 @@ export abstract class BaseOfdFetcher {
     Logger.warn(`Not found data of bill with qrDto=${this.qrDtoString} in ${this.constructor.name}`, this.constructor.name);
   }
 
+  protected throwError() {
+    Logger.warn(`Was thrown an error while getting bill data with qrDto=${this.qrDtoString} in ${this.constructor.name}`, this.constructor.name);
+  }
+
   protected found() {
     Logger.log(`Found bill data with qrDto=${this.qrDtoString} in ${this.constructor.name}`, this.constructor.name);
   }

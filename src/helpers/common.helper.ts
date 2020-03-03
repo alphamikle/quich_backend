@@ -1,6 +1,7 @@
-import leven      from 'leven';
-import { Logger } from '@nestjs/common';
-import { v4 }     from 'uuid';
+import leven               from 'leven';
+import { Logger }          from '@nestjs/common';
+import { v4 }              from 'uuid';
+import { AllHtmlEntities } from 'html-entities';
 
 export async function wait(delay = 500) {
   await new Promise(resolve => setTimeout(resolve, delay));
@@ -60,4 +61,8 @@ export function randomOS(): string {
 
 export function randomUUID() {
   return v4();
+}
+
+export function decodeHtmlEntities(val: string) {
+  return (new AllHtmlEntities()).decode(val);
 }

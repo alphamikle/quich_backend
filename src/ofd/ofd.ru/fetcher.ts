@@ -1,5 +1,4 @@
 import { HTMLElement, NodeType, parse }  from 'node-html-parser';
-import { AllHtmlEntities }               from 'html-entities';
 import * as assert                       from 'assert';
 import { BaseOfdFetcher, FetcherParams } from '../base-ofd-fetcher';
 import { ShopDto }                       from '../../shop/dto/shop.dto';
@@ -7,6 +6,7 @@ import { PurchaseDto }                   from '../../purchase/dto/purchase.dto';
 import { FtsQrDto }                      from '../../fts/dto/fts-qr.dto';
 import { BillDto }                       from '../../bill/dto/bill.dto';
 import { RequestService }                from '../../proxy/dto/requestable.interface';
+import { decodeHtmlEntities }            from '../../helpers/common.helper';
 
 export class OfdFetcher extends BaseOfdFetcher {
   private body: HTMLElement;
@@ -102,10 +102,6 @@ export class OfdFetcher extends BaseOfdFetcher {
     return null;
   }
 
-  private decodeEntities(val: string): string {
-    return (new AllHtmlEntities()).decode(val);
-  }
-
   private getNthBlock(val = 0): HTMLElement {
     return this.body.querySelectorAll('.margin-top-10')[val];
   }
@@ -116,7 +112,7 @@ export class OfdFetcher extends BaseOfdFetcher {
   }
 
   private getShopTitle(): string {
-    return this.decodeEntities(this.getNthBlock(0)
+    return decodeHtmlEntities(this.getNthBlock(0)
       .querySelector('.text-align-center').firstChild.childNodes[0].rawText);
   }
 
@@ -137,7 +133,7 @@ export class OfdFetcher extends BaseOfdFetcher {
   }
 
   private getShopPrettyTitle(): string {
-    return this.decodeEntities(this.getRightBlockOf(4));
+    return decodeHtmlEntities(this.getRightBlockOf(4));
   }
 
 }
