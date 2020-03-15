@@ -18,6 +18,7 @@ import { BILL_IS_BEEN_SAVED, FTS_UNKNOWN_FETCHING_ERROR, INVALID_ID_ERROR, INVAL
 import { DateHelper }                                                                                                      from '../helpers/date.helper';
 import { SecureDeleteAction, SecureGetAction, SecurePatchAction, SecurePostAction, TagController }                         from '../helpers/decorators';
 import { SubscriptionValidator }                                                                                           from '../subscription/subscription.validator';
+import { BillRequestEntity }                                                                                               from '../bill-request/entities/bill-request.entity';
 
 @TagController('bill')
 export class BillController {
@@ -160,7 +161,14 @@ export class BillController {
   }
 
   private async getBillDataFromFtsOrOfd(user: UserEntity, ftsQrDto: FtsQrDto): Promise<string | BillDto> {
-    const ftsPromise = this.getBillDataFromFts(user, ftsQrDto);
+    const billRequest = await this.billRequestService.findOrCreateBillRequest({
+      userId: user.id,
+      ftsQrDto,
+    });
+    if (billRequest && billRequest.isFetched && billRequest.billId) {
+      return BILL_IS_BEEN_SAVED;
+    }
+    const ftsPromise = this.getBillDataFromFts(user, ftsQrDto, billRequest);
     const ofdPromise = this.ofdService.fetchBillData(ftsQrDto);
     const promiseArr = [
       ftsPromise,
@@ -173,17 +181,18 @@ export class BillController {
         accountId: null,
         qrDto: ftsQrDto,
       });
+      await this.billRequestService.makeBillRequestFetched(billRequest.id);
       return result;
     }
     const [billFromFts, billFromOfd] = await Promise.all(promiseArr);
-    if (billFromOfd === null) {
-      return billFromFts;
+    if (typeof billFromFts !== 'string') {
+      await this.userService.incrementUserQueriesLimit({
+        userId: user.id,
+        accountId: null,
+        qrDto: ftsQrDto,
+      });
+      await this.billRequestService.makeBillRequestFetched(billRequest.id);
     }
-    await this.userService.incrementUserQueriesLimit({
-      userId: user.id,
-      accountId: null,
-      qrDto: ftsQrDto,
-    });
     return billFromOfd;
   }
 
@@ -213,14 +222,7 @@ export class BillController {
     }`;
   }
 
-  private async getBillDataFromFts(user: UserEntity, ftsQrDto: FtsQrDto): Promise<string | BillDto> {
-    const billRequest = await this.billRequestService.findOrCreateBillRequest({
-      userId: user.id,
-      ftsQrDto,
-    });
-    if (billRequest && billRequest.isFetched && billRequest.billId) {
-      return BILL_IS_BEEN_SAVED;
-    }
+  private async getBillDataFromFts(user: UserEntity, ftsQrDto: FtsQrDto, billRequest: BillRequestEntity): Promise<string | BillDto> {
     const ftsAccount = await this.userService.getFtsAccountForUser(user.id);
     if (!ftsAccount) {
       // ? Ждем до получения чека от ОФД
@@ -238,12 +240,10 @@ export class BillController {
       if (typeof billDataFromFts !== 'string') {
         const billDto = this.ftsTransformer.transformFtsBillToBillDto(billDataFromFts);
         await Promise.all([
-          this.billRequestService.makeBillRequestFetched(billRequestId),
           this.billRequestService.addFtsDataToBillRequest({
             billRequestId,
             ftsData: billDataFromFts,
           }),
-          // ! TODO: С течением времени убедиться, что счетчик в ФНС увеличивается только на успешные попытки, а не на все подряд
           this.ftsService.incrementUsesOfFtsAccount(ftsAccount.phone),
           await this.userService.incrementUserQueriesLimit({
             userId: user.id,
