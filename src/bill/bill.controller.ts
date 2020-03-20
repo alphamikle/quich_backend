@@ -230,8 +230,9 @@ export class BillController {
     }
     let checkStatus = billRequest.isChecked;
     const ftsAccountDto = new FtsAccountDto(ftsAccount.phone, ftsAccount.password);
+    const newCheckStatus = await this.ftsService.checkBillExistence(ftsQrDto, ftsAccountDto);
     if (!checkStatus) {
-      checkStatus = await this.ftsService.checkBillExistence(ftsQrDto, ftsAccountDto);
+      checkStatus = newCheckStatus;
     }
     if (checkStatus) {
       const billRequestId = billRequest.id;
