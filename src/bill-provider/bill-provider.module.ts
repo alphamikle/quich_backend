@@ -12,6 +12,7 @@ import { BillRequestEntity }   from '../bill-request/entities/bill-request.entit
     ]),
   ],
   providers: [BillProviderService],
+  exports: [BillProviderService],
 })
 export class BillProviderModule {
 }

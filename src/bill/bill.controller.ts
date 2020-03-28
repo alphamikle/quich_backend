@@ -19,6 +19,7 @@ import { DateHelper }                                                           
 import { SecureDeleteAction, SecureGetAction, SecurePatchAction, SecurePostAction, TagController }                         from '../helpers/decorators';
 import { SubscriptionValidator }                                                                                           from '../subscription/subscription.validator';
 import { BillRequestEntity }                                                                                               from '../bill-request/entities/bill-request.entity';
+import { BillProviderService, ProviderCode }                                                                               from '../bill-provider/bill-provider.service';
 
 @TagController('bill')
 export class BillController {
@@ -35,6 +36,7 @@ export class BillController {
     private readonly billService: BillService,
     private readonly dateHelper: DateHelper,
     private readonly subscriptionValidator: SubscriptionValidator,
+    private readonly providerService: BillProviderService,
   ) {
   }
 
@@ -181,19 +183,29 @@ export class BillController {
         accountId: null,
         qrDto: ftsQrDto,
       });
-      await this.billRequestService.makeBillRequestFetched(billRequest.id);
+      await this.makeBillRequestFetched(billRequest.id, result.providerCode);
       return result;
     }
     const [billFromFts, billFromOfd] = await Promise.all(promiseArr);
     if (typeof billFromFts !== 'string') {
+      await this.makeBillRequestFetched(billRequest.id, billFromFts.providerCode);
+      return billFromFts;
+    }
+    if (typeof billFromOfd !== 'string') {
       await this.userService.incrementUserQueriesLimit({
         userId: user.id,
         accountId: null,
         qrDto: ftsQrDto,
       });
-      await this.billRequestService.makeBillRequestFetched(billRequest.id);
+      await this.makeBillRequestFetched(billRequest.id, billFromOfd.providerCode);
+      return billFromOfd;
     }
-    return billFromOfd;
+    return 'Чек не найден в источниках';
+  }
+
+  private async makeBillRequestFetched(billRequestId: string, providerCode: string): Promise<void> {
+    const billProvider = await this.providerService.extractBillProvider(providerCode ?? ProviderCode.FTS);
+    await this.billRequestService.makeBillRequestFetched(billRequestId, billProvider.id);
   }
 
   private setBillRequestIdToCache({ userId, ftsQrDto, billRequestId }: { userId: string; ftsQrDto: FtsQrDto; billRequestId: string }) {

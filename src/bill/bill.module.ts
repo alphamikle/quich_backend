@@ -15,6 +15,7 @@ import { ShopModule }         from '../shop/shop.module';
 import { PurchaseModule }     from '../purchase/purchase.module';
 import { DateHelper }         from '../helpers/date.helper';
 import { SubscriptionModule } from '../subscription/subscription.module';
+import { BillProviderModule } from '../bill-provider/bill-provider.module';
 
 @Module({
   controllers: [BillController],
@@ -33,6 +34,7 @@ import { SubscriptionModule } from '../subscription/subscription.module';
     ShopModule,
     PurchaseModule,
     SubscriptionModule,
+    BillProviderModule,
   ],
   providers: [
     BillService,

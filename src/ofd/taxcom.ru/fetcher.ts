@@ -8,6 +8,7 @@ import { RequestService }                from '../../proxy/dto/requestable.inter
 import { decodeHtmlEntities }            from '../../helpers/common.helper';
 import { BillDto }                       from '../../bill/dto/bill.dto';
 import { DateHelper }                    from '../../helpers/date.helper';
+import { ProviderCode }                  from '../../bill-provider/bill-provider.service';
 
 export class TaxcomFetcher extends BaseOfdFetcher {
 
@@ -36,7 +37,7 @@ export class TaxcomFetcher extends BaseOfdFetcher {
   private purchases: PurchaseDto[] = [];
 
   constructor(qrDto: FtsQrDto, { proxyService, dateHelper }: FetcherParams) {
-    super(qrDto, 'TAXCOM');
+    super(qrDto, ProviderCode.TAXCOM);
     if (proxyService === undefined) {
       throw new Error('Need to define proxy service for TaxcomFetcher');
     }

@@ -7,6 +7,7 @@ import { PurchaseDto }    from '../purchase/dto/purchase.dto';
 import { Item }           from './1-ofd.ru/interfaces';
 import { DateHelper }     from '../helpers/date.helper';
 import { RequestService } from '../proxy/dto/requestable.interface';
+import { ProviderCode }   from '../bill-provider/bill-provider.service';
 
 export interface FetcherParams {
   dateHelper?: DateHelper;
@@ -30,7 +31,7 @@ export abstract class BaseOfdFetcher {
 
   protected qrDtoString: string;
 
-  protected constructor(qrDto: FtsQrDto, code: string) {
+  protected constructor(qrDto: FtsQrDto, code: ProviderCode) {
     const { fiscalDocument, fiscalProp, fiscalNumber } = qrDto;
     this.qrDto = qrDto;
     this.qrDtoString = JSON.stringify(this.qrDto);

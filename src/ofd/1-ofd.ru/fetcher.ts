@@ -8,6 +8,7 @@ import { DateHelper }                    from '../../helpers/date.helper';
 import { ShopDto }                       from '../../shop/dto/shop.dto';
 import { PurchaseDto }                   from '../../purchase/dto/purchase.dto';
 import { RequestService }                from '../../proxy/dto/requestable.interface';
+import { ProviderCode }                  from '../../bill-provider/bill-provider.service';
 
 export enum FirstOfdCheckBillStatus {
   EXIST = 1,
@@ -33,7 +34,7 @@ export class FirstOfdFetcher extends BaseOfdFetcher {
   private fetchResponse: FetchResponse = null;
 
   constructor(qrDto: FtsQrDto, { dateHelper, proxyService }: FetcherParams) {
-    super(qrDto, '1-OFD');
+    super(qrDto, ProviderCode.FIRST_OFD);
     assert(dateHelper !== undefined);
     assert(proxyService !== undefined);
     this.dateHelper = dateHelper;

@@ -1,6 +1,7 @@
 import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
 import { ShopDto }                                    from '../../shop/dto/shop.dto';
 import { PurchaseDto }                                from '../../purchase/dto/purchase.dto';
+import { ProviderCode }                               from '../../bill-provider/bill-provider.service';
 
 export class BillDto {
   @ApiModelPropertyOptional()
@@ -39,5 +40,5 @@ export class BillDto {
   @ApiModelPropertyOptional()
   billRequestId?: string;
 
-  providerCode?: string;
+  providerCode?: ProviderCode;
 }

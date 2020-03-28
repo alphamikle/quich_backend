@@ -7,6 +7,7 @@ import { FtsQrDto }                      from '../../fts/dto/fts-qr.dto';
 import { BillDto }                       from '../../bill/dto/bill.dto';
 import { RequestService }                from '../../proxy/dto/requestable.interface';
 import { decodeHtmlEntities }            from '../../helpers/common.helper';
+import { ProviderCode }                  from '../../bill-provider/bill-provider.service';
 
 export class OfdFetcher extends BaseOfdFetcher {
   private body: HTMLElement;
@@ -14,7 +15,7 @@ export class OfdFetcher extends BaseOfdFetcher {
   private readonly proxyService: RequestService;
 
   constructor(qrDto: FtsQrDto, { proxyService }: FetcherParams) {
-    super(qrDto, 'OFD');
+    super(qrDto, ProviderCode.OFD);
     assert(proxyService !== undefined);
     this.proxyService = proxyService;
   }

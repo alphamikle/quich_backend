@@ -98,8 +98,11 @@ export class BillRequestService {
     await this.billRequestEntityRepository.update({ id: billRequestId }, { isChecked: true });
   }
 
-  async makeBillRequestFetched(billRequestId: string): Promise<void> {
-    await this.billRequestEntityRepository.update({ id: billRequestId }, { isFetched: true });
+  async makeBillRequestFetched(billRequestId: string, billProviderId: string): Promise<void> {
+    await this.billRequestEntityRepository.update({ id: billRequestId }, {
+      isFetched: true,
+      billProviderId,
+    });
   }
 
   async addFtsDataToBillRequest({ billRequestId, ftsData }: { billRequestId: string, ftsData: FtsFetchResponseBill }): Promise<void> {
