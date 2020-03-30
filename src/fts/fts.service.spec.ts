@@ -32,6 +32,8 @@ describe('Fts service test', () => {
     phone: TEST_FTS_PHONE,
   } as const;
 
+  Logger.log('Fts service test');
+
   beforeAll(async (done) => {
     Logger.log('Start fts service tests');
     const ftsAccountEntityRepository = new Repository<FtsAccountEntity>();

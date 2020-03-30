@@ -64,7 +64,7 @@ async function runTest(fileName: string) {
 
 const tests = [
   'fts.service.spec.ts',
-  'ofd.service.spec.ts',
+  // 'ofd.service.spec.ts',
 ];
 
 (async () => {
