@@ -32,11 +32,14 @@ describe('Fts service test', () => {
     phone: TEST_FTS_PHONE,
   } as const;
 
-  beforeAll(async () => {
+  beforeAll(async (done) => {
+    Logger.log('Start fts service tests');
     const ftsAccountEntityRepository = new Repository<FtsAccountEntity>();
     const ftsAccountUsingsRepository = new Repository<FtsAccountUsingsEntity>();
     const dateHelper = new DateHelper();
     service = new FtsService(ftsAccountEntityRepository, ftsAccountUsingsRepository, dateHelper);
+    done();
+    Logger.log('End fts service tests');
   });
 
   it('check bill data', async (done) => {

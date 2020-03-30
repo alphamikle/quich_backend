@@ -53,7 +53,8 @@ describe('Ofd service test', () => {
     fiscalDocument: '15535',
   };
 
-  beforeAll(async () => {
+  beforeAll(async (done) => {
+    Logger.log('Start ofd service tests');
     requestService = new TestRequestService();
     const module: TestingModule = await Test.createTestingModule({
       imports: [
@@ -68,6 +69,8 @@ describe('Ofd service test', () => {
     })
       .compile();
     billRequestService = module.get(BillRequestService);
+    done();
+    Logger.log('End ofd service tests');
   });
 
   it.skip('Target ofd test', async () => {
