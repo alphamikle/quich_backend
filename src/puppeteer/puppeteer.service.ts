@@ -84,7 +84,7 @@ export class PuppeteerService {
   private browser: Promise<Browser> = null;
 
   private readonly options: LaunchOptions = {
-    headless: isDev,
+    headless: !isDev,
     defaultViewport: null,
     args: ['--window-size=1920,1080'],
   };

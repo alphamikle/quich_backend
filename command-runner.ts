@@ -13,6 +13,8 @@ aBaseConfig();
 
 const asyncExec = promisify(exec);
 
+Logger.log(`NODE ENV IS ${process.env.NODE_ENV}`);
+
 const mockRepository = new Repository<EmailContentEntity>();
 jestMock.spyOn(mockRepository, 'findOne')
   .mockImplementation(async () => undefined);
@@ -54,7 +56,9 @@ async function runTest(fileName: string) {
   const path = getFilePath(fileName);
   try {
     Logger.log(`Found test case ${path}`);
-    await asyncExec(`jest ${path}`);
+    const result = await asyncExec(`jest --detectOpenHandles ${path}`);
+    console.log(result.stdout);
+    console.error(result.stderr);
   } catch (err) {
     await emailService.sendServiceErrorEmailToAdmin(err);
     Logger.error(err.stack);
@@ -64,7 +68,7 @@ async function runTest(fileName: string) {
 
 const tests = [
   'fts.service.spec.ts',
-  // 'ofd.service.spec.ts',
+  'ofd.service.spec.ts',
 ];
 
 (async () => {
