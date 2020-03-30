@@ -20,7 +20,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:runner": "ts-node command-runner.ts"
   },
   "dependencies": {
     "@nestjs/common": "^6.10.5",
@@ -49,7 +50,8 @@
     "rimraf": "^2.6.2",
     "swagger-ui-express": "^4.1.2",
     "typeorm": "^0.2.20",
-    "uuid": "^3.4.0"
+    "uuid": "^3.4.0",
+    "jest-mock": "^25.2.3"
   },
   "devDependencies": {
     "@nestjs/testing": "^6.10.5",

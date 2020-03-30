@@ -2,8 +2,10 @@ import { Injectable, Logger }                                        from '@nest
 import { createTransport, Transporter }                              from 'nodemailer';
 import { InjectRepository }                                          from '@nestjs/typeorm';
 import { Repository }                                                from 'typeorm';
+import { Attachment }                                                from 'nodemailer/lib/mailer';
 import { EmailContentEntity }                                        from './entities/email-content.entity';
 import { PASSWORD_VARIABLE, REQUIRED_ENTITIES, RESTORE_ENTITY_CODE } from './content/mock-content';
+import { getInfoFromError }                                          from '../helpers/common.helper';
 
 export interface EmailCredentials {
   host: string;
@@ -18,19 +20,17 @@ export interface UsualEmailData {
   title: string;
 }
 
-export interface TextEmailCredentials extends UsualEmailData {
-  text: string;
-}
-
-export interface HtmlEmailCredentials extends UsualEmailData {
-  html: string;
+export interface EmailContent extends UsualEmailData {
+  text?: string;
+  html?: string;
+  attachments?: Attachment[];
 }
 
 export interface RestoreEmailCredentials {
   to: string;
 }
 
-const { MAIL_SMTP_HOST, MAIL_SMTP_PORT, MAIL_USERNAME, MAIL_PASSWORD } = process.env;
+const { MAIL_SMTP_HOST, MAIL_SMTP_PORT, MAIL_USERNAME, MAIL_PASSWORD, ADMIN_EMAIL } = process.env;
 
 @Injectable()
 export class EmailService {
@@ -51,18 +51,12 @@ export class EmailService {
 
   initialize(credentials?: EmailCredentials): void {
     if (credentials === undefined) {
-      credentials = {
-        host: MAIL_SMTP_HOST,
-        port: Number(MAIL_SMTP_PORT),
-        username: MAIL_USERNAME,
-        password: MAIL_PASSWORD,
-      };
-    } else {
-      credentials.host = credentials.host || MAIL_SMTP_HOST;
-      credentials.port = credentials.port || Number(MAIL_SMTP_PORT);
-      credentials.username = credentials.username || MAIL_USERNAME;
-      credentials.password = credentials.password || MAIL_PASSWORD;
+      credentials = {} as EmailCredentials;
     }
+    credentials.host = credentials.host ?? MAIL_SMTP_HOST;
+    credentials.port = credentials.port ?? Number(MAIL_SMTP_PORT);
+    credentials.username = credentials.username ?? MAIL_USERNAME;
+    credentials.password = credentials.password ?? MAIL_PASSWORD;
     this.transport = createTransport({
       host: credentials.host,
       port: credentials.port,
@@ -75,12 +69,27 @@ export class EmailService {
     });
   }
 
-  async sendTextEmail({ to, from, text, title }: TextEmailCredentials): Promise<void> {
+  async sendEmail({ to, from, text, title, attachments }: EmailContent): Promise<void> {
     await this.transport.sendMail({
       to,
       from,
       text,
       subject: title,
+      attachments,
+    });
+  }
+
+  async sendServiceErrorEmailToAdmin(content: Error): Promise<void> {
+    const errorInfo = getInfoFromError(content);
+    const attachment: Attachment = {
+      filename: `${errorInfo.message}.${errorInfo.extension}`,
+      content: errorInfo.content,
+    };
+    await this.sendEmail({
+      from: MAIL_USERNAME,
+      to: ADMIN_EMAIL,
+      title: errorInfo.message,
+      attachments: [attachment],
     });
   }
 
@@ -95,7 +104,7 @@ export class EmailService {
         from: restoreContent.from,
       };
       Logger.log(config);
-      await this.sendTextEmail(config);
+      await this.sendEmail(config);
     } catch (err) {
       Logger.error(err.message, err.stack, EmailService.name);
     }

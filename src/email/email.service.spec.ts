@@ -20,7 +20,7 @@ describe('EmailService', () => {
       username: '',
       port: 0,
     });
-    await service.sendTextEmail({
+    await service.sendEmail({
       from: '',
       to: '',
       text: '',

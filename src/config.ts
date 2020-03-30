@@ -3,9 +3,11 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 const { IS_IN_DOCKER } = process.env;
 
-export const output = IS_IN_DOCKER === 'true' ?
+const out = IS_IN_DOCKER === 'true' ?
   {} :
   config();
+
+export const aBaseConfig = () => out;
 
 const { DB_PORT, DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME, DB_SYNC } = process.env;
 

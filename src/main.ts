@@ -1,13 +1,13 @@
 import { NestFactory }                    from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { Logger }                         from '@nestjs/common';
-import { output }                         from './config';
-import { AppModule }                      from './app.module';
+import { Logger }      from '@nestjs/common';
+import { aBaseConfig } from './config';
+import { AppModule }   from './app.module';
 import * as pack                          from '../package.json';
 
 const { APP_PORT, NODE_ENV } = process.env;
 
-const configUser = output;
+aBaseConfig();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

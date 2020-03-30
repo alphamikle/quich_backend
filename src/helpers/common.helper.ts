@@ -81,8 +81,28 @@ export function getHash(data: Hashable) {
   } else {
     string = String(data);
   }
-  console.log(string);
   return md5()
     .update(string)
     .digest('hex');
+}
+
+export interface ErrorInfo {
+  message: string;
+  content: string;
+  extension: string;
+}
+
+export function getInfoFromError(error: any): ErrorInfo {
+  const info: ErrorInfo = {
+    message: `error_${(new Date()).toISOString()}`,
+    content: '',
+    extension: 'txt',
+  };
+  if (error.stderr) {
+    info.content = error.stderr;
+  }
+  if (error.message) {
+    info.content = error.stack;
+  }
+  return info;
 }
