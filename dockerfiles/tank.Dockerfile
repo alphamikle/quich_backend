@@ -1,0 +1,1 @@
+FROM direvius/yandex-tank

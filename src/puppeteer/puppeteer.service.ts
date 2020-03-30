@@ -226,18 +226,23 @@ export class PuppeteerService {
 
   private openBrowser(): Promise<Browser> {
     this.usingCounter += 1;
+    const beforeOpen = Date.now();
     if (this.browser === null) {
       this.browser = launch(this.options);
+      this.browser.then(() => {
+        Logger.log(`Browser open in ${Date.now() - beforeOpen}ms`, this.constructor.name);
+      });
     }
     return this.browser;
   }
 
   public async closeBrowser(): Promise<void> {
     this.usingCounter -= 1;
-    Logger.log(this.usingCounter, 'Using counter');
+    Logger.log(`Trying to close browser with ${this.usingCounter} operations left`, this.constructor.name);
     if (this.usingCounter <= 0) {
       await (await this.browser).close();
       this.browser = null;
+      Logger.log('The browser closed', this.constructor.name);
     }
   }
 }

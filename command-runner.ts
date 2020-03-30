@@ -53,6 +53,7 @@ function getFilePath(fileName: string) {
 async function runTest(fileName: string) {
   const path = getFilePath(fileName);
   try {
+    Logger.log(`Found test case ${path}`);
     await asyncExec(`jest ${path}`);
   } catch (err) {
     await emailService.sendServiceErrorEmailToAdmin(err);

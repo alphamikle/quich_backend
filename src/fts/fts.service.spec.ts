@@ -31,7 +31,7 @@ describe('Fts service test', () => {
     phone: TEST_FTS_PHONE,
   } as const;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const ftsAccountEntityRepository = new Repository<FtsAccountEntity>();
     const ftsAccountUsingsRepository = new Repository<FtsAccountUsingsEntity>();
     const dateHelper = new DateHelper();
