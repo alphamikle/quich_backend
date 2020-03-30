@@ -6,6 +6,7 @@ import { FtsAccountEntity }       from '../user/entities/fts-account.entity';
 import { FtsAccountUsingsEntity } from './entities/fts-account-usings.entity';
 import { DateHelper }             from '../helpers/date.helper';
 import { fetchBillDataEqual }     from './test-equals/equals';
+import { Logger }                 from '@nestjs/common';
 
 jest.setTimeout(600000);
 
@@ -38,15 +39,21 @@ describe('Fts service test', () => {
     service = new FtsService(ftsAccountEntityRepository, ftsAccountUsingsRepository, dateHelper);
   });
 
-  it('check bill data', async () => {
+  it('check bill data', async (done) => {
+    Logger.log('Start checking bill');
     const billData = await service.checkBillExistence(firstTestQrDto, testAccount);
     expect(billData)
       .toBe(true);
+    done();
+    Logger.log('End checking bill');
   });
 
-  it('fetch bill data', async () => {
+  it('fetch bill data', async (done) => {
+    Logger.log('Start fetching bill');
     const billData = await service.fetchBillData(firstTestQrDto, testAccount);
     expect(billData)
       .toEqual(fetchBillDataEqual);
+    done();
+    Logger.log('End fetching bill');
   });
 });

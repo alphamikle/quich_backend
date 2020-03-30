@@ -93,7 +93,7 @@ describe('Ofd service test', () => {
     await puppeteerService.closeBrowser();
   });
 
-  it('Check working of taxcom fetcher', async () => {
+  it('Check working of taxcom fetcher', async (done) => {
     const taxcomFetcher = new TaxcomFetcher(taxcomQrDto, {
       proxyService: requestService,
       dateHelper: new DateHelper(),
@@ -104,9 +104,10 @@ describe('Ofd service test', () => {
       .toBeNull();
     expect(billDto.purchases.length)
       .toBeGreaterThan(0);
+    done();
   });
 
-  it('Ofd service test', async () => {
+  it('Ofd service test', async (done) => {
     const ofdFetcher = new OfdFetcher(ofdQrDto, { proxyService: requestService });
     const billDto = await ofdFetcher.fetchBill();
     expect(billDto)
@@ -114,9 +115,10 @@ describe('Ofd service test', () => {
       .toBeNull();
     expect(billDto.purchases.length)
       .toBeGreaterThan(0);
+    done();
   });
 
-  it('1-OFD service test', async () => {
+  it('1-OFD service test', async (done) => {
     const ofdFetcher = new FirstOfdPuppeteerFetcher(firstOfdQrDto, puppeteerService, dateHelper);
     const billDto = await ofdFetcher.fetchBill();
     expect(billDto)
@@ -124,5 +126,6 @@ describe('Ofd service test', () => {
       .toBeNull();
     expect(billDto.purchases.length)
       .toBeGreaterThan(0);
+    done();
   });
 });
