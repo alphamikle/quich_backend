@@ -1,4 +1,4 @@
-import { Injectable }                                          from '@nestjs/common';
+import { Injectable, Logger }                                  from '@nestjs/common';
 import { Browser, ElementHandle, launch, LaunchOptions, Page } from 'puppeteer';
 import { resolve }                                             from 'path';
 import { readdirSync, readFileSync, unlinkSync }               from 'fs';
@@ -89,6 +89,10 @@ export class PuppeteerService {
     args: ['--window-size=1920,1080'],
   };
 
+  public get browserInstance(): Promise<Browser> {
+    return this.openBrowser();
+  }
+
   public async getFreeProxyList(): Promise<ProxyParams[]> {
     const limitSelector = '#proxylisttable_length > label > select';
     const tableSelector = '#proxylisttable > tbody';
@@ -166,7 +170,7 @@ export class PuppeteerService {
     return proxyParams;
   }
 
-  public async getProxyDownloadList() {
+  public async getProxyDownloadList(): Promise<ProxyParams[]> {
     const downloadBtnSelector = '#downloadbtn';
     const filterSelector = '#country-select1 > dt';
     const anonymousSelector = '#mislista2 > li:nth-child(3) > input';
@@ -228,8 +232,9 @@ export class PuppeteerService {
     return this.browser;
   }
 
-  private async closeBrowser(): Promise<void> {
+  public async closeBrowser(): Promise<void> {
     this.usingCounter -= 1;
+    Logger.log(this.usingCounter, 'Using counter');
     if (this.usingCounter <= 0) {
       await (await this.browser).close();
       this.browser = null;

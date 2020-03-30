@@ -1,16 +1,17 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { Repository }         from 'typeorm';
-import { InjectRepository }   from '@nestjs/typeorm';
-import { writeFileSync }      from 'fs';
-import { resolve }            from 'path';
-import { FtsQrDto }           from '../fts/dto/fts-qr.dto';
-import { OfdFetcher }         from './ofd.ru/fetcher';
-import { BillDto }            from '../bill/dto/bill.dto';
-import { BillRequestEntity }  from '../bill-request/entities/bill-request.entity';
-import { DateHelper }         from '../helpers/date.helper';
-import { FirstOfdFetcher }    from './1-ofd.ru/fetcher';
-import { OfdFetcherClass }    from './base-ofd-fetcher';
-import { ProxyService }       from '../proxy/proxy.service';
+import { Injectable, Logger }       from '@nestjs/common';
+import { Repository }               from 'typeorm';
+import { InjectRepository }         from '@nestjs/typeorm';
+import { writeFileSync }            from 'fs';
+import { resolve }                  from 'path';
+import { FtsQrDto }                 from '../fts/dto/fts-qr.dto';
+import { OfdFetcher }               from './ofd.ru/fetcher';
+import { BillDto }                  from '../bill/dto/bill.dto';
+import { BillRequestEntity }        from '../bill-request/entities/bill-request.entity';
+import { DateHelper }               from '../helpers/date.helper';
+import { OfdFetcherClass }          from './base-ofd-fetcher';
+import { ProxyService }             from '../proxy/proxy.service';
+import { FirstOfdPuppeteerFetcher } from './1-ofd.ru/puppeteer-fetcher';
+import { PuppeteerService }         from '../puppeteer/puppeteer.service';
 
 @Injectable()
 export class OfdService {
@@ -19,15 +20,13 @@ export class OfdService {
     private readonly billRequestEntityRepository: Repository<BillRequestEntity>,
     private readonly dateHelper: DateHelper,
     private readonly proxyService: ProxyService,
+    private readonly puppeteerService: PuppeteerService,
   ) {
   }
 
   async fetchBillData(qrData: FtsQrDto): Promise<BillDto | null> {
     const ofdFetcher = new OfdFetcher(qrData, { proxyService: this.proxyService });
-    const firstOfdFetcher = new FirstOfdFetcher(qrData, {
-      proxyService: this.proxyService,
-      dateHelper: this.dateHelper,
-    });
+    const firstOfdFetcher = new FirstOfdPuppeteerFetcher(qrData, this.puppeteerService, this.dateHelper);
 
     const promisesArr: Promise<BillDto>[] = [
       ofdFetcher.fetchBill(),
@@ -69,7 +68,7 @@ export class OfdService {
     });
     const ofds: OfdFetcherClass[] = [
       OfdFetcher,
-      FirstOfdFetcher,
+      FirstOfdPuppeteerFetcher,
     ];
     const data: any[] = [];
     let i = 0;

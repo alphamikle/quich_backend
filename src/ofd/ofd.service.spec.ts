@@ -11,6 +11,8 @@ import { BillRequestService }                       from '../bill-request/bill-r
 import { BillRequestModule }                        from '../bill-request/bill-request.module';
 import { FtsQrDto }                                 from '../fts/dto/fts-qr.dto';
 import { DateHelper }                               from '../helpers/date.helper';
+import { FirstOfdPuppeteerFetcher }                 from './1-ofd.ru/puppeteer-fetcher';
+import { PuppeteerService }                         from '../puppeteer/puppeteer.service';
 
 @Injectable()
 class TestRequestService implements RequestService {
@@ -24,8 +26,34 @@ jest.setTimeout(600000);
 describe('Ofd service test', () => {
   let requestService: TestRequestService;
   let billRequestService: BillRequestService;
+  const dateHelper = new DateHelper();
+  const puppeteerService = new PuppeteerService();
 
-  beforeEach(async () => {
+  const taxcomQrDto: FtsQrDto = {
+    fiscalProp: '571333283',
+    totalSum: 322.5,
+    fiscalNumber: '9283440300110611',
+    fiscalDocument: '430',
+    dateTime: '20190512T1432',
+    checkType: 1,
+  };
+
+  const ofdQrDto = {
+    fiscalProp: '2834357247',
+    totalSum: 328,
+    fiscalNumber: '9282000100387649',
+    fiscalDocument: '21303',
+    dateTime: '20200125T1328',
+    checkType: 1,
+  };
+
+  const firstOfdQrDto: FtsQrDto = {
+    fiscalProp: '2618158950',
+    fiscalNumber: '9289000100402029',
+    fiscalDocument: '15535',
+  };
+
+  beforeAll(async () => {
     requestService = new TestRequestService();
     const module: TestingModule = await Test.createTestingModule({
       imports: [
@@ -42,24 +70,9 @@ describe('Ofd service test', () => {
     billRequestService = module.get(BillRequestService);
   });
 
-  it('Ofd service test', async () => {
-    const qrDto = {
-      'checkType': 1,
-      'dateTime': '20200125T1328',
-      'fiscalDocument': '21303',
-      'fiscalNumber': '9282000100387649',
-      'fiscalProp': '2834357247',
-      'totalSum': 328,
-    };
-    const ofdFetcher = new OfdFetcher(qrDto, { proxyService: requestService });
-    const response = await ofdFetcher.fetchBill();
-    expect(response.purchases.length)
-      .toBeGreaterThan(0);
-  });
-
-  it('Target ofd test', async () => {
+  it.skip('Target ofd test', async () => {
     const entities = await billRequestService.getBillRequests({
-      limit: 40,
+      limit: 30,
       offset: 10,
     });
     for (const billRequestEntity of entities) {
@@ -68,26 +81,20 @@ describe('Ofd service test', () => {
       qrDto.totalSum = billRequestEntity.totalSum;
       qrDto.fiscalNumber = billRequestEntity.fiscalNumber;
       qrDto.fiscalDocument = billRequestEntity.fiscalDocument;
-      qrDto.dateTime = billRequestEntity.billDate.toISOString();
+      qrDto.dateTime = dateHelper.transformDateToFtsDate(billRequestEntity.billDate);
       qrDto.checkType = 1;
-      const taxcomFetcher = new TaxcomFetcher(qrDto, { proxyService: requestService });
-      const billData = await taxcomFetcher.fetchBill() as unknown as string;
-      if (billData && !billData.match('Чек по указанным параметрам не найден')) {
-        console.log('Found check with data:', qrDto, billData);
+      const fetcher = new FirstOfdPuppeteerFetcher(qrDto, puppeteerService, dateHelper);
+      const billData = await fetcher.fetchBill() as unknown as string;
+      if (billData === undefined) {
+        console.log(billData);
+        return;
       }
     }
+    await puppeteerService.closeBrowser();
   });
 
   it('Check working of taxcom fetcher', async () => {
-    const existQrDto = new FtsQrDto();
-    existQrDto.fiscalProp = '571333283';
-    existQrDto.totalSum = 322.5;
-    existQrDto.fiscalNumber = '9283440300110611';
-    existQrDto.fiscalDocument = '430';
-    existQrDto.dateTime = '20190512T1432';
-    existQrDto.checkType = 1;
-
-    const taxcomFetcher = new TaxcomFetcher(existQrDto, {
+    const taxcomFetcher = new TaxcomFetcher(taxcomQrDto, {
       proxyService: requestService,
       dateHelper: new DateHelper(),
     });
@@ -95,6 +102,27 @@ describe('Ofd service test', () => {
     expect(billDto)
       .not
       .toBeNull();
-    console.log(billDto);
+    expect(billDto.purchases.length)
+      .toBeGreaterThan(0);
+  });
+
+  it('Ofd service test', async () => {
+    const ofdFetcher = new OfdFetcher(ofdQrDto, { proxyService: requestService });
+    const billDto = await ofdFetcher.fetchBill();
+    expect(billDto)
+      .not
+      .toBeNull();
+    expect(billDto.purchases.length)
+      .toBeGreaterThan(0);
+  });
+
+  it('1-OFD service test', async () => {
+    const ofdFetcher = new FirstOfdPuppeteerFetcher(firstOfdQrDto, puppeteerService, dateHelper);
+    const billDto = await ofdFetcher.fetchBill();
+    expect(billDto)
+      .not
+      .toBeNull();
+    expect(billDto.purchases.length)
+      .toBeGreaterThan(0);
   });
 });

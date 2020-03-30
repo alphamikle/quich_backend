@@ -14,7 +14,7 @@ export interface FetcherParams {
   proxyService?: RequestService;
 }
 
-export type OfdFetcherClass = { new(qrDto: FtsQrDto, params?: FetcherParams): BaseOfdFetcher };
+export type OfdFetcherClass = { new(qrDto: FtsQrDto, params?: FetcherParams | any, ...args: any[]): BaseOfdFetcher };
 
 export type PurchaseData = Item | HTMLElement;
 

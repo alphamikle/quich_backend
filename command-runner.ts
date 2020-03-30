@@ -61,8 +61,15 @@ async function runTest(fileName: string) {
   }
 }
 
+const tests = [
+  'fts.service.spec.ts',
+  'ofd.service.spec.ts',
+];
+
 (async () => {
-  await runTest('fts.service.spec.ts');
+  for await (const test of tests) {
+    await runTest(test);
+  }
   Logger.log('All commands complete');
   process.exit(0);
 })();
