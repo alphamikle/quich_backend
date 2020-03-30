@@ -1,8 +1,8 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Test, TestingModule }                      from '@nestjs/testing';
-import { TypeOrmModule }                            from '@nestjs/typeorm';
-import { Injectable }                               from '@nestjs/common';
-import { RequestService }                           from '../proxy/dto/requestable.interface';
+import { TypeOrmModule }      from '@nestjs/typeorm';
+import { Injectable, Logger } from '@nestjs/common';
+import { RequestService }     from '../proxy/dto/requestable.interface';
 import { OfdFetcher }                               from './ofd.ru/fetcher';
 import { TaxcomFetcher }                            from './taxcom.ru/fetcher';
 import { typeOrmOptions }                           from '../config';
