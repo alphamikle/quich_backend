@@ -39,7 +39,7 @@ export class FirstOfdPuppeteerFetcher extends BaseOfdFetcher {
     if (this.isFound()) {
       billDto = this.getBillDto();
     }
-    await this.page.waitFor(300);
+    await this.page.waitFor(500);
     await this.page.close();
     await this.puppeteerService.closeBrowser();
     return billDto;
@@ -100,10 +100,9 @@ export class FirstOfdPuppeteerFetcher extends BaseOfdFetcher {
     await fiscalPropField.focus();
     await this.page.keyboard.type(this.fiscalProp);
 
-    await this.page.waitFor(150);
     const submitButton = await this.page.$(this.submitSelector);
     await submitButton.click();
-    await this.page.waitFor(600);
+    await this.page.waitFor(1000);
   }
 
   private isFound(): boolean {

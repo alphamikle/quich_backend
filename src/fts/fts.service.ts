@@ -14,6 +14,7 @@ import { FtsFetchResponse }                                                     
 import { FtsFetchResponseBill }                                                                                                                                        from './dto/fts-fetch-response/bill.dto';
 import { randomOS, randomUUID, wait }                                                                                                                                  from '../helpers/common.helper';
 import { FtsAccountUsingsEntity }                                                                                                                                      from './entities/fts-account-usings.entity';
+import { FtsFetchResponsePurchase }                                                                                                                                    from './dto/fts-fetch-response/purchase.dto';
 
 export interface FtsHeaders {
   'Device-Id': string;
@@ -135,7 +136,11 @@ export class FtsService {
           count + 1,
         );
       }
-      return response.data.document.receipt;
+      const { receipt } = response.data.document;
+      if (this.isEncodingCorrect(receipt)) {
+        return receipt;
+      }
+      return 'Неверная кодировка';
     } catch (err) {
       Logger.error(`FETCHING ERROR ${JSON.stringify(err.message)}`, err.stack, FtsService.name);
       if (count < limit) {
@@ -209,5 +214,29 @@ export class FtsService {
       headers.Authorization = this.generateAuthorizationValue(userCredentials);
     }
     return headers;
+  }
+
+  private isEncodingCorrect(ftsFetchResponse: FtsFetchResponseBill): boolean {
+    const billProps: Array<keyof FtsFetchResponseBill> = [
+      'operator',
+      'retailPlace',
+    ];
+    const itemProps: Array<keyof FtsFetchResponsePurchase> = [
+      'name',
+    ];
+    const check = (value: string): boolean => value && typeof value === 'string' && value.match(/[?]{2,}/ui) === null;
+    for (const prop of billProps) {
+      if (!check(ftsFetchResponse[prop] as string)) {
+        return false;
+      }
+    }
+    for (const prop of itemProps) {
+      for (const item of ftsFetchResponse.items) {
+        if (!check(item[prop] as string)) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 }

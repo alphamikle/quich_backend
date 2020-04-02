@@ -187,11 +187,11 @@ export class BillController {
       return result;
     }
     const [billFromFts, billFromOfd] = await Promise.all(promiseArr);
-    if (typeof billFromFts !== 'string') {
+    if (typeof billFromFts !== 'string' && billFromFts !== null) {
       await this.makeBillRequestFetched(billRequest.id, billFromFts.providerCode);
       return billFromFts;
     }
-    if (typeof billFromOfd !== 'string') {
+    if (typeof billFromOfd !== 'string' && billFromOfd !== null) {
       await this.userService.incrementUserQueriesLimit({
         userId: user.id,
         accountId: null,
