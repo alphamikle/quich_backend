@@ -69,11 +69,16 @@ export class TaxcomFetcher extends BaseOfdFetcher {
   }
 
   private async loadData() {
-    const response = await this.proxyService.request<string>({
-      url: this.getUrl(),
-      method: 'GET',
-    });
-    this.rawData = response.data;
+    try {
+      const response = await this.proxyService.request<string>({
+        url: this.getUrl(),
+        method: 'GET',
+      });
+      this.rawData = response.data;
+    } catch (err) {
+      Logger.error(err);
+      throw err;
+    }
   }
 
   private parseRawData() {

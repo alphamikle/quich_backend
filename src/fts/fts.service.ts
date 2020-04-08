@@ -226,7 +226,8 @@ export class FtsService {
     ];
     const check = (value: string): boolean => value && typeof value === 'string' && value.match(/[?]{2,}/ui) === null;
     for (const prop of billProps) {
-      if (!check(ftsFetchResponse[prop] as string)) {
+      const value = ftsFetchResponse[prop] as string;
+      if (value && !check(value)) {
         return false;
       }
     }

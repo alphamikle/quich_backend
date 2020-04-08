@@ -11,7 +11,6 @@ import { DateHelper }               from '../helpers/date.helper';
 import { OfdFetcherClass }          from './base-ofd-fetcher';
 import { ProxyService }             from '../proxy/proxy.service';
 import { FirstOfdPuppeteerFetcher } from './1-ofd.ru/puppeteer-fetcher';
-import { PuppeteerService }         from '../puppeteer/puppeteer.service';
 import { TaxcomFetcher }            from './taxcom.ru/fetcher';
 
 @Injectable()
@@ -21,18 +20,24 @@ export class OfdService {
     private readonly billRequestEntityRepository: Repository<BillRequestEntity>,
     private readonly dateHelper: DateHelper,
     private readonly proxyService: ProxyService,
-    private readonly puppeteerService: PuppeteerService,
+    // private readonly puppeteerService: PuppeteerService,
   ) {
   }
 
   async fetchBillData(qrData: FtsQrDto): Promise<BillDto | null> {
-    const ofdFetcher = new OfdFetcher(qrData, { proxyService: this.proxyService, dateHelper: this.dateHelper });
-    const firstOfdFetcher = new FirstOfdPuppeteerFetcher(qrData, this.puppeteerService, this.dateHelper);
-    const taxcomOfdFetcher = new TaxcomFetcher(qrData, { proxyService: this.proxyService, dateHelper: this.dateHelper });
+    const ofdFetcher = new OfdFetcher(qrData, {
+      proxyService: this.proxyService,
+      dateHelper: this.dateHelper,
+    });
+    // const firstOfdFetcher = new FirstOfdPuppeteerFetcher(qrData, this.puppeteerService, this.dateHelper);
+    const taxcomOfdFetcher = new TaxcomFetcher(qrData, {
+      proxyService: this.proxyService,
+      dateHelper: this.dateHelper,
+    });
 
     const promisesArr: Promise<BillDto>[] = [
       ofdFetcher.fetchBill(),
-      firstOfdFetcher.fetchBill(),
+      // firstOfdFetcher.fetchBill(),
       taxcomOfdFetcher.fetchBill(),
     ];
 

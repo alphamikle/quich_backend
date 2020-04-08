@@ -33,7 +33,7 @@ export class ProxyService implements RequestService {
     await this.warmProxies(1000, 10);
   }
 
-  public async request<T>(config: AxiosRequestConfig, { disableProxy = false, isWarming = false, limit = 3, counter = 0 },
+  public async request<T>(config: AxiosRequestConfig, { disableProxy = false, isWarming = false, limit = 3, counter = 0 } = {},
   ): Promise<AxiosResponse<T>> {
     config.timeout = 8000;
     if (disableProxy || counter >= limit) {
@@ -181,9 +181,7 @@ export class ProxyService implements RequestService {
   }
 
   private async getLastUsedProxyEntity(): Promise<ProxyEntity> {
-    const lastUsingProxyId = this.proxyUsingQueue[
-      this.proxyUsingQueue.length - 1
-    ].id;
+    const lastUsingProxyId = this.proxyUsingQueue[this.proxyUsingQueue.length - 1].id;
     const where: FindConditions<ProxyEntity> = {
       id: lastUsingProxyId,
     };
