@@ -57,4 +57,6 @@ export class UserEntity {
   hasPurchase!: boolean;
 
   queryUses!: number;
+
+  queryUsesLimits!: number;
 }

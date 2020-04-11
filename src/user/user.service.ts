@@ -175,6 +175,14 @@ export class UserService {
     await this.userQueryLimitEntityRepository.save(query);
   }
 
+  async increaseUserQueryLimit(userId: string): Promise<void> {
+    const query = await this.getUserQueryUses(userId);
+    if (query) {
+      query.queryLimit += 1;
+      await this.userQueryLimitEntityRepository.save(query);
+    }
+  }
+
   async getUserQueryUses(userId: string): Promise<UserQueryLimitEntity | undefined> {
     const currentDate = new Date();
     const nextDate = this.dateHelper.addDays(currentDate, 1);

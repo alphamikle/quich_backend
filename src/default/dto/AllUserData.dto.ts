@@ -36,4 +36,7 @@ export class AllUserDataDto {
 
   @ApiModelProperty()
   queries: number;
+
+  @ApiModelProperty()
+  queriesLimit: number;
 }

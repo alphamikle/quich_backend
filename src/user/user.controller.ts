@@ -159,4 +159,9 @@ export class UserController {
       phone,
     });
   }
+
+  @SecurePostAction('Увеличение лимита на сканирования', null, 'increase-limit')
+  async increaseQueryLimit(@RequestUser() user: UserEntity) {
+    await this.userService.increaseUserQueryLimit(user.id);
+  }
 }

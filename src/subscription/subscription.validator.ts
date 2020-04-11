@@ -45,7 +45,7 @@ export class SubscriptionValidator {
   }
 
   validateUserUsingLimits(user: UserEntity): true | { push: string } {
-    if (!user.hasPurchase && user.queryUses >= 2) {
+    if (!user.hasPurchase && user.queryUses >= user.queryUsesLimits) {
       return {
         push: YOU_NEED_TO_BUY_SUBSCRIPTION,
       };

@@ -66,8 +66,10 @@ export class DefaultService {
     const unreadMessages = await this.messageService.getUnreadUserMessages(userId);
     const userQueries = await this.userService.getUserQueryUses(userId);
     let queries = 0;
+    let queriesLimit = 2;
     if (userQueries) {
       queries = userQueries.queries;
+      queriesLimit = userQueries.queryLimit;
     }
     return {
       bills,
@@ -79,6 +81,7 @@ export class DefaultService {
       billsRequests,
       unreadMessages,
       queries,
+      queriesLimit,
     };
   }
 

@@ -25,13 +25,10 @@ export class BearerStrategy extends PassportStrategy(Strategy) {
     }
     const user = await this.userService.getUserByToken(token);
     const subscriptionInfoDto = await this.subscriptionService.getUserSubscriptionInfo(user.id);
-    user.hasPurchase = Boolean(subscriptionInfoDto && subscriptionInfoDto.activeTo.valueOf() > Date.now());
+    user.hasPurchase = Boolean(subscriptionInfoDto?.activeTo.valueOf() > Date.now() && subscriptionInfoDto.isActive);
     const queryUsesEntity = await this.userService.getUserQueryUses(user.id);
-    user.queryUses = queryUsesEntity === undefined
-      ?
-      0
-      :
-      queryUsesEntity.queries;
+    user.queryUses = queryUsesEntity === undefined ? 0 : queryUsesEntity.queries;
+    user.queryUsesLimits = queryUsesEntity === undefined ? 2 : queryUsesEntity.queryLimit;
     Logger.debug(`User ${JSON.stringify(user)} used api`);
     done(null, user);
   }

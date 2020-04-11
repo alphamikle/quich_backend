@@ -19,6 +19,12 @@ export class UserQueryLimitEntity {
   queries!: number;
 
   @Column({
+    type: 'integer',
+    default: 2,
+  })
+  queryLimit!: number;
+
+  @Column({
     type: 'date',
     default: () => 'now()',
   })
