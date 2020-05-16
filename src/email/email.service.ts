@@ -1,11 +1,11 @@
-import { Injectable, Logger }                                        from '@nestjs/common';
-import { createTransport, Transporter }                              from 'nodemailer';
-import { InjectRepository }                                          from '@nestjs/typeorm';
-import { Repository }                                                from 'typeorm';
-import { Attachment }                                                from 'nodemailer/lib/mailer';
-import { EmailContentEntity }                                        from './entities/email-content.entity';
+import { Injectable, Logger } from '@nestjs/common';
+import { createTransport, Transporter } from 'nodemailer';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Attachment } from 'nodemailer/lib/mailer';
+import { EmailContent } from './entities/email-content.entity';
 import { PASSWORD_VARIABLE, REQUIRED_ENTITIES, RESTORE_ENTITY_CODE } from './content/mock-content';
-import { getInfoFromError }                                          from '../helpers/common.helper';
+import { getInfoFromError } from '../helpers/common.helper';
 
 export interface EmailCredentials {
   host: string;
@@ -20,7 +20,7 @@ export interface UsualEmailData {
   title: string;
 }
 
-export interface EmailContent extends UsualEmailData {
+export interface EmailContentToSend extends UsualEmailData {
   text?: string;
   html?: string;
   attachments?: Attachment[];
@@ -37,8 +37,8 @@ export class EmailService {
   private transport: Transporter;
 
   constructor(
-    @InjectRepository(EmailContentEntity)
-    private readonly emailContentEntityRepository: Repository<EmailContentEntity>,
+    @InjectRepository(EmailContent)
+    private readonly emailContentEntityRepository: Repository<EmailContent>,
   ) {
     this.initialize();
     this.initDefaultEntities()
@@ -69,7 +69,7 @@ export class EmailService {
     });
   }
 
-  async sendEmail({ to, from, text, title, attachments }: EmailContent): Promise<void> {
+  async sendEmail({ to, from, text, title, attachments }: EmailContentToSend): Promise<void> {
     await this.transport.sendMail({
       to,
       from,
@@ -82,7 +82,7 @@ export class EmailService {
   async sendServiceErrorEmailToAdmin(content: Error): Promise<void> {
     const errorInfo = getInfoFromError(content);
     const attachment: Attachment = {
-      filename: `${errorInfo.message}.${errorInfo.extension}`,
+      filename: `${ errorInfo.message }.${ errorInfo.extension }`,
       content: errorInfo.content,
     };
     await this.sendEmail({
@@ -110,11 +110,11 @@ export class EmailService {
     }
   }
 
-  async getEmailContentEntityByCode(code: string): Promise<EmailContentEntity> {
+  async getEmailContentEntityByCode(code: string): Promise<EmailContent> {
     return this.emailContentEntityRepository.findOne({ code });
   }
 
-  async createEmailContentEntity(emailContentEntity: EmailContentEntity): Promise<EmailContentEntity> {
+  async createEmailContentEntity(emailContentEntity: EmailContent): Promise<EmailContent> {
     return this.emailContentEntityRepository.save(emailContentEntity);
   }
 

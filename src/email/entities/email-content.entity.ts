@@ -1,8 +1,8 @@
 import 'reflect-metadata';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
-export class EmailContentEntity {
+@Entity('email_content_entity')
+export class EmailContent {
   @PrimaryGeneratedColumn()
   id!: number;
 
@@ -18,8 +18,8 @@ export class EmailContentEntity {
   @Column()
   content: string;
 
-  static createFrom(code: string, title: string, content: string, from: string): EmailContentEntity {
-    const entity: EmailContentEntity = new EmailContentEntity();
+  static createFrom(code: string, title: string, content: string, from: string): EmailContent {
+    const entity: EmailContent = new EmailContent();
     entity.code = code;
     entity.title = title;
     entity.content = content;

@@ -1,21 +1,21 @@
-import { exec }               from 'child_process';
-import { promisify }          from 'util';
-import { readdirSync }        from 'fs';
-import { resolve }            from 'path';
-import { Repository }         from 'typeorm';
-import * as jestMock          from 'jest-mock';
-import { Logger }             from '@nestjs/common';
-import { aBaseConfig }        from './src/config';
-import { EmailService }       from './src/email/email.service';
-import { EmailContentEntity } from './src/email/entities/email-content.entity';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+import { readdirSync } from 'fs';
+import { resolve } from 'path';
+import { Repository } from 'typeorm';
+import * as jestMock from 'jest-mock';
+import { Logger } from '@nestjs/common';
+import { aBaseConfig } from './src/config';
+import { EmailService } from './src/email/email.service';
+import { EmailContent } from './src/email/entities/email-content.entity';
 
 aBaseConfig();
 
 const asyncExec = promisify(exec);
 
-Logger.log(`NODE ENV IS ${process.env.NODE_ENV}`);
+Logger.log(`NODE ENV IS ${ process.env.NODE_ENV }`);
 
-const mockRepository = new Repository<EmailContentEntity>();
+const mockRepository = new Repository<EmailContent>();
 jestMock.spyOn(mockRepository, 'findOne')
   .mockImplementation(async () => undefined);
 jestMock.spyOn(mockRepository, 'save')
@@ -47,7 +47,7 @@ function getFilePath(fileName: string) {
       }
       directories.splice(0, 1);
     }
-    throw new Error(`Not found file ${fileName} in dir ${__dirname}`);
+    throw new Error(`Not found file ${ fileName } in dir ${ __dirname }`);
   };
   return readDir(__dirname);
 }
@@ -55,8 +55,8 @@ function getFilePath(fileName: string) {
 async function runTest(fileName: string) {
   const path = getFilePath(fileName);
   try {
-    Logger.log(`Found test case ${path}`);
-    const result = await asyncExec(`jest --detectOpenHandles ${path}`);
+    Logger.log(`Found test case ${ path }`);
+    const result = await asyncExec(`jest --detectOpenHandles ${ path }`);
     console.log(result.stdout);
     console.error(result.stderr);
   } catch (err) {

@@ -1,4 +1,4 @@
-import { EmailContentEntity } from '../entities/email-content.entity';
+import { EmailContent } from '../entities/email-content.entity';
 
 const { MAIL_USERNAME } = process.env;
 
@@ -7,10 +7,10 @@ export const PASSWORD_VARIABLE = '${password}';
 
 // ? Restore password
 export const RESTORE_ENTITY_CODE = 'restorePassword';
-const RESTORE_ENTITY = EmailContentEntity.createFrom(
+const RESTORE_ENTITY = EmailContent.createFrom(
   RESTORE_ENTITY_CODE,
   'Восстановление пароля',
-  `Ваш новый пароль: ${PASSWORD_VARIABLE}`,
+  `Ваш новый пароль: ${ PASSWORD_VARIABLE }`,
   MAIL_USERNAME,
 );
 

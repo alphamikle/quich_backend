@@ -1,12 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { EmailService }        from './email.service';
+import { EmailService } from '~/email/email.service';
 
 describe('EmailService', () => {
   let service: EmailService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [EmailService],
+      providers: [
+        EmailService,
+      ],
     })
       .compile();
 
