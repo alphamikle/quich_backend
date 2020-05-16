@@ -1,6 +1,7 @@
-import { Injectable }                                     from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+// eslint-disable-next-line import/no-named-default
 import { AxiosInstance, AxiosResponse, default as axios } from 'axios';
-import { DadataResponse, Suggestion }                     from './dto/response.interface';
+import { DadataResponse, Suggestion } from '~/dadata/dto/response.interface';
 
 const { DADATA_TOKEN } = process.env;
 
@@ -12,7 +13,7 @@ export class DadataService {
     this.api = axios.create({
       baseURL: 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/',
       headers: {
-        Authorization: `Token ${DADATA_TOKEN}`,
+        Authorization: `Token ${ DADATA_TOKEN }`,
       },
     });
   }
@@ -26,7 +27,7 @@ export class DadataService {
       });
       return response.data.suggestions[0];
     } catch (err) {
-      console.error(err);
+      Logger.error(err);
       return null;
     }
   }
@@ -38,7 +39,7 @@ export class DadataService {
       });
       return response.data.suggestions[0];
     } catch (err) {
-      console.error(err);
+      Logger.error(err);
       return null;
     }
   }
