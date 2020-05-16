@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user';
-import { FtsAccountEntity } from './entities/fts-account.entity';
+import { FtsAccount } from './entities/fts-account.entity';
 
 @Injectable()
 export class UserValidator {
   constructor(
     @InjectRepository(User) private readonly userEntityRepository: Repository<User>,
-    @InjectRepository(FtsAccountEntity) private readonly ftsAccountEntityRepository: Repository<FtsAccountEntity>,
+    @InjectRepository(FtsAccount) private readonly ftsAccountEntityRepository: Repository<FtsAccount>,
   ) {
   }
 

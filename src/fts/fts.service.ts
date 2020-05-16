@@ -7,7 +7,7 @@ import { FtsAccountDto } from './dto/fts-account.dto';
 import { FtsRegistrationDto } from './dto/fts-registration.dto';
 import { FTS_BILL_NOT_SEND_ERROR, FTS_TRY_MORE_ERROR, FTS_UNKNOWN_FETCHING_ERROR, FTS_USER_EXIST_ERROR, FTS_USER_NOT_EXIST_ERROR, INVALID_PHONE_ERROR, UNKNOWN_ERROR } from '../helpers/text';
 import { FtsRemindDto } from './dto/fts-remind.dto';
-import { FtsAccountEntity } from '../user/entities/fts-account.entity';
+import { FtsAccount } from '../user/entities/fts-account.entity';
 import { FtsQrDto } from './dto/fts-qr.dto';
 import { DateHelper } from '../helpers/date.helper';
 import { FtsFetchResponse } from './dto/fts-fetch-response/response.dto';
@@ -35,8 +35,8 @@ export class FtsService {
   private baseUrl: string;
 
   constructor(
-    @InjectRepository(FtsAccountEntity)
-    private readonly ftsAccountEntityRepository: Repository<FtsAccountEntity>,
+    @InjectRepository(FtsAccount)
+    private readonly ftsAccountEntityRepository: Repository<FtsAccount>,
     @InjectRepository(FtsAccountUsingsEntity)
     private readonly ftsAccountUsingsRepository: Repository<FtsAccountUsingsEntity>,
     private readonly dateHelper: DateHelper,
@@ -90,8 +90,8 @@ export class FtsService {
     }
   }
 
-  async changeFtsAccountPassword({ password, phone }: { password: string; phone: string; }): Promise<FtsAccountEntity> {
-    const ftsAccount: FtsAccountEntity = await this.ftsAccountEntityRepository.findOne({ where: { phone } });
+  async changeFtsAccountPassword({ password, phone }: { password: string; phone: string; }): Promise<FtsAccount> {
+    const ftsAccount: FtsAccount = await this.ftsAccountEntityRepository.findOne({ where: { phone } });
     ftsAccount.password = password;
     return this.ftsAccountEntityRepository.save(ftsAccount);
   }

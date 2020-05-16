@@ -1,29 +1,26 @@
+import { Controller } from '@nestjs/common';
+import { Metadata } from 'grpc';
 import { DefaultService } from './default.service';
-import { RequestUser } from '../user/user.decorator';
-import { User } from '../user/entities/user';
-import { AllUserDataDto } from './dto/AllUserData.dto';
-import { GetAction, SecureGetAction, SecureHeadAction, TagController } from '../helpers/decorators';
+import { AllDataDto } from './dto/all-data.dto';
+import { securedGrpc } from '~/providers/decorators';
+import { Empty } from '~/providers/empty';
+import * as defaultProto from '~/proto-generated/default';
 
-@TagController('default')
-export class DefaultController {
+@Controller()
+export class DefaultController implements defaultProto.DefaultController {
   constructor(
     private readonly defaultService: DefaultService,
   ) {
   }
 
-  @GetAction('URL для проверки работоспособности сервера', String, 'ping')
-  pingAction(): string {
-    return 'PONG';
+  @securedGrpc
+  async serviceAction(): Promise<Empty> {
+    await this.defaultService.doServiceWork();
+    return new Empty();
   }
 
-  @SecureHeadAction('Сервисный маршрут для внутренних нужд', null)
-  async serviceAction() {
-    return this.defaultService.doServiceWork();
-  }
-
-  @SecureGetAction('Получение всех данных пользователя в приложении', AllUserDataDto, 'data')
-  async getAllUserData(@RequestUser() user: User): Promise<AllUserDataDto> {
-    const data = await this.defaultService.getAllUserData(user.id);
-    return data;
+  @securedGrpc
+  async getAllUserData(request: Empty, { user }: Metadata): Promise<AllDataDto> {
+    return this.defaultService.getAllUserData(user.id);
   }
 }

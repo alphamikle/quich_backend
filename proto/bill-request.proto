@@ -2,6 +2,8 @@ syntax = "proto3";
 package quichx;
 
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "bill.proto";
 
 service BillRequestController {
   rpc DeleteBillRequest (BillRequestIdDto) returns (google.protobuf.Empty);
@@ -9,4 +11,15 @@ service BillRequestController {
 
 message BillRequestIdDto {
   string billRequestId = 1;
+}
+
+message BillRequest {
+  string id = 1;
+  string fiscalProp = 2;
+  string fiscalNumber = 3;
+  string fiscalDocument = 4;
+  google.protobuf.Timestamp billDate = 5;
+  float totalSum = 6;
+  BillDto rawDat = 7;
+  bool isFetched = 8;
 }

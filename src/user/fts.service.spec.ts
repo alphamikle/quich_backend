@@ -7,7 +7,7 @@ import { UserValidator } from './user.validator';
 import { DateHelper } from '../helpers/date.helper';
 import { User } from './entities/user';
 import { Session } from './entities/session';
-import { FtsAccountEntity } from './entities/fts-account.entity';
+import { FtsAccount } from './entities/fts-account.entity';
 import { Bill } from '../bill/entities/bill.entity';
 import { CategoryToUserRel } from '../category/entities/category-to-user-rel.entity';
 import { BillRequest } from '../bill-request/entities/bill-request.entity';
@@ -32,7 +32,7 @@ describe('user service test', () => {
         TypeOrmModule.forFeature([
           User,
           Session,
-          FtsAccountEntity,
+          FtsAccount,
           Bill,
           CategoryToUserRel,
           BillRequest,

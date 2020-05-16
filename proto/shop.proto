@@ -1,6 +1,8 @@
 syntax = "proto3";
 package quichx;
 
+import "export.proto";
+
 message ShopDto {
   oneof opId {
     string id = 1;
@@ -8,4 +10,21 @@ message ShopDto {
   string title = 2;
   string tin = 3;
   string address = 4;
+}
+
+message Shop {
+  string id = 1;
+  string title = 2;
+  oneof opAddress {
+    string address = 3;
+  }
+  oneof opLongitude {
+    float longitude = 4;
+  }
+  oneof opLatitude {
+    float latitude = 5;
+  }
+  oneof opTin {
+    string tin = 6;
+  }
 }

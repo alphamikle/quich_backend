@@ -1,18 +1,18 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { PurchaseEntity } from '../../purchase/entities/purchase.entity';
+import { Purchase } from '~/purchase/entities/purchase.entity';
+import * as product from '~/proto-generated/product';
 
-@Entity()
-export class ProductEntity {
+@Entity('product_entity')
+export class Product implements product.Product {
 
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-
   @Column({ unique: true })
   title!: string;
 
-  @OneToMany(() => PurchaseEntity, purchase => purchase.product)
-  purchases?: PurchaseEntity[];
+  @OneToMany(() => Purchase, purchase => purchase.product)
+  purchases?: Purchase[];
 
   @Column({ default: () => 'now()' })
   createdAt!: Date;

@@ -1,7 +1,7 @@
 import { Injectable }       from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository }       from 'typeorm';
-import { ShopEntity }       from './entities/shop.entity';
+import { Shop }       from './entities/shop.entity';
 import { ShopDto }          from './dto/shop.dto';
 import { DadataService }    from '../dadata/dadata.service';
 import { MapsService }      from '../maps/maps.service';
@@ -9,15 +9,15 @@ import { MapsService }      from '../maps/maps.service';
 @Injectable()
 export class ShopService {
   constructor(
-    @InjectRepository(ShopEntity)
-    private readonly shopEntityRepository: Repository<ShopEntity>,
+    @InjectRepository(Shop)
+    private readonly shopEntityRepository: Repository<Shop>,
     private readonly dadataService: DadataService,
     private readonly mapsService: MapsService,
   ) {
   }
 
-  async getUserShops(userId: string): Promise<ShopEntity[]> {
-    const shops: ShopEntity[] = await this.shopEntityRepository.query(`
+  async getUserShops(userId: string): Promise<Shop[]> {
+    const shops: Shop[] = await this.shopEntityRepository.query(`
       SELECT distinct(se.id), se.title, se.address, se.tin, se.latitude, se.longitude FROM shop_entity se
         LEFT OUTER JOIN bill_entity be on se.id = be."shopId"
         WHERE be."userId" = '${userId}'
@@ -25,8 +25,8 @@ export class ShopService {
     return shops;
   }
 
-  async createShopEntity(shopDto: ShopDto): Promise<ShopEntity> {
-    const shop = new ShopEntity();
+  async createShopEntity(shopDto: ShopDto): Promise<Shop> {
+    const shop = new Shop();
     shop.address = shopDto.address;
     shop.title = shopDto.title;
     shop.tin = shopDto.tin;
@@ -48,19 +48,19 @@ export class ShopService {
     return this.shopEntityRepository.save(shop);
   }
 
-  async getShopByTitle(title: string): Promise<ShopEntity> {
+  async getShopByTitle(title: string): Promise<Shop> {
     return this.shopEntityRepository.findOne({ title });
   }
 
-  async getShopByTitleAndAddress({ title, address }: { title: string, address: string }): Promise<ShopEntity> {
+  async getShopByTitleAndAddress({ title, address }: { title: string, address: string }): Promise<Shop> {
     return this.shopEntityRepository.findOne({
       title,
       address,
     });
   }
 
-  async getShopByProps({ title, address }: { title: string, address?: string }): Promise<ShopEntity> {
-    let shop: ShopEntity;
+  async getShopByProps({ title, address }: { title: string, address?: string }): Promise<Shop> {
+    let shop: Shop;
     if (address) {
       shop = await this.getShopByTitleAndAddress({
         title,
@@ -73,11 +73,11 @@ export class ShopService {
     return shop;
   }
 
-  async getShopById(id: string): Promise<ShopEntity> {
+  async getShopById(id: string): Promise<Shop> {
     return this.shopEntityRepository.findOne(id);
   }
 
-  async editShop(shopDto: ShopDto): Promise<ShopEntity> {
+  async editShop(shopDto: ShopDto): Promise<Shop> {
     const shop = await this.getShopById(shopDto.id);
     if (shopDto.title !== shop.title) {
       return this.createShopEntity(shopDto);
@@ -85,8 +85,8 @@ export class ShopService {
     return shop;
   }
 
-  async findOrCreateShop(shopDto: ShopDto): Promise<ShopEntity> {
-    let shop: ShopEntity;
+  async findOrCreateShop(shopDto: ShopDto): Promise<Shop> {
+    let shop: Shop;
     if (shopDto.id) {
       shop = await this.getShopById(shopDto.id);
     }

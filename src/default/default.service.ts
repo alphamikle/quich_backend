@@ -1,25 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Bill } from '../bill/entities/bill.entity';
-import { BillProvider } from '../bill-provider/entities/bill-provider.entity';
-import { BillRequest } from '../bill-request/entities/bill-request.entity';
-import { Category } from '../category/entities/category.entity';
-import { CategoryToUserRel } from '../category/entities/category-to-user-rel.entity';
-import { ProductEntity } from '../product/entities/product.entity';
-import { PurchaseEntity } from '../purchase/entities/purchase.entity';
-import { ShopEntity } from '../shop/entities/shop.entity';
-import { FtsAccountEntity } from '../user/entities/fts-account.entity';
-import { User } from '../user/entities/user';
-import { ShopService } from '../shop/shop.service';
-import { BillService } from '../bill/bill.service';
-import { CategoryService } from '../category/category.service';
-import { PurchaseService } from '../purchase/purchase.service';
-import { ProductService } from '../product/product.service';
-import { UserService } from '../user/user.service';
-import { AllUserDataDto } from './dto/AllUserData.dto';
-import { BillRequestService } from '../bill-request/bill-request.service';
-import { MessageService } from '../message/message.service';
+import { Bill } from '~/bill/entities/bill.entity';
+import { BillProvider } from '~/bill-provider/entities/bill-provider.entity';
+import { BillRequest } from '~/bill-request/entities/bill-request.entity';
+import { Category } from '~/category/entities/category.entity';
+import { CategoryToUserRel } from '~/category/entities/category-to-user-rel.entity';
+import { Product } from '~/product/entities/product.entity';
+import { Purchase } from '~/purchase/entities/purchase.entity';
+import { Shop } from '~/shop/entities/shop.entity';
+import { FtsAccount } from '~/user/entities/fts-account.entity';
+import { User } from '~/user/entities/user';
+import { ShopService } from '~/shop/shop.service';
+import { BillService } from '~/bill/bill.service';
+import { CategoryService } from '~/category/category.service';
+import { PurchaseService } from '~/purchase/purchase.service';
+import { ProductService } from '~/product/product.service';
+import { UserService } from '~/user/user.service';
+import { AllDataDto } from '~/default/dto/all-data.dto';
+import { BillRequestService } from '~/bill-request/bill-request.service';
+import { MessageService } from '~/message/message.service';
 
 @Injectable()
 export class DefaultService {
@@ -34,14 +34,14 @@ export class DefaultService {
     private readonly categoryEntityRepository: Repository<Category>,
     @InjectRepository(CategoryToUserRel)
     private readonly categoryToUserEntityRepository: Repository<CategoryToUserRel>,
-    @InjectRepository(ProductEntity)
-    private readonly productEntityRepository: Repository<ProductEntity>,
-    @InjectRepository(PurchaseEntity)
-    private readonly purchaseEntityRepository: Repository<PurchaseEntity>,
-    @InjectRepository(ShopEntity)
-    private readonly shopEntityRepository: Repository<ShopEntity>,
-    @InjectRepository(FtsAccountEntity)
-    private readonly ftsAccountEntityRepository: Repository<FtsAccountEntity>,
+    @InjectRepository(Product)
+    private readonly productEntityRepository: Repository<Product>,
+    @InjectRepository(Purchase)
+    private readonly purchaseEntityRepository: Repository<Purchase>,
+    @InjectRepository(Shop)
+    private readonly shopEntityRepository: Repository<Shop>,
+    @InjectRepository(FtsAccount)
+    private readonly ftsAccountEntityRepository: Repository<FtsAccount>,
     @InjectRepository(User)
     private readonly userEntityRepository: Repository<User>,
     private readonly shopService: ShopService,
@@ -55,7 +55,7 @@ export class DefaultService {
   ) {
   }
 
-  async getAllUserData(userId: string): Promise<AllUserDataDto> {
+  async getAllUserData(userId: string): Promise<AllDataDto> {
     const bills = await this.billService.getUserBills(userId);
     const categories = await this.categoryService.getUserCategories(userId);
     const shops = await this.shopService.getUserShops(userId);
@@ -78,8 +78,8 @@ export class DefaultService {
       purchases,
       products,
       accounts,
-      billsRequests,
-      unreadMessages,
+      requests: billsRequests,
+      messages: unreadMessages,
       queries,
       queriesLimit,
     };

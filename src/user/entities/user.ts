@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { FtsAccountEntity } from './fts-account.entity';
+import { FtsAccount } from './fts-account.entity';
 import { Session } from '~/user/entities/session';
 import { Bill } from '~/bill/entities/bill.entity';
 import { CategoryToUserRel } from '~/category/entities/category-to-user-rel.entity';
@@ -23,8 +23,8 @@ export class User {
   @CreateDateColumn()
   createdAt!: Date;
 
-  @OneToMany(() => FtsAccountEntity, account => account.user)
-  ftsAccounts?: FtsAccountEntity[];
+  @OneToMany(() => FtsAccount, account => account.user)
+  ftsAccounts?: FtsAccount[];
 
   @OneToMany(() => Session, session => session.user)
   sessions?: Session[];

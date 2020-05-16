@@ -1,20 +1,18 @@
 import { AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from './user';
+import { User } from '~/user/entities/user';
+import * as fts from '~/proto-generated/fts';
 
-@Entity()
-export class FtsAccountEntity {
+@Entity('fts_account_entity')
+export class FtsAccount implements fts.FtsAccount {
 
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-
   @Column()
   phone!: string;
 
-
   @Column()
   password!: string;
-
 
   @Column()
   userId!: string;

@@ -1,0 +1,16 @@
+syntax = "proto3";
+package quichx;
+
+message Message {
+  string id = 1;
+  string title = 2;
+  string content = 3;
+  bool isRead = 4;
+
+}
+
+enum MessageType {
+  INFO = 0;
+  WARNING = 1;
+  ERROR = 2;
+}

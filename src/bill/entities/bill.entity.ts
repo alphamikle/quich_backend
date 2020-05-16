@@ -1,8 +1,8 @@
 import 'reflect-metadata';
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { ShopEntity } from '~/shop/entities/shop.entity';
+import { Shop } from '~/shop/entities/shop.entity';
 import { User } from '~/user/entities/user';
-import { PurchaseEntity } from '~/purchase/entities/purchase.entity';
+import { Purchase } from '~/purchase/entities/purchase.entity';
 import { BillRequest } from '~/bill-request/entities/bill-request.entity';
 import * as bill from '~/proto-generated/bill';
 
@@ -27,8 +27,8 @@ export class Bill implements bill.Bill {
   @Column()
   shopId!: string;
 
-  @ManyToOne(() => ShopEntity, shop => shop.bills, { onDelete: 'RESTRICT' })
-  shop?: ShopEntity;
+  @ManyToOne(() => Shop, shop => shop.bills, { onDelete: 'RESTRICT' })
+  shop?: Shop;
 
   @Column()
   userId!: string;
@@ -36,8 +36,8 @@ export class Bill implements bill.Bill {
   @ManyToOne(() => User, user => user.bills, { onDelete: 'RESTRICT' })
   user?: User;
 
-  @OneToMany(() => PurchaseEntity, purchase => purchase.bill)
-  purchases?: PurchaseEntity[];
+  @OneToMany(() => Purchase, purchase => purchase.bill)
+  purchases?: Purchase[];
 
   @OneToMany(() => BillRequest, billRequest => billRequest.bill)
   billRequests?: BillRequest[];

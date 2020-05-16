@@ -3,9 +3,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { BillService } from './bill.service';
 import { BillController } from './bill.controller';
 import { Bill } from './entities/bill.entity';
-import { ShopEntity } from '~/shop/entities/shop.entity';
+import { Shop } from '~/shop/entities/shop.entity';
 import { User } from '~/user/entities/user';
-import { PurchaseEntity } from '~/purchase/entities/purchase.entity';
+import { Purchase } from '~/purchase/entities/purchase.entity';
 import { BillRequest } from '~/bill-request/entities/bill-request.entity';
 import { BillRequestModule } from '~/bill-request/bill-request.module';
 import { FtsModule } from '~/fts/fts.module';
@@ -23,9 +23,9 @@ import { BillProviderModule } from '~/bill-provider/bill-provider.module';
   imports: [
     TypeOrmModule.forFeature([
       Bill,
-      ShopEntity,
+      Shop,
       User,
-      PurchaseEntity,
+      Purchase,
       BillRequest,
     ]),
     BillRequestModule,

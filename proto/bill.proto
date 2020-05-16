@@ -6,6 +6,7 @@ import "purchase.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
+import "export.proto";
 
 service BillController {
   rpc GetUserBills (google.protobuf.Empty) returns (Bills);
@@ -18,16 +19,6 @@ service BillController {
 
 message Bills {
   repeated Bill bills = 1;
-}
-
-message Bill {
-  string id = 1;
-  google.protobuf.StringValue comment = 2;
-  float totalSum = 3;
-  google.protobuf.Timestamp billDate = 4;
-  string shopId = 5;
-  string userId = 6;
-  google.protobuf.Timestamp createdAt = 7;
 }
 
 message BillDto {

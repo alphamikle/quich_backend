@@ -1,14 +1,12 @@
 import 'reflect-metadata';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from '../../user/entities/user';
+import { User } from '~/user/entities/user';
 
 export enum MessageType {
-  info = 'info',
-  warning = 'warning',
-  error = 'error'
+  INFO,
+  WARNING,
+  ERROR,
 }
-
-const types = Object.keys(MessageType);
 
 @Entity()
 export class MessageEntity {
@@ -16,14 +14,11 @@ export class MessageEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-
   @Column()
   title!: string;
 
-
   @Column()
   content!: string;
-
 
   @Column({ default: false })
   isRead!: boolean;
@@ -34,11 +29,6 @@ export class MessageEntity {
   @Column()
   userId!: string;
 
-
-  @Column({
-    type: 'enum',
-    enum: MessageType,
-    default: MessageType.info,
-  })
+  @Column({ enum: Object.values(MessageType), default: MessageType.INFO })
   type!: MessageType;
 }

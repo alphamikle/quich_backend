@@ -1,56 +1,56 @@
-import { Injectable }       from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository }       from 'typeorm';
-import { ProductEntity }    from './entities/product.entity';
+import { Repository } from 'typeorm';
+import { Product } from './entities/product.entity';
 import { getWordsDistance } from '../helpers/common.helper';
 
 @Injectable()
 export class ProductService {
   constructor(
-    @InjectRepository(ProductEntity)
-    private readonly productEntityRepository: Repository<ProductEntity>,
+    @InjectRepository(Product)
+    private readonly productEntityRepository: Repository<Product>,
   ) {
   }
 
-  async getUserProducts(userId: string): Promise<ProductEntity[]> {
-    const products: ProductEntity[] = await this.productEntityRepository.query(`
+  async getUserProducts(userId: string): Promise<Product[]> {
+    const products: Product[] = await this.productEntityRepository.query(`
         SELECT * FROM product_entity pe WHERE pe.id IN (
             SELECT pue."productId" FROM purchase_entity pue
             LEFT JOIN bill_entity be on pue."billId" = be.id
-            WHERE be."userId" = '${userId}'
+            WHERE be."userId" = '${ userId }'
         )
     `);
     return products;
   }
 
-  async createProduct(title: string): Promise<ProductEntity> {
-    const product = new ProductEntity();
+  async createProduct(title: string): Promise<Product> {
+    const product = new Product();
     product.title = title;
     return this.productEntityRepository.save(product);
   }
 
-  async getProductByTitle(title: string): Promise<ProductEntity> {
+  async getProductByTitle(title: string): Promise<Product> {
     return this.productEntityRepository.findOne({ where: { title } });
   }
 
-  async getProductById(id: string): Promise<ProductEntity> {
+  async getProductById(id: string): Promise<Product> {
     return this.productEntityRepository.findOne({ where: { id } });
   }
 
-  async createProductEntity(title: string): Promise<ProductEntity> {
-    const product = new ProductEntity();
+  async createProductEntity(title: string): Promise<Product> {
+    const product = new Product();
     product.title = title;
     return this.productEntityRepository.save(product);
   }
 
-  async getAllProducts(): Promise<ProductEntity[]> {
+  async getAllProducts(): Promise<Product[]> {
     return this.productEntityRepository.find({ order: { title: 'ASC' } });
   }
 
-  async getClosestProductByTitle({ title, products }: { title: string, products: ProductEntity[] }): Promise<ProductEntity | null> {
+  async getClosestProductByTitle({ title, products }: { title: string, products: Product[] }): Promise<Product | null> {
     const separator = /( )|(\.)/g;
     let min = Infinity;
-    let target: ProductEntity = null;
+    let target: Product = null;
     title = title.toLowerCase();
     const subTitles = title.split(separator)
       .filter(t => t)
@@ -106,8 +106,8 @@ export class ProductService {
     return target;
   }
 
-  async findOrCreateProductByTitleOrId({ title, id }: { title: string, id: string }): Promise<ProductEntity> {
-    let product: ProductEntity;
+  async findOrCreateProductByTitleOrId({ title, id }: { title: string, id: string }): Promise<Product> {
+    let product: Product;
     if (id) {
       product = await this.getProductById(id);
       if (product && product.title !== title) {

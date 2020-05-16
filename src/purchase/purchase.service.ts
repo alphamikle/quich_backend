@@ -1,21 +1,21 @@
-import { Injectable }          from '@nestjs/common';
-import { InjectRepository }    from '@nestjs/typeorm';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { In, Not, Repository } from 'typeorm';
-import { PurchaseEntity }      from './entities/purchase.entity';
-import { PurchaseDto }         from './dto/purchase.dto';
-import { ProductService }      from '../product/product.service';
-import { ProductEntity }       from '../product/entities/product.entity';
+import { Purchase } from './entities/purchase.entity';
+import { PurchaseDto } from './dto/purchase.dto';
+import { ProductService } from '../product/product.service';
+import { Product } from '../product/entities/product.entity';
 
 @Injectable()
 export class PurchaseService {
   constructor(
-    @InjectRepository(PurchaseEntity)
-    private readonly purchaseEntityRepository: Repository<PurchaseEntity>,
+    @InjectRepository(Purchase)
+    private readonly purchaseEntityRepository: Repository<Purchase>,
     private readonly productService: ProductService,
   ) {
   }
 
-  async getPurchaseById(id: string): Promise<PurchaseEntity> {
+  async getPurchaseById(id: string): Promise<Purchase> {
     return this.purchaseEntityRepository.findOne(id);
   }
 
@@ -30,22 +30,22 @@ export class PurchaseService {
     }
   }
 
-  async getUserPurchases(userId: string): Promise<PurchaseEntity[]> {
-    const purchases: PurchaseEntity[] = await this.purchaseEntityRepository.query(`
+  async getUserPurchases(userId: string): Promise<Purchase[]> {
+    const purchases: Purchase[] = await this.purchaseEntityRepository.query(`
       SELECT pe.id, pe."billId", pe."categoryId", pe."createdAt", pe.price, pe.quantity, pe.rate, pe."productId"
       FROM purchase_entity pe
         LEFT JOIN bill_entity be on pe."billId" = be.id
-        WHERE be."userId" = '${userId}'
+        WHERE be."userId" = '${ userId }'
     `);
     return purchases;
   }
 
-  async createPurchase({ purchaseDto, billId }: { purchaseDto: PurchaseDto, billId: string }): Promise<PurchaseEntity> {
+  async createPurchase({ purchaseDto, billId }: { purchaseDto: PurchaseDto, billId: string }): Promise<Purchase> {
     const product = await this.productService.findOrCreateProductByTitleOrId({
       title: purchaseDto.title,
       id: purchaseDto.id,
     });
-    const purchase = new PurchaseEntity();
+    const purchase = new Purchase();
     purchase.categoryId = purchaseDto.categoryId;
     purchase.price = purchaseDto.price;
     purchase.productId = product.id;
@@ -55,7 +55,7 @@ export class PurchaseService {
     return this.purchaseEntityRepository.save(purchase);
   }
 
-  async getPurchasesByBillId(billId: string): Promise<PurchaseEntity[]> {
+  async getPurchasesByBillId(billId: string): Promise<Purchase[]> {
     return this.purchaseEntityRepository.find({ where: { billId } });
   }
 
@@ -68,7 +68,7 @@ export class PurchaseService {
     }
   }
 
-  async editPurchases({ purchases, billId }: { purchases: PurchaseDto[], billId: string }): Promise<PurchaseEntity[]> {
+  async editPurchases({ purchases, billId }: { purchases: PurchaseDto[], billId: string }): Promise<Purchase[]> {
     const currentPurchasesIds: string[] = [];
     const editedPurchases = await Promise.all(purchases.map(purchaseDto => this.editPurchase({
       purchaseDto,
@@ -82,9 +82,9 @@ export class PurchaseService {
     return editedPurchases;
   }
 
-  async editPurchase({ purchaseDto, billId }: { purchaseDto: PurchaseDto, billId: string }): Promise<PurchaseEntity> {
-    let purchaseEntity: PurchaseEntity;
-    let product: ProductEntity;
+  async editPurchase({ purchaseDto, billId }: { purchaseDto: PurchaseDto, billId: string }): Promise<Purchase> {
+    let purchaseEntity: Purchase;
+    let product: Product;
     if (purchaseDto.id) {
       purchaseEntity = await this.getPurchaseById(purchaseDto.id);
     }
@@ -110,7 +110,7 @@ export class PurchaseService {
     return purchaseEntity;
   }
 
-  async getClosestCategoryIdByProductTitle({ title, products }: { title: string, products: ProductEntity[] }): Promise<string | null> {
+  async getClosestCategoryIdByProductTitle({ title, products }: { title: string, products: Product[] }): Promise<string | null> {
     const closestProduct = await this.productService.getClosestProductByTitle({
       title,
       products,

@@ -1,0 +1,15 @@
+syntax = "proto3";
+package quichx;
+
+import "google/protobuf/timestamp.proto";
+
+message Bill {
+  string id = 1;
+  oneof opComment {
+    string comment = 2;
+  }
+  float totalSum = 3;
+  google.protobuf.Timestamp billDate = 4;
+  string shopId = 5;
+  string userId = 6;
+}

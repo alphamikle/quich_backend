@@ -15,7 +15,7 @@ import {
   SIGN_IN_NO_USER,
   SIGN_UP_SUCCESS,
 } from '../helpers/text';
-import { FtsAccountEntity } from './entities/fts-account.entity';
+import { FtsAccount } from './entities/fts-account.entity';
 import { AuthService } from '../auth/auth.service';
 import { AuthValidator } from '../auth/auth.validator';
 import { RequestUser } from './user.decorator';
@@ -96,13 +96,13 @@ export class UserController {
     return this.authService.signIn(user);
   }
 
-  @SecureGetAction('Получение списка аккаунтов ФНС', [FtsAccountEntity], 'fts-accounts')
-  async getFtsAccountsList(@RequestUser() user: User): Promise<FtsAccountEntity[]> {
+  @SecureGetAction('Получение списка аккаунтов ФНС', [FtsAccount], 'fts-accounts')
+  async getFtsAccountsList(@RequestUser() user: User): Promise<FtsAccount[]> {
     return this.userService.getFtsAccountsByUserId(user.id);
   }
 
-  @SecurePostAction('Добавление нового аккаунта ФНС к пользователю', FtsAccountEntity, 'fts-accounts')
-  async addFtsAccountToUser(@RequestUser() user: User, @Body() ftsAccountData: FtsAccountDto): Promise<FtsAccountEntity> {
+  @SecurePostAction('Добавление нового аккаунта ФНС к пользователю', FtsAccount, 'fts-accounts')
+  async addFtsAccountToUser(@RequestUser() user: User, @Body() ftsAccountData: FtsAccountDto): Promise<FtsAccount> {
     if (ftsAccountData.password === null || ftsAccountData.password === undefined) {
       const ftsRegistrationDto = new FtsRegistrationDto({
         email: user.email,
@@ -149,8 +149,8 @@ export class UserController {
     return FTS_PHONE_DELETION_COMPLETE;
   }
 
-  @SecurePatchAction('Изменение данных аккаунта ФНС', FtsAccountEntity, 'fts-accounts')
-  async modifyFtsAccount(@RequestUser() user: User, @Body() { password, phone }: FtsAccountModifyDto): Promise<FtsAccountEntity> {
+  @SecurePatchAction('Изменение данных аккаунта ФНС', FtsAccount, 'fts-accounts')
+  async modifyFtsAccount(@RequestUser() user: User, @Body() { password, phone }: FtsAccountModifyDto): Promise<FtsAccount> {
     const isAccountExist = await this.userValidator.isFtsAccountExistOnUser({
       user,
       phone,

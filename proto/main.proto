@@ -6,3 +6,6 @@ import "purchase.proto";
 import "shop.proto";
 import "bill-request.proto";
 import "category.proto";
+import "default.proto";
+import "product.proto";
+import "export.proto";

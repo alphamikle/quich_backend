@@ -1,0 +1,31 @@
+syntax = "proto3";
+package quichx;
+
+import "google/protobuf/empty.proto";
+import "bill.proto";
+import "category.proto";
+import "product.proto";
+import "fts.proto";
+import "bill-request.proto";
+import "message.proto";
+import "export.proto";
+import "shop.proto";
+import "purchase.proto";
+
+service DefaultController {
+  rpc ServiceAction (google.protobuf.Empty) returns (google.protobuf.Empty);
+  rpc GetAllUserData (google.protobuf.Empty) returns (AllDataDto);
+}
+
+message AllDataDto {
+  repeated Bill bills = 1;
+  repeated CategoryDto categories = 2;
+  repeated Shop shops = 3;
+  repeated Purchase purchases = 4;
+  repeated Product products = 5;
+  repeated FtsAccount accounts = 6;
+  repeated BillRequest requests = 7;
+  repeated Message messages = 8;
+  int32 queries = 9;
+  int32 queriesLimit = 10;
+}

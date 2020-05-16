@@ -5,9 +5,10 @@ import { Bill } from '~/bill/entities/bill.entity';
 import { BillProvider } from '~/bill-provider/entities/bill-provider.entity';
 import { FtsFetchResponseBill } from '~/fts/dto/fts-fetch-response/bill.dto';
 import { BillDto } from '~/bill/dto/bill.dto';
+import * as billRequest from '~/proto-generated/bill-request';
 
 @Entity('bill_request_entity')
-export class BillRequest {
+export class BillRequest implements billRequest.BillRequest {
 
   @PrimaryGeneratedColumn('uuid')
   id!: string;

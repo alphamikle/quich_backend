@@ -4,7 +4,7 @@ import { Between, FindConditions, In, Not, Repository } from 'typeorm';
 import { User } from './entities/user';
 import { Session } from './entities/session';
 import { DateHelper } from '../helpers/date.helper';
-import { FtsAccountEntity } from './entities/fts-account.entity';
+import { FtsAccount } from './entities/fts-account.entity';
 import { FtsAccountDto } from '../fts/dto/fts-account.dto';
 import { FTS_ACCOUNTS_ALL_BUSY_ERROR } from '../helpers/text';
 import { UserQueryLimitEntity } from './entities/user-query-limit.entity';
@@ -20,8 +20,8 @@ export class UserService {
     private readonly userEntityRepository: Repository<User>,
     @InjectRepository(Session)
     private readonly sessionEntityRepository: Repository<Session>,
-    @InjectRepository(FtsAccountEntity)
-    private readonly ftsAccountEntityRepository: Repository<FtsAccountEntity>,
+    @InjectRepository(FtsAccount)
+    private readonly ftsAccountEntityRepository: Repository<FtsAccount>,
     @InjectRepository(UserQueryLimitEntity)
     private readonly userQueryLimitEntityRepository: Repository<UserQueryLimitEntity>,
     private readonly dateHelper: DateHelper,
@@ -71,12 +71,12 @@ export class UserService {
     }
   }
 
-  async getFtsAccountsByUserId(userId: string): Promise<FtsAccountEntity[]> {
+  async getFtsAccountsByUserId(userId: string): Promise<FtsAccount[]> {
     return this.ftsAccountEntityRepository.find({ where: { userId } });
   }
 
-  async addFtsAccountToUser({ user, ftsAccountData }: { user: User, ftsAccountData: FtsAccountDto }): Promise<FtsAccountEntity> {
-    const ftsAccount = new FtsAccountEntity();
+  async addFtsAccountToUser({ user, ftsAccountData }: { user: User, ftsAccountData: FtsAccountDto }): Promise<FtsAccount> {
+    const ftsAccount = new FtsAccount();
     ftsAccount.phone = ftsAccountData.phone;
     ftsAccount.password = ftsAccountData.password;
     ftsAccount.userId = user.id;
@@ -95,7 +95,7 @@ export class UserService {
     return count > 0;
   }
 
-  async getRandomFtsAccount(): Promise<FtsAccountEntity | null> {
+  async getRandomFtsAccount(): Promise<FtsAccount | null> {
     const lessUsedFtsAccountsIds: Array<{ id: string }> = await this.ftsAccountEntityRepository.query(`
         SELECT fe.id
         FROM fts_account_entity fe
@@ -112,9 +112,9 @@ export class UserService {
   }
 
   // ? Выбирает из списка аккаунтов ФНС пользователя тот, что использовался раньше всех
-  async getNextFtsAccountByUserId(userId: string): Promise<FtsAccountEntity> {
+  async getNextFtsAccountByUserId(userId: string): Promise<FtsAccount> {
     const exceededIds = await this.getUserAccountsWithExceededLimit(userId);
-    const where: FindConditions<FtsAccountEntity> = {
+    const where: FindConditions<FtsAccount> = {
       userId,
     };
     if (exceededIds?.length > 0) {
@@ -138,9 +138,9 @@ export class UserService {
     return userAccounts.map(account => account.id);
   }
 
-  async getFtsAccountForUser(userId: string): Promise<FtsAccountEntity> {
+  async getFtsAccountForUser(userId: string): Promise<FtsAccount> {
     const hasUserFtsAccount = await this.hasUserFtsAccount(userId);
-    let ftsAccount: FtsAccountEntity;
+    let ftsAccount: FtsAccount;
     if (hasUserFtsAccount) {
       ftsAccount = await this.getNextFtsAccountByUserId(userId);
     }
