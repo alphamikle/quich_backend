@@ -9,14 +9,14 @@ import { BillRequest } from '../bill-request/entities/bill-request.entity';
 import { BillRequestModule } from '../bill-request/bill-request.module';
 import { FtsTransformer } from './fts.transformer';
 import { DateHelper } from '../helpers/date.helper';
-import { FtsAccountUsingsEntity } from './entities/fts-account-usings.entity';
+import { FtsAccountUsings } from './entities/fts-account-usings.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       FtsAccount,
       BillRequest,
-      FtsAccountUsingsEntity,
+      FtsAccountUsings,
     ]),
     forwardRef(() => UserModule),
     BillRequestModule,

@@ -1,6 +1,16 @@
 syntax = "proto3";
 package quichx;
 
+import "google/protobuf/empty.proto";
+
+service MessageController {
+  rpc MarkMessageRead (MessageIdDto) returns (google.protobuf.Empty);
+}
+
+message MessageIdDto {
+  string messageId = 1;
+}
+
 message Message {
   string id = 1;
   string title = 2;

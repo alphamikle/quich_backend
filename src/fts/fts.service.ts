@@ -13,7 +13,7 @@ import { DateHelper } from '../helpers/date.helper';
 import { FtsFetchResponse } from './dto/fts-fetch-response/response.dto';
 import { FtsFetchResponseBill } from './dto/fts-fetch-response/bill.dto';
 import { randomOS, randomUUID, wait } from '../helpers/common.helper';
-import { FtsAccountUsingsEntity } from './entities/fts-account-usings.entity';
+import { FtsAccountUsings } from './entities/fts-account-usings.entity';
 import { FtsFetchResponsePurchase } from './dto/fts-fetch-response/purchase.dto';
 
 export interface FtsHeaders {
@@ -37,8 +37,8 @@ export class FtsService {
   constructor(
     @InjectRepository(FtsAccount)
     private readonly ftsAccountEntityRepository: Repository<FtsAccount>,
-    @InjectRepository(FtsAccountUsingsEntity)
-    private readonly ftsAccountUsingsRepository: Repository<FtsAccountUsingsEntity>,
+    @InjectRepository(FtsAccountUsings)
+    private readonly ftsAccountUsingsRepository: Repository<FtsAccountUsings>,
     private readonly dateHelper: DateHelper,
   ) {
     this.setFtsUrl();
@@ -182,7 +182,7 @@ export class FtsService {
       },
     });
     if (currentDateUses === undefined) {
-      currentDateUses = new FtsAccountUsingsEntity();
+      currentDateUses = new FtsAccountUsings();
       currentDateUses.phone = phone;
       currentDateUses.usingDay = currentDate;
       currentDateUses.uses = 0;

@@ -1,18 +1,20 @@
-import { Param }                            from '@nestjs/common';
-import { MessageService }                   from './message.service';
-import { OK }                               from '../helpers/text';
-import { SecurePatchAction, TagController } from '../helpers/decorators';
+import { Controller } from '@nestjs/common';
+import { MessageService } from '~/message/message.service';
+import { securedGrpc } from '~/providers/decorators';
+import { MessageIdDto } from '~/message/dto/message-id.dto';
+import { Empty } from '~/providers/empty';
+import * as message from '~/proto-generated/message';
 
-@TagController('message')
-export class MessageController {
+@Controller()
+export class MessageController implements message.MessageController {
   constructor(
     private readonly messageService: MessageService,
   ) {
   }
 
-  @SecurePatchAction('Прочитать письмо', String, ':messageId')
-  async markMessageRead(@Param('messageId') messageId: string): Promise<string> {
+  @securedGrpc
+  async markMessageRead({ messageId }: MessageIdDto): Promise<Empty> {
     await this.messageService.markMessageRead(messageId);
-    return OK;
+    return new Empty();
   }
 }

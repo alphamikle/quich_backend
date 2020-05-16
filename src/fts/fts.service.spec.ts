@@ -1,12 +1,12 @@
-import { Repository }             from 'typeorm';
-import { FtsService }             from './fts.service';
-import { FtsAccountDto }          from './dto/fts-account.dto';
-import { FtsQrDto }               from './dto/fts-qr.dto';
-import { FtsAccount }       from '../user/entities/fts-account.entity';
-import { FtsAccountUsingsEntity } from './entities/fts-account-usings.entity';
-import { DateHelper }             from '../helpers/date.helper';
-import { fetchBillDataEqual }     from './test-equals/equals';
-import { Logger }                 from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { FtsService } from './fts.service';
+import { FtsAccountDto } from './dto/fts-account.dto';
+import { FtsQrDto } from './dto/fts-qr.dto';
+import { FtsAccount } from '../user/entities/fts-account.entity';
+import { FtsAccountUsings } from './entities/fts-account-usings.entity';
+import { DateHelper } from '../helpers/date.helper';
+import { fetchBillDataEqual } from './test-equals/equals';
+import { Logger } from '@nestjs/common';
 
 jest.setTimeout(600000);
 
@@ -37,7 +37,7 @@ describe('Fts service test', () => {
   beforeAll(async (done) => {
     Logger.log('Start fts service tests');
     const ftsAccountEntityRepository = new Repository<FtsAccount>();
-    const ftsAccountUsingsRepository = new Repository<FtsAccountUsingsEntity>();
+    const ftsAccountUsingsRepository = new Repository<FtsAccountUsings>();
     const dateHelper = new DateHelper();
     service = new FtsService(ftsAccountEntityRepository, ftsAccountUsingsRepository, dateHelper);
     done();
