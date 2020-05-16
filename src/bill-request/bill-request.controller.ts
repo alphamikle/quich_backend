@@ -1,21 +1,22 @@
-import { BadRequestException, Param } from '@nestjs/common';
-import { BillRequestService } from './bill-request.service';
-import { RequestUser } from '../user/user.decorator';
-import { User } from '../user/entities/user';
-import { BillRequestValidator } from './bill-request.validator';
-import { OK } from '../helpers/text';
-import { SecureDeleteAction, TagController } from '../helpers/decorators';
+import { BadRequestException, Controller } from '@nestjs/common';
+import { Metadata } from 'grpc';
+import { BillRequestService } from '~/bill-request/bill-request.service';
+import { BillRequestValidator } from '~/bill-request/bill-request.validator';
+import { securedGrpc } from '~/providers/decorators';
+import { BillRequestIdDto } from '~/bill-request/dto/bill-request-id.dto';
+import * as billRequest from '~/proto-generated/bill-request';
+import { Empty } from '~/providers/empty';
 
-@TagController('bill-request')
-export class BillRequestController {
+@Controller()
+export class BillRequestController implements billRequest.BillRequestController {
   constructor(
     private readonly billRequestService: BillRequestService,
     private readonly billRequestValidator: BillRequestValidator,
   ) {
   }
 
-  @SecureDeleteAction('Удаление запроса на получение чека из ФНС', String, ':billRequestId')
-  async deleteBillRequest(@RequestUser() user: User, @Param('billRequestId') billRequestId: string) {
+  @securedGrpc
+  async deleteBillRequest({ billRequestId }: BillRequestIdDto, { user }: Metadata): Promise<Empty> {
     const validationResult = await this.billRequestValidator.isBillRequestExistToUser({
       userId: user.id,
       billRequestId,
@@ -24,6 +25,6 @@ export class BillRequestController {
       throw new BadRequestException({ push: validationResult });
     }
     await this.billRequestService.deleteBillRequestById(billRequestId);
-    return OK;
+    return new Empty();
   }
 }

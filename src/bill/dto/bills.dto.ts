@@ -1,4 +1,4 @@
-import { Bill } from '~/bill/entities/bill';
+import { Bill } from '~/bill/entities/bill.entity';
 import * as bill from '~/proto-generated/bill';
 
 export class Bills implements bill.Bills {

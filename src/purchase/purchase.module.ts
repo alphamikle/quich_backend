@@ -3,8 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PurchaseService } from './purchase.service';
 import { PurchaseEntity } from './entities/purchase.entity';
 import { ProductEntity } from '../product/entities/product.entity';
-import { CategoryEntity } from '../category/entities/category.entity';
-import { Bill } from '../bill/entities/bill';
+import { Category } from '../category/entities/category.entity';
+import { Bill } from '../bill/entities/bill.entity';
 import { ProductModule } from '../product/product.module';
 
 @Module({
@@ -12,7 +12,7 @@ import { ProductModule } from '../product/product.module';
     TypeOrmModule.forFeature([
       PurchaseEntity,
       ProductEntity,
-      CategoryEntity,
+      Category,
       Bill,
     ]),
     ProductModule,

@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { ProductEntity } from '../../product/entities/product.entity';
-import { Bill } from '../../bill/entities/bill';
-import { CategoryEntity } from '../../category/entities/category.entity';
+import { Bill } from '../../bill/entities/bill.entity';
+import { Category } from '../../category/entities/category.entity';
 
 @Entity()
 export class PurchaseEntity {
@@ -35,8 +35,8 @@ export class PurchaseEntity {
   @Column()
   categoryId!: string;
 
-  @ManyToOne(() => CategoryEntity, category => category.purchases, { onDelete: 'RESTRICT' })
-  category?: CategoryEntity;
+  @ManyToOne(() => Category, category => category.purchases, { onDelete: 'RESTRICT' })
+  category?: Category;
 
 
   @Column()

@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DefaultController } from './default.controller';
 import { DefaultService } from './default.service';
-import { Bill } from '../bill/entities/bill';
+import { Bill } from '../bill/entities/bill.entity';
 import { BillProvider } from '../bill-provider/entities/bill-provider.entity';
-import { BillRequestEntity } from '../bill-request/entities/bill-request.entity';
-import { CategoryEntity } from '../category/entities/category.entity';
-import { CategoryToUserEntity } from '../category/entities/category-to-user.entity';
+import { BillRequest } from '../bill-request/entities/bill-request.entity';
+import { Category } from '../category/entities/category.entity';
+import { CategoryToUserRel } from '../category/entities/category-to-user-rel.entity';
 import { ProductEntity } from '../product/entities/product.entity';
 import { PurchaseEntity } from '../purchase/entities/purchase.entity';
 import { ShopEntity } from '../shop/entities/shop.entity';
@@ -27,9 +27,9 @@ import { MessageModule } from '../message/message.module';
     TypeOrmModule.forFeature([
       Bill,
       BillProvider,
-      BillRequestEntity,
-      CategoryEntity,
-      CategoryToUserEntity,
+      BillRequest,
+      Category,
+      CategoryToUserRel,
       ProductEntity,
       PurchaseEntity,
       ShopEntity,

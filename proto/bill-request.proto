@@ -1,0 +1,12 @@
+syntax = "proto3";
+package quichx;
+
+import "google/protobuf/empty.proto";
+
+service BillRequestController {
+  rpc DeleteBillRequest (BillRequestIdDto) returns (google.protobuf.Empty);
+}
+
+message BillRequestIdDto {
+  string billRequestId = 1;
+}

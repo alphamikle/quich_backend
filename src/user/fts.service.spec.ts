@@ -8,9 +8,9 @@ import { DateHelper } from '../helpers/date.helper';
 import { User } from './entities/user';
 import { Session } from './entities/session';
 import { FtsAccountEntity } from './entities/fts-account.entity';
-import { Bill } from '../bill/entities/bill';
-import { CategoryToUserEntity } from '../category/entities/category-to-user.entity';
-import { BillRequestEntity } from '../bill-request/entities/bill-request.entity';
+import { Bill } from '../bill/entities/bill.entity';
+import { CategoryToUserRel } from '../category/entities/category-to-user-rel.entity';
+import { BillRequest } from '../bill-request/entities/bill-request.entity';
 import { AuthModule } from '../auth/auth.module';
 import { FtsModule } from '../fts/fts.module';
 import { EmailModule } from '../email/email.module';
@@ -34,8 +34,8 @@ describe('user service test', () => {
           Session,
           FtsAccountEntity,
           Bill,
-          CategoryToUserEntity,
-          BillRequestEntity,
+          CategoryToUserRel,
+          BillRequest,
           UserQueryLimitEntity,
         ]),
         forwardRef(() => AuthModule),

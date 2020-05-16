@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Bill } from '../../bill/entities/bill';
+import { Bill } from '../../bill/entities/bill.entity';
 
 @Entity()
 export class ShopEntity {

@@ -9,9 +9,9 @@ import { FtsAccountEntity } from './entities/fts-account.entity';
 import { DateHelper } from '../helpers/date.helper';
 import { AuthModule } from '../auth/auth.module';
 import { FtsModule } from '../fts/fts.module';
-import { Bill } from '../bill/entities/bill';
-import { CategoryToUserEntity } from '../category/entities/category-to-user.entity';
-import { BillRequestEntity } from '../bill-request/entities/bill-request.entity';
+import { Bill } from '../bill/entities/bill.entity';
+import { CategoryToUserRel } from '../category/entities/category-to-user-rel.entity';
+import { BillRequest } from '../bill-request/entities/bill-request.entity';
 import { EmailModule } from '../email/email.module';
 import { UserQueryLimitEntity } from './entities/user-query-limit.entity';
 
@@ -22,8 +22,8 @@ import { UserQueryLimitEntity } from './entities/user-query-limit.entity';
       Session,
       FtsAccountEntity,
       Bill,
-      CategoryToUserEntity,
-      BillRequestEntity,
+      CategoryToUserRel,
+      BillRequest,
       UserQueryLimitEntity,
     ]),
     forwardRef(() => AuthModule),

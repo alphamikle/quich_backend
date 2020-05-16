@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Bill } from '../bill/entities/bill';
+import { Bill } from '../bill/entities/bill.entity';
 import { BillProvider } from '../bill-provider/entities/bill-provider.entity';
-import { BillRequestEntity } from '../bill-request/entities/bill-request.entity';
-import { CategoryEntity } from '../category/entities/category.entity';
-import { CategoryToUserEntity } from '../category/entities/category-to-user.entity';
+import { BillRequest } from '../bill-request/entities/bill-request.entity';
+import { Category } from '../category/entities/category.entity';
+import { CategoryToUserRel } from '../category/entities/category-to-user-rel.entity';
 import { ProductEntity } from '../product/entities/product.entity';
 import { PurchaseEntity } from '../purchase/entities/purchase.entity';
 import { ShopEntity } from '../shop/entities/shop.entity';
@@ -28,12 +28,12 @@ export class DefaultService {
     private readonly billEntityRepository: Repository<Bill>,
     @InjectRepository(BillProvider)
     private readonly billProviderEntityRepository: Repository<BillProvider>,
-    @InjectRepository(BillRequestEntity)
-    private readonly billRequestEntityRepository: Repository<BillRequestEntity>,
-    @InjectRepository(CategoryEntity)
-    private readonly categoryEntityRepository: Repository<CategoryEntity>,
-    @InjectRepository(CategoryToUserEntity)
-    private readonly categoryToUserEntityRepository: Repository<CategoryToUserEntity>,
+    @InjectRepository(BillRequest)
+    private readonly billRequestEntityRepository: Repository<BillRequest>,
+    @InjectRepository(Category)
+    private readonly categoryEntityRepository: Repository<Category>,
+    @InjectRepository(CategoryToUserRel)
+    private readonly categoryToUserEntityRepository: Repository<CategoryToUserRel>,
     @InjectRepository(ProductEntity)
     private readonly productEntityRepository: Repository<ProductEntity>,
     @InjectRepository(PurchaseEntity)

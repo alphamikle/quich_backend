@@ -1,11 +1,11 @@
 import 'reflect-metadata';
-import { Bill } from '../../bill/entities/bill';
+import { Bill } from '../../bill/entities/bill.entity';
 import { ShopEntity } from '../../shop/entities/shop.entity';
 import { PurchaseEntity } from '../../purchase/entities/purchase.entity';
 import { ProductEntity } from '../../product/entities/product.entity';
 import { FtsAccountEntity } from '../../user/entities/fts-account.entity';
 import { CategoryDto } from '../../category/dto/category.dto';
-import { BillRequestEntity } from '../../bill-request/entities/bill-request.entity';
+import { BillRequest } from '../../bill-request/entities/bill-request.entity';
 import { MessageEntity } from '../../message/entity/message.entity';
 
 export class AllUserDataDto {
@@ -28,7 +28,7 @@ export class AllUserDataDto {
   accounts: FtsAccountEntity[];
 
 
-  billsRequests: BillRequestEntity[];
+  billsRequests: BillRequest[];
 
 
   unreadMessages: MessageEntity[];

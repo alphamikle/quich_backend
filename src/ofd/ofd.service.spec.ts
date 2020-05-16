@@ -6,7 +6,7 @@ import { RequestService } from '../proxy/dto/requestable.interface';
 import { OfdFetcher } from './ofd.ru/fetcher';
 import { TaxcomFetcher } from './taxcom.ru/fetcher';
 import { typeOrmOptions } from '../config';
-import { BillRequestEntity } from '../bill-request/entities/bill-request.entity';
+import { BillRequest } from '../bill-request/entities/bill-request.entity';
 import { BillRequestService } from '../bill-request/bill-request.service';
 import { BillRequestModule } from '../bill-request/bill-request.module';
 import { FtsQrDto } from '../fts/dto/fts-qr.dto';
@@ -61,7 +61,7 @@ describe('Ofd service test', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot(typeOrmOptions),
-        TypeOrmModule.forFeature([BillRequestEntity]),
+        TypeOrmModule.forFeature([BillRequest]),
         BillRequestModule,
       ],
       providers: [

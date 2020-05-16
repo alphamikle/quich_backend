@@ -1,27 +1,23 @@
 import 'reflect-metadata';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { CategoryEntity } from './category.entity';
-import { User } from '../../user/entities/user';
+import { Category } from '~/category/entities/category.entity';
+import { User } from '~/user/entities/user';
 
-@Entity()
-export class CategoryToUserEntity {
+@Entity('category_to_user_entity')
+export class CategoryToUserRel {
   static BLACK_COLOR = 4278190080;
-
 
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-
   @Column('bigint')
   color!: number;
-
 
   @Column()
   categoryId!: string;
 
-  @ManyToOne(() => CategoryEntity, category => category.categoriesToUsers, { onDelete: 'RESTRICT' })
-  category?: CategoryEntity;
-
+  @ManyToOne(() => Category, category => category.categoriesToUsers, { onDelete: 'RESTRICT' })
+  category?: Category;
 
   @Column()
   userId!: string;

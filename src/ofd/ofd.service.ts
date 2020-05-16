@@ -6,7 +6,7 @@ import { resolve } from 'path';
 import { FtsQrDto } from '../fts/dto/fts-qr.dto';
 import { OfdFetcher } from './ofd.ru/fetcher';
 import { BillDto } from '../bill/dto/bill.dto';
-import { BillRequestEntity } from '../bill-request/entities/bill-request.entity';
+import { BillRequest } from '../bill-request/entities/bill-request.entity';
 import { DateHelper } from '../helpers/date.helper';
 import { OfdFetcherClass } from './base-ofd-fetcher';
 import { ProxyService } from '../proxy/proxy.service';
@@ -16,8 +16,8 @@ import { TaxcomFetcher } from './taxcom.ru/fetcher';
 @Injectable()
 export class OfdService {
   constructor(
-    @InjectRepository(BillRequestEntity)
-    private readonly billRequestEntityRepository: Repository<BillRequestEntity>,
+    @InjectRepository(BillRequest)
+    private readonly billRequestEntityRepository: Repository<BillRequest>,
     private readonly dateHelper: DateHelper,
     private readonly proxyService: ProxyService,
     // private readonly puppeteerService: PuppeteerService,
@@ -55,7 +55,7 @@ export class OfdService {
   }
 
   async checkOfd() {
-    const billRequestEntities: BillRequestEntity[] = await this.billRequestEntityRepository.query(`
+    const billRequestEntities: BillRequest[] = await this.billRequestEntityRepository.query(`
         select *
         from bill_request_entity bre
             /*where bre."billId" is not null

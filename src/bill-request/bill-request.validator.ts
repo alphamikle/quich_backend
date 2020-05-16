@@ -1,6 +1,6 @@
-import { Injectable }                                from '@nestjs/common';
-import { BillRequestService }                        from './bill-request.service';
-import { INCORRECT_USER_ID, NOT_FOUND_BILL_REQUEST } from '../helpers/text';
+import { Injectable } from '@nestjs/common';
+import { BillRequestService } from '~/bill-request/bill-request.service';
+import { INCORRECT_USER_ID, NOT_FOUND_BILL_REQUEST } from '~/helpers/text';
 
 @Injectable()
 export class BillRequestValidator {

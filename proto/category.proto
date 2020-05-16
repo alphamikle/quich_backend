@@ -1,0 +1,33 @@
+syntax = "proto3";
+package quichx;
+
+import "google/protobuf/empty.proto";
+
+service CategoryController {
+  rpc GetUserCategories (google.protobuf.Empty) returns (google.protobuf.Empty);
+  rpc CreateCategory (CategoryDto) returns (CategoryDto);
+  rpc EditCategory (CategoryDto) returns (CategoryDto);
+  rpc DeleteCategory (CategoryIdDto) returns (google.protobuf.Empty);
+  rpc MergeCategories (MergeCategoriesDto) returns (google.protobuf.Empty);
+}
+
+message Categories {
+  repeated CategoryDto categories = 1;
+}
+
+message CategoryDto {
+  oneof opId {
+    string id = 1;
+  }
+  string title = 2;
+  int32 color = 3;
+}
+
+message CategoryIdDto {
+  string categoryId = 1;
+}
+
+message MergeCategoriesDto {
+  string donorId = 1;
+  string recipientId = 2;
+}

@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Not, Repository } from 'typeorm';
-import { BillRequestEntity } from './entities/bill-request.entity';
-import { BillRequestCreatingDto } from './dto/bill-request-creating.dto';
-import { FtsQrDto } from '../fts/dto/fts-qr.dto';
-import { FtsFetchResponseBill } from '../fts/dto/fts-fetch-response/bill.dto';
-import { DateHelper } from '../helpers/date.helper';
-import { BillDto } from '../bill/dto/bill.dto';
+import { BillRequest } from '~/bill-request/entities/bill-request.entity';
+import { BillRequestCreatingDto } from '~/bill-request/dto/bill-request-creating.dto';
+import { FtsQrDto } from '~/fts/dto/fts-qr.dto';
+import { FtsFetchResponseBill } from '~/fts/dto/fts-fetch-response/bill.dto';
+import { DateHelper } from '~/helpers/date.helper';
+import { BillDto } from '~/bill/dto/bill.dto';
 
 @Injectable()
 export class BillRequestService {
   constructor(
-    @InjectRepository(BillRequestEntity)
-    private readonly billRequestEntityRepository: Repository<BillRequestEntity>,
+    @InjectRepository(BillRequest)
+    private readonly billRequestEntityRepository: Repository<BillRequest>,
     private readonly dateHelper: DateHelper,
   ) {
   }
@@ -28,7 +28,7 @@ export class BillRequestService {
     });
   }
 
-  async getBillRequestByProps({ fiscalDocument, fiscalNumber, fiscalProp }: { fiscalDocument: string, fiscalNumber: string, fiscalProp: string }): Promise<BillRequestEntity> {
+  async getBillRequestByProps({ fiscalDocument, fiscalNumber, fiscalProp }: { fiscalDocument: string, fiscalNumber: string, fiscalProp: string }): Promise<BillRequest> {
     return this.billRequestEntityRepository.findOne({
       where: {
         fiscalDocument,
@@ -42,7 +42,7 @@ export class BillRequestService {
     await this.billRequestEntityRepository.delete({ id });
   }
 
-  async getBillRequestById(id: string): Promise<BillRequestEntity> {
+  async getBillRequestById(id: string): Promise<BillRequest> {
     return this.billRequestEntityRepository.findOne(id);
   }
 
@@ -62,9 +62,8 @@ export class BillRequestService {
     await this.billRequestEntityRepository.update({ id: billRequestId }, { billId });
   }
 
-  async createBillRequest({ billDate, fiscalDocument, fiscalNumber, fiscalProp, isFetched, totalSum, userId }: BillRequestCreatingDto):
-    Promise<BillRequestEntity> {
-    const billRequestEntity = new BillRequestEntity();
+  async createBillRequest({ billDate, fiscalDocument, fiscalNumber, fiscalProp, isFetched, totalSum, userId }: BillRequestCreatingDto): Promise<BillRequest> {
+    const billRequestEntity = new BillRequest();
     billRequestEntity.billDate = billDate;
     billRequestEntity.fiscalDocument = fiscalDocument;
     billRequestEntity.fiscalNumber = fiscalNumber;
@@ -75,7 +74,7 @@ export class BillRequestService {
     return this.billRequestEntityRepository.save(billRequestEntity);
   }
 
-  async findOrCreateBillRequest({ userId, ftsQrDto }: { userId: string, ftsQrDto: FtsQrDto }): Promise<BillRequestEntity> {
+  async findOrCreateBillRequest({ userId, ftsQrDto }: { userId: string, ftsQrDto: FtsQrDto }): Promise<BillRequest> {
     let billRequest = await this.getBillRequestByProps({
       fiscalNumber: ftsQrDto.fiscalNumber,
       fiscalDocument: ftsQrDto.fiscalDocument,
@@ -109,7 +108,7 @@ export class BillRequestService {
     await this.billRequestEntityRepository.update({ id: billRequestId }, { ftsData });
   }
 
-  async getUnloadedBillRequestsByUserId(userId: string): Promise<BillRequestEntity[]> {
+  async getUnloadedBillRequestsByUserId(userId: string): Promise<BillRequest[]> {
     return this.billRequestEntityRepository.find({
       where: {
         billId: IsNull(),

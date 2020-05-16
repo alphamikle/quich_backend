@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BillService } from './bill.service';
 import { BillController } from './bill.controller';
-import { Bill } from './entities/bill';
+import { Bill } from './entities/bill.entity';
 import { ShopEntity } from '~/shop/entities/shop.entity';
 import { User } from '~/user/entities/user';
 import { PurchaseEntity } from '~/purchase/entities/purchase.entity';
-import { BillRequestEntity } from '~/bill-request/entities/bill-request.entity';
+import { BillRequest } from '~/bill-request/entities/bill-request.entity';
 import { BillRequestModule } from '~/bill-request/bill-request.module';
 import { FtsModule } from '~/fts/fts.module';
 import { UserModule } from '~/user/user.module';
@@ -26,7 +26,7 @@ import { BillProviderModule } from '~/bill-provider/bill-provider.module';
       ShopEntity,
       User,
       PurchaseEntity,
-      BillRequestEntity,
+      BillRequest,
     ]),
     BillRequestModule,
     FtsModule,

@@ -3,7 +3,7 @@ import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGenerate
 import { ShopEntity } from '~/shop/entities/shop.entity';
 import { User } from '~/user/entities/user';
 import { PurchaseEntity } from '~/purchase/entities/purchase.entity';
-import { BillRequestEntity } from '~/bill-request/entities/bill-request.entity';
+import { BillRequest } from '~/bill-request/entities/bill-request.entity';
 import * as bill from '~/proto-generated/bill';
 
 @Entity('bill_entity')
@@ -39,8 +39,8 @@ export class Bill implements bill.Bill {
   @OneToMany(() => PurchaseEntity, purchase => purchase.bill)
   purchases?: PurchaseEntity[];
 
-  @OneToMany(() => BillRequestEntity, billRequest => billRequest.bill)
-  billRequests?: BillRequestEntity[];
+  @OneToMany(() => BillRequest, billRequest => billRequest.bill)
+  billRequests?: BillRequest[];
 
   @CreateDateColumn()
   createdAt!: Date;

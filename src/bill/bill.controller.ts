@@ -12,12 +12,12 @@ import { OfdService } from '~/ofd/ofd.service';
 import { ShopService } from '~/shop/shop.service';
 import { PurchaseService } from '~/purchase/purchase.service';
 import { BillService } from '~/bill/bill.service';
-import { Bill } from '~/bill/entities/bill';
+import { Bill } from '~/bill/entities/bill.entity';
 import { ShopDto } from '~/shop/dto/shop.dto';
 import { BILL_IS_BEEN_SAVED, FTS_UNKNOWN_FETCHING_ERROR, INVALID_ID_ERROR, INVALID_USER_ERROR, NOT_FOUND_FTS_ACCOUNT } from '~/helpers/text';
 import { DateHelper } from '~/helpers/date.helper';
 import { SubscriptionValidator } from '~/subscription/subscription.validator';
-import { BillRequestEntity } from '~/bill-request/entities/bill-request.entity';
+import { BillRequest } from '~/bill-request/entities/bill-request.entity';
 import { BillProviderService, ProviderCode } from '~/bill-provider/bill-provider.service';
 import { securedGrpc } from '~/providers/decorators';
 import { Bills } from '~/bill/dto/bills.dto';
@@ -239,7 +239,7 @@ export class BillController implements bill.BillController {
     }`;
   }
 
-  private async getBillDataFromFts(user: User, ftsQrDto: FtsQrDto, billRequest: BillRequestEntity): Promise<string | BillDto> {
+  private async getBillDataFromFts(user: User, ftsQrDto: FtsQrDto, billRequest: BillRequest): Promise<string | BillDto> {
     const ftsAccount = await this.userService.getFtsAccountForUser(user.id);
     if (!ftsAccount) {
       // ? Ждем до получения чека от ОФД

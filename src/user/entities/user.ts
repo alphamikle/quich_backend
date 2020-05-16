@@ -1,9 +1,9 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { FtsAccountEntity } from './fts-account.entity';
 import { Session } from '~/user/entities/session';
-import { Bill } from '~/bill/entities/bill';
-import { CategoryToUserEntity } from '~/category/entities/category-to-user.entity';
-import { BillRequestEntity } from '~/bill-request/entities/bill-request.entity';
+import { Bill } from '~/bill/entities/bill.entity';
+import { CategoryToUserRel } from '~/category/entities/category-to-user-rel.entity';
+import { BillRequest } from '~/bill-request/entities/bill-request.entity';
 import { SubscriptionEntity } from '~/subscription/entities/subscription.entity';
 import { MessageEntity } from '~/message/entity/message.entity';
 import { UserQueryLimitEntity } from '~/user/entities/user-query-limit.entity';
@@ -32,11 +32,11 @@ export class User {
   @OneToMany(() => Bill, bill => bill.user)
   bills?: Bill[];
 
-  @OneToMany(() => CategoryToUserEntity, categoryToUser => categoryToUser.user)
-  categoriesToUsers?: CategoryToUserEntity[];
+  @OneToMany(() => CategoryToUserRel, categoryToUser => categoryToUser.user)
+  categoriesToUsers?: CategoryToUserRel[];
 
-  @OneToMany(() => BillRequestEntity, billRequest => billRequest.user)
-  billRequests?: BillRequestEntity[];
+  @OneToMany(() => BillRequest, billRequest => billRequest.user)
+  billRequests?: BillRequest[];
 
   @OneToMany(() => SubscriptionEntity, subscription => subscription.user)
   subscriptions?: SubscriptionEntity[];

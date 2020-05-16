@@ -1,67 +1,72 @@
-import { BadRequestException, Body, Param } from '@nestjs/common';
-import { CategoryService } from './category.service';
-import { RequestUser } from '../user/user.decorator';
-import { User } from '../user/entities/user';
-import { CategoryDto } from './dto/category.dto';
-import { CATEGORY_NOT_EXIST_ERROR, CATEGORY_TITLE_DOUBLE_ERROR, OK } from '../helpers/text';
-import { PurchaseService } from '../purchase/purchase.service';
-import { SecureDeleteAction, SecureGetAction, SecurePatchAction, SecurePostAction, SecurePutAction, TagController } from '../helpers/decorators';
+import { BadRequestException, Controller } from '@nestjs/common';
+import { Metadata } from 'grpc';
+import { CategoryService } from '~/category/category.service';
+import { RequestUser } from '~/user/user.decorator';
+import { User } from '~/user/entities/user';
+import { CategoryDto } from '~/category/dto/category.dto';
+import { CATEGORY_NOT_EXIST_ERROR, CATEGORY_TITLE_DOUBLE_ERROR } from '~/helpers/text';
+import { PurchaseService } from '~/purchase/purchase.service';
+import { securedGrpc } from '~/providers/decorators';
+import * as category from '~/proto-generated/category';
+import { CategoryIdDto } from '~/category/dto/category-id.dto';
+import { Empty } from '~/providers/empty';
+import { MergeCategoriesDto } from '~/category/dto/merge-categories.dto';
 
-@TagController('category')
-export class CategoryController {
+@Controller()
+export class CategoryController implements category.CategoryController {
   constructor(
     private readonly categoryService: CategoryService,
     private readonly purchaseService: PurchaseService,
   ) {
   }
 
-  @SecureGetAction('Получение списка категорий пользователя', [CategoryDto])
+  @securedGrpc
   async getUserCategories(@RequestUser() user: User): Promise<CategoryDto[]> {
     return this.categoryService.getUserCategories(user.id);
   }
 
-  @SecurePostAction('Создание категории для пользователя', CategoryDto)
-  async createCategory(@RequestUser() user: User, @Body() categoryDto: CategoryDto): Promise<CategoryDto> {
+  @securedGrpc
+  async createCategory(request: CategoryDto, { user }: Metadata): Promise<CategoryDto> {
     const existCategory = await this.categoryService.getCategoryForUserByTitle({
-      title: categoryDto.title,
+      title: request.title,
       userId: user.id,
     });
     if (existCategory) {
       throw new BadRequestException({ title: CATEGORY_TITLE_DOUBLE_ERROR });
     }
     return this.categoryService.createCategoryForUserId({
-      categoryDto,
+      categoryDto: request,
       userId: user.id,
     });
   }
 
-  @SecurePatchAction('Редактирование категории пользователя', CategoryDto, ':categoryId')
-  async editCategory(@RequestUser() user: User, @Body() categoryDto: CategoryDto, @Param('categoryId') categoryId: string): Promise<CategoryDto> {
-    const existCategory = await this.categoryService.getCategoryEntityById(categoryId);
+  @securedGrpc
+  async editCategory(request: CategoryDto, { user }: Metadata): Promise<CategoryDto> {
+    const existCategory = await this.categoryService.getCategoryEntityById(request.id);
     if (!existCategory) {
       throw new BadRequestException({ push: CATEGORY_NOT_EXIST_ERROR });
     }
     const categoryByTitle = await this.categoryService.getCategoryForUserByTitle({
-      title: categoryDto.title,
+      title: request.title,
       userId: user.id,
     });
     if (categoryByTitle && categoryByTitle.title !== existCategory.title) {
       throw new BadRequestException({ title: CATEGORY_TITLE_DOUBLE_ERROR });
     }
-    const category = await this.categoryService.editCategory({
-      categoryDto,
+    const editedCategory = await this.categoryService.editCategory({
+      categoryDto: request,
       userId: user.id,
     });
     await this.purchaseService.updateUserPurchasesCategoryId({
-      oldCategoryId: categoryDto.id,
-      newCategoryId: category.id,
+      oldCategoryId: request.id,
+      newCategoryId: editedCategory.id,
       userId: user.id,
     });
-    return category;
+    return editedCategory;
   }
 
-  @SecureDeleteAction('Удаление категории пользователя', String, ':categoryId')
-  async deleteCategory(@RequestUser() user: User, @Param('categoryId') categoryId: string): Promise<string> {
+  @securedGrpc
+  async deleteCategory({ categoryId }: CategoryIdDto, { user }: Metadata): Promise<Empty> {
     const existCategory = await this.categoryService.getCategoryEntityById(categoryId);
     if (!existCategory) {
       throw new BadRequestException({ push: CATEGORY_NOT_EXIST_ERROR });
@@ -70,11 +75,11 @@ export class CategoryController {
       categoryId,
       userId: user.id,
     });
-    return OK;
+    return new Empty();
   }
 
-  @SecurePutAction('Объединение категорий', String, ':recipientId/:donorId')
-  async mergeCategories(@RequestUser() user: User, @Param('recipientId') recipientId: string, @Param('donorId') donorId: string): Promise<string> {
+  @securedGrpc
+  async mergeCategories({ donorId, recipientId }: MergeCategoriesDto, { user }: Metadata): Promise<Empty> {
     await this.purchaseService.updateUserPurchasesCategoryId({
       oldCategoryId: donorId,
       newCategoryId: recipientId,
@@ -84,6 +89,6 @@ export class CategoryController {
       categoryId: donorId,
       userId: user.id,
     });
-    return OK;
+    return new Empty();
   }
 }
