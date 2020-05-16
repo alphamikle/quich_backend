@@ -7,8 +7,8 @@ import { ProviderCode } from '~/bill-provider/bill-provider.service';
 /**
  * @description Справочник провайдеров данных о чеках - ФНС и различные ОФД
  */
-@Entity()
-export class BillProviderEntity {
+@Entity('bill_provider_entity')
+export class BillProvider {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Bill } from '../bill/entities/bill';
-import { BillProviderEntity } from '../bill-provider/entities/bill-provider.entity';
+import { BillProvider } from '../bill-provider/entities/bill-provider.entity';
 import { BillRequestEntity } from '../bill-request/entities/bill-request.entity';
 import { CategoryEntity } from '../category/entities/category.entity';
 import { CategoryToUserEntity } from '../category/entities/category-to-user.entity';
@@ -26,8 +26,8 @@ export class DefaultService {
   constructor(
     @InjectRepository(Bill)
     private readonly billEntityRepository: Repository<Bill>,
-    @InjectRepository(BillProviderEntity)
-    private readonly billProviderEntityRepository: Repository<BillProviderEntity>,
+    @InjectRepository(BillProvider)
+    private readonly billProviderEntityRepository: Repository<BillProvider>,
     @InjectRepository(BillRequestEntity)
     private readonly billRequestEntityRepository: Repository<BillRequestEntity>,
     @InjectRepository(CategoryEntity)

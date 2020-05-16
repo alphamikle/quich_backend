@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DefaultController } from './default.controller';
 import { DefaultService } from './default.service';
 import { Bill } from '../bill/entities/bill';
-import { BillProviderEntity } from '../bill-provider/entities/bill-provider.entity';
+import { BillProvider } from '../bill-provider/entities/bill-provider.entity';
 import { BillRequestEntity } from '../bill-request/entities/bill-request.entity';
 import { CategoryEntity } from '../category/entities/category.entity';
 import { CategoryToUserEntity } from '../category/entities/category-to-user.entity';
@@ -26,7 +26,7 @@ import { MessageModule } from '../message/message.module';
   imports: [
     TypeOrmModule.forFeature([
       Bill,
-      BillProviderEntity,
+      BillProvider,
       BillRequestEntity,
       CategoryEntity,
       CategoryToUserEntity,

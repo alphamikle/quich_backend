@@ -1,18 +1,22 @@
-import { Module }              from '@nestjs/common';
-import { TypeOrmModule }       from '@nestjs/typeorm';
-import { BillProviderService } from './bill-provider.service';
-import { BillProviderEntity }  from './entities/bill-provider.entity';
-import { BillRequestEntity }   from '../bill-request/entities/bill-request.entity';
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { BillProviderService } from '~/bill-provider/bill-provider.service';
+import { BillProvider } from '~/bill-provider/entities/bill-provider.entity';
+import { BillRequestEntity } from '~/bill-request/entities/bill-request.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      BillProviderEntity,
+      BillProvider,
       BillRequestEntity,
     ]),
   ],
-  providers: [BillProviderService],
-  exports: [BillProviderService],
+  providers: [
+    BillProviderService,
+  ],
+  exports: [
+    BillProviderService,
+  ],
 })
 export class BillProviderModule {
 }

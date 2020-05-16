@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { User } from '../../user/entities/user';
 import { Bill } from '../../bill/entities/bill';
-import { BillProviderEntity } from '../../bill-provider/entities/bill-provider.entity';
+import { BillProvider } from '../../bill-provider/entities/bill-provider.entity';
 import { FtsFetchResponseBill } from '../../fts/dto/fts-fetch-response/bill.dto';
 import { BillDto } from '../../bill/dto/bill.dto';
 
@@ -72,6 +72,6 @@ export class BillRequestEntity {
   @Column({ nullable: true })
   billProviderId?: string;
 
-  @ManyToOne(() => BillProviderEntity, billProvider => billProvider.billRequests, { nullable: true, onDelete: 'SET NULL' })
-  billProvider?: BillProviderEntity;
+  @ManyToOne(() => BillProvider, billProvider => billProvider.billRequests, { nullable: true, onDelete: 'SET NULL' })
+  billProvider?: BillProvider;
 }
