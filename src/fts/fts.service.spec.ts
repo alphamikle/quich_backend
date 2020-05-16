@@ -20,7 +20,7 @@ describe('Fts service test', () => {
   let service: FtsService;
 
   const firstTestQrDto: FtsQrDto = {
-    dateTime: '20200322T151500',
+    ftsDateTime: '20200322T151500',
     fiscalDocument: '104630',
     fiscalNumber: '9289000100344931',
     fiscalProp: '4163986685',

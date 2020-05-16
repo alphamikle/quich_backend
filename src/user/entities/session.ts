@@ -1,8 +1,8 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { UserEntity }                                                          from './user.entity';
+import { User } from './user';
 
-@Entity()
-export class SessionEntity {
+@Entity('session_entity')
+export class Session {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
@@ -21,6 +21,6 @@ export class SessionEntity {
   @Column('string')
   userId!: string;
 
-  @ManyToOne(() => UserEntity, user => user.sessions, { onDelete: 'CASCADE' })
-  user?: UserEntity;
+  @ManyToOne(() => User, user => user.sessions, { onDelete: 'CASCADE' })
+  user?: User;
 }

@@ -1,19 +1,19 @@
-import { HTMLElement, parse }            from 'node-html-parser';
-import { Logger }                        from '@nestjs/common';
+import { HTMLElement, parse } from 'node-html-parser';
+import { Logger } from '@nestjs/common';
 import { BaseOfdFetcher, FetcherParams } from '../base-ofd-fetcher';
-import { PurchaseDto }                   from '../../purchase/dto/purchase.dto';
-import { ShopDto }                       from '../../shop/dto/shop.dto';
-import { FtsQrDto }                      from '../../fts/dto/fts-qr.dto';
-import { RequestService }                from '../../proxy/dto/requestable.interface';
-import { decodeHtmlEntities }            from '../../helpers/common.helper';
-import { BillDto }                       from '../../bill/dto/bill.dto';
-import { DateHelper }                    from '../../helpers/date.helper';
-import { ProviderCode }                  from '../../bill-provider/bill-provider.service';
+import { PurchaseDto } from '../../purchase/dto/purchase.dto';
+import { ShopDto } from '../../shop/dto/shop.dto';
+import { FtsQrDto } from '../../fts/dto/fts-qr.dto';
+import { RequestService } from '../../proxy/dto/requestable.interface';
+import { decodeHtmlEntities } from '../../helpers/common.helper';
+import { BillDto } from '../../bill/dto/bill.dto';
+import { DateHelper } from '../../helpers/date.helper';
+import { ProviderCode } from '../../bill-provider/bill-provider.service';
 
 export class TaxcomFetcher extends BaseOfdFetcher {
 
   private getUrl(): string {
-    return `https://receipt.taxcom.ru/v01/show?fp=${this.qrDto.fiscalProp}&s=${this.qrDto.totalSum.toString()}&sf=False&sfn=False`;
+    return `https://receipt.taxcom.ru/v01/show?fp=${ this.qrDto.fiscalProp }&s=${ this.qrDto.totalSum.toString() }&sf=False&sfn=False`;
   }
 
   private readonly dateHelper: DateHelper;
@@ -53,7 +53,7 @@ export class TaxcomFetcher extends BaseOfdFetcher {
       this.getPurchases();
       this.billDto.shop = this.shopDto;
       this.billDto.purchases = this.purchases;
-      this.billDto.billDate = this.dateHelper.transformFtsDateToDate(this.qrDto.dateTime);
+      this.billDto.billDate = this.dateHelper.transformFtsDateToDate(this.qrDto.ftsDateTime);
       this.found();
       return this.billDto;
     } catch (err) {

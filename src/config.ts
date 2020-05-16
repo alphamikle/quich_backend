@@ -1,4 +1,4 @@
-import { config }               from 'dotenv';
+import { config } from 'dotenv';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 const { IS_IN_DOCKER } = process.env;
@@ -18,7 +18,7 @@ export const typeOrmOptions: TypeOrmModuleOptions = {
   username: DB_USERNAME,
   password: DB_PASSWORD,
   database: DB_NAME,
-  entities: [`${__dirname}/**/*.entity{.ts,.js}`],
+  entities: [`${ __dirname }/**/*entities/*{.ts,.js}`], // TODO: check entities
   synchronize: DB_SYNC === 'true',
   uuidExtension: 'pgcrypto',
 };

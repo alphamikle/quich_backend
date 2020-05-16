@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { UserEntity }                                        from './user.entity';
+import { User } from './user';
 
 @Entity()
 export class UserQueryLimitEntity {
@@ -9,8 +9,8 @@ export class UserQueryLimitEntity {
   @Column()
   userId!: string;
 
-  @ManyToOne(() => UserEntity, user => user.queryLimits)
-  user?: UserEntity;
+  @ManyToOne(() => User, user => user.queryLimits)
+  user?: User;
 
   @Column({
     type: 'integer',

@@ -1,9 +1,9 @@
-import { BadRequestException, Param }        from '@nestjs/common';
-import { BillRequestService }                from './bill-request.service';
-import { RequestUser }                       from '../user/user.decorator';
-import { UserEntity }                        from '../user/entities/user.entity';
-import { BillRequestValidator }              from './bill-request.validator';
-import { OK }                                from '../helpers/text';
+import { BadRequestException, Param } from '@nestjs/common';
+import { BillRequestService } from './bill-request.service';
+import { RequestUser } from '../user/user.decorator';
+import { User } from '../user/entities/user';
+import { BillRequestValidator } from './bill-request.validator';
+import { OK } from '../helpers/text';
 import { SecureDeleteAction, TagController } from '../helpers/decorators';
 
 @TagController('bill-request')
@@ -15,7 +15,7 @@ export class BillRequestController {
   }
 
   @SecureDeleteAction('Удаление запроса на получение чека из ФНС', String, ':billRequestId')
-  async deleteBillRequest(@RequestUser() user: UserEntity, @Param('billRequestId') billRequestId: string) {
+  async deleteBillRequest(@RequestUser() user: User, @Param('billRequestId') billRequestId: string) {
     const validationResult = await this.billRequestValidator.isBillRequestExistToUser({
       userId: user.id,
       billRequestId,

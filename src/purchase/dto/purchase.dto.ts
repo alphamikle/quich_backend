@@ -1,24 +1,18 @@
-import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
+import * as purchase from '~/proto-generated/purchase';
 
-export class PurchaseDto {
-  @ApiModelPropertyOptional()
+export class PurchaseDto implements purchase.PurchaseDto {
+
   id?: string;
 
-  @ApiModelProperty()
   title!: string;
 
-  @ApiModelProperty({ format: 'double' })
   price!: number;
 
-  @ApiModelProperty({ format: 'double' })
   quantity!: number;
 
-  @ApiModelPropertyOptional({ format: 'double' })
   rate?: number;
 
-  @ApiModelPropertyOptional()
   categoryId?: string;
 
-  @ApiModelPropertyOptional({ default: false })
   isValid?: boolean;
 }

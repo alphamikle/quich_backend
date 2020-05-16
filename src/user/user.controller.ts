@@ -1,20 +1,31 @@
-import { BadRequestException, Body, ForbiddenException, forwardRef, Inject, Param, Query }                                                                                                                        from '@nestjs/common';
-import { UserService }                                                                                                                                                                                            from './user.service';
-import { UserCredentialsDto }                                                                                                                                                                                     from './dto/user-credentials.dto';
-import { UserValidator }                                                                                                                                                                                          from './user.validator';
-import { UserEntity }                                                                                                                                                                                             from './entities/user.entity';
-import { BAD_FTS_SIGN_IN_DATA, DUPLICATE_FTS_PHONE, EMAIL_RESTORE_SUCCESS, FTS_PHONE_DELETION_COMPLETE, NOT_EXIST_FTS_PHONE, REG_ERROR, SENDING_FTS_SMS, SIGN_IN_BAD_PASSWORD, SIGN_IN_NO_USER, SIGN_UP_SUCCESS } from '../helpers/text';
-import { FtsAccountEntity }                                                                                                                                                                                       from './entities/fts-account.entity';
-import { AuthService }                                                                                                                                                                                            from '../auth/auth.service';
-import { AuthValidator }                                                                                                                                                                                          from '../auth/auth.validator';
-import { RequestUser }                                                                                                                                                                                            from './user.decorator';
-import { FtsAccountDto }                                                                                                                                                                                          from '../fts/dto/fts-account.dto';
-import { FtsValidator }                                                                                                                                                                                           from '../fts/fts.validator';
-import { FtsAccountModifyDto }                                                                                                                                                                                    from './dto/fts-account-modify.dto';
-import { FtsService }                                                                                                                                                                                             from '../fts/fts.service';
-import { EmailService, RestoreEmailCredentials }                                                                                                                                                                  from '../email/email.service';
-import { FtsRegistrationDto }                                                                                                                                                                                     from '../fts/dto/fts-registration.dto';
-import { GetAction, PostAction, SecureDeleteAction, SecureGetAction, SecurePatchAction, SecurePostAction, TagController }                                                                                         from '../helpers/decorators';
+import { BadRequestException, Body, ForbiddenException, forwardRef, Inject, Param, Query } from '@nestjs/common';
+import { UserService } from './user.service';
+import { UserCredentialsDto } from './dto/user-credentials.dto';
+import { UserValidator } from './user.validator';
+import { User } from './entities/user';
+import {
+  BAD_FTS_SIGN_IN_DATA,
+  DUPLICATE_FTS_PHONE,
+  EMAIL_RESTORE_SUCCESS,
+  FTS_PHONE_DELETION_COMPLETE,
+  NOT_EXIST_FTS_PHONE,
+  REG_ERROR,
+  SENDING_FTS_SMS,
+  SIGN_IN_BAD_PASSWORD,
+  SIGN_IN_NO_USER,
+  SIGN_UP_SUCCESS,
+} from '../helpers/text';
+import { FtsAccountEntity } from './entities/fts-account.entity';
+import { AuthService } from '../auth/auth.service';
+import { AuthValidator } from '../auth/auth.validator';
+import { RequestUser } from './user.decorator';
+import { FtsAccountDto } from '../fts/dto/fts-account.dto';
+import { FtsValidator } from '../fts/fts.validator';
+import { FtsAccountModifyDto } from './dto/fts-account-modify.dto';
+import { FtsService } from '../fts/fts.service';
+import { EmailService, RestoreEmailCredentials } from '../email/email.service';
+import { FtsRegistrationDto } from '../fts/dto/fts-registration.dto';
+import { GetAction, PostAction, SecureDeleteAction, SecureGetAction, SecurePatchAction, SecurePostAction, TagController } from '../helpers/decorators';
 
 @TagController('user')
 export class UserController {
@@ -39,7 +50,7 @@ export class UserController {
     if (isUserExits) {
       throw new BadRequestException({ email: REG_ERROR });
     }
-    const user: UserEntity = await this.authService.signUp({
+    const user: User = await this.authService.signUp({
       email,
       password,
     });
@@ -74,7 +85,7 @@ export class UserController {
     if (!isUserExits) {
       throw new BadRequestException({ email: SIGN_IN_NO_USER });
     }
-    const user: UserEntity = await this.userService.getUserByEmail(email);
+    const user: User = await this.userService.getUserByEmail(email);
     const isPasswordValid: boolean = await this.authValidator.isPasswordValid({
       user,
       password,
@@ -86,12 +97,12 @@ export class UserController {
   }
 
   @SecureGetAction('Получение списка аккаунтов ФНС', [FtsAccountEntity], 'fts-accounts')
-  async getFtsAccountsList(@RequestUser() user: UserEntity): Promise<FtsAccountEntity[]> {
+  async getFtsAccountsList(@RequestUser() user: User): Promise<FtsAccountEntity[]> {
     return this.userService.getFtsAccountsByUserId(user.id);
   }
 
   @SecurePostAction('Добавление нового аккаунта ФНС к пользователю', FtsAccountEntity, 'fts-accounts')
-  async addFtsAccountToUser(@RequestUser() user: UserEntity, @Body() ftsAccountData: FtsAccountDto): Promise<FtsAccountEntity> {
+  async addFtsAccountToUser(@RequestUser() user: User, @Body() ftsAccountData: FtsAccountDto): Promise<FtsAccountEntity> {
     if (ftsAccountData.password === null || ftsAccountData.password === undefined) {
       const ftsRegistrationDto = new FtsRegistrationDto({
         email: user.email,
@@ -123,7 +134,7 @@ export class UserController {
   }
 
   @SecureDeleteAction('Удаление аккаунта ФНС из учетной записи пользователя', String, 'fts-accounts')
-  async deleteFtsAccountFromUser(@RequestUser() user: UserEntity, @Query('phone') phone: string): Promise<string> {
+  async deleteFtsAccountFromUser(@RequestUser() user: User, @Query('phone') phone: string): Promise<string> {
     const isAccountExist = await this.userValidator.isFtsAccountExistOnUser({
       user,
       phone,
@@ -139,7 +150,7 @@ export class UserController {
   }
 
   @SecurePatchAction('Изменение данных аккаунта ФНС', FtsAccountEntity, 'fts-accounts')
-  async modifyFtsAccount(@RequestUser() user: UserEntity, @Body() { password, phone }: FtsAccountModifyDto): Promise<FtsAccountEntity> {
+  async modifyFtsAccount(@RequestUser() user: User, @Body() { password, phone }: FtsAccountModifyDto): Promise<FtsAccountEntity> {
     const isAccountExist = await this.userValidator.isFtsAccountExistOnUser({
       user,
       phone,
@@ -161,7 +172,7 @@ export class UserController {
   }
 
   @SecurePostAction('Увеличение лимита на сканирования', null, 'increase-limit')
-  async increaseQueryLimit(@RequestUser() user: UserEntity) {
+  async increaseQueryLimit(@RequestUser() user: User) {
     await this.userService.increaseUserQueryLimit(user.id);
   }
 }

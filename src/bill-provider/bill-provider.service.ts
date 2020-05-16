@@ -1,13 +1,13 @@
-import { Injectable }         from '@nestjs/common';
-import { InjectRepository }   from '@nestjs/typeorm';
-import { Repository }         from 'typeorm';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { BillProviderEntity } from './entities/bill-provider.entity';
 
 export enum ProviderCode {
-  FTS = 'fts',
-  FIRST_OFD = '1-OFD',
-  OFD = 'OFD',
-  TAXCOM = 'TAXCOM',
+  FTS,
+  FIRST_OFD,
+  OFD,
+  TAXCOM,
 }
 
 @Injectable()
@@ -18,17 +18,17 @@ export class BillProviderService {
   ) {
   }
 
-  public async getProviderByTitle(title: string): Promise<BillProviderEntity> {
+  public async getProviderByTitle(title: ProviderCode): Promise<BillProviderEntity> {
     return this.billProviderRepository.findOne({ where: { title } });
   }
 
-  public async createProvider(title: string): Promise<BillProviderEntity> {
+  public async createProvider(code: ProviderCode): Promise<BillProviderEntity> {
     const provider = new BillProviderEntity();
-    provider.title = title;
+    provider.title = code;
     return this.billProviderRepository.save(provider);
   }
 
-  async extractBillProvider(title: string): Promise<BillProviderEntity> {
-    return (await this.getProviderByTitle(title)) ?? this.createProvider(title);
+  async extractBillProvider(code: ProviderCode): Promise<BillProviderEntity> {
+    return (await this.getProviderByTitle(code)) ?? this.createProvider(code);
   }
 }

@@ -1,7 +1,7 @@
-import { Injectable }  from '@nestjs/common';
-import { UserEntity }  from '../user/entities/user.entity';
-import { AuthService } from './auth.service';
-import { DateHelper }  from '../helpers/date.helper';
+import { Injectable } from '@nestjs/common';
+import { User } from '~/user/entities/user';
+import { AuthService } from '~/auth/auth.service';
+import { DateHelper } from '~/helpers/date.helper';
 
 @Injectable()
 export class AuthValidator {
@@ -11,7 +11,7 @@ export class AuthValidator {
   ) {
   }
 
-  async isPasswordValid({ user, password }: { user: UserEntity, password: string }): Promise<boolean> {
+  async isPasswordValid({ user, password }: { user: User, password: string }): Promise<boolean> {
     return this.authService.isHashValid(password, user.password);
   }
 

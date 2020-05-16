@@ -1,25 +1,25 @@
-import { BadRequestException, Injectable }              from '@nestjs/common';
-import { InjectRepository }                             from '@nestjs/typeorm';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Between, FindConditions, In, Not, Repository } from 'typeorm';
-import { UserEntity }                                   from './entities/user.entity';
-import { SessionEntity }                                from './entities/session.entity';
-import { DateHelper }                                   from '../helpers/date.helper';
-import { FtsAccountEntity }                             from './entities/fts-account.entity';
-import { FtsAccountDto }                                from '../fts/dto/fts-account.dto';
-import { FTS_ACCOUNTS_ALL_BUSY_ERROR }                  from '../helpers/text';
-import { UserQueryLimitEntity }                         from './entities/user-query-limit.entity';
-import { FtsQrDto }                                     from '../fts/dto/fts-qr.dto';
-import { getHash }                                      from '../helpers/common.helper';
+import { User } from './entities/user';
+import { Session } from './entities/session';
+import { DateHelper } from '../helpers/date.helper';
+import { FtsAccountEntity } from './entities/fts-account.entity';
+import { FtsAccountDto } from '../fts/dto/fts-account.dto';
+import { FTS_ACCOUNTS_ALL_BUSY_ERROR } from '../helpers/text';
+import { UserQueryLimitEntity } from './entities/user-query-limit.entity';
+import { FtsQrDto } from '../fts/dto/fts-qr.dto';
+import { getHash } from '../helpers/common.helper';
 
 const { TOKEN_DURATION } = process.env;
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(UserEntity)
-    private readonly userEntityRepository: Repository<UserEntity>,
-    @InjectRepository(SessionEntity)
-    private readonly sessionEntityRepository: Repository<SessionEntity>,
+    @InjectRepository(User)
+    private readonly userEntityRepository: Repository<User>,
+    @InjectRepository(Session)
+    private readonly sessionEntityRepository: Repository<Session>,
     @InjectRepository(FtsAccountEntity)
     private readonly ftsAccountEntityRepository: Repository<FtsAccountEntity>,
     @InjectRepository(UserQueryLimitEntity)
@@ -28,31 +28,31 @@ export class UserService {
   ) {
   }
 
-  async setUserPassword({ user, password }: { user: UserEntity, password: string }): Promise<UserEntity> {
+  async setUserPassword({ user, password }: { user: User, password: string }): Promise<User> {
     user.password = password;
     return this.userEntityRepository.save(user);
   }
 
-  async createUser({ email, passwordHash }: { email: string, passwordHash: string }): Promise<UserEntity> {
-    const user = new UserEntity();
+  async createUser({ email, passwordHash }: { email: string, passwordHash: string }): Promise<User> {
+    const user = new User();
     user.email = email;
     user.password = passwordHash;
     return this.userEntityRepository.save(user);
   }
 
-  async createSession({ token, user }: { token: string, user: UserEntity }): Promise<SessionEntity> {
-    const session = new SessionEntity();
+  async createSession({ token, user }: { token: string, user: User }): Promise<Session> {
+    const session = new Session();
     session.token = token;
     session.user = user;
     session.expiredAt = this.dateHelper.addDays(new Date(), Number(TOKEN_DURATION));
     return this.sessionEntityRepository.save(session);
   }
 
-  async getUserByEmail(email: string): Promise<UserEntity> {
+  async getUserByEmail(email: string): Promise<User> {
     return this.userEntityRepository.findOne({ where: { email } });
   }
 
-  async getUserByToken(token: string): Promise<UserEntity> {
+  async getUserByToken(token: string): Promise<User> {
     const session = await this.sessionEntityRepository.findOne({
       where: { token },
       relations: ['user'],
@@ -75,7 +75,7 @@ export class UserService {
     return this.ftsAccountEntityRepository.find({ where: { userId } });
   }
 
-  async addFtsAccountToUser({ user, ftsAccountData }: { user: UserEntity, ftsAccountData: FtsAccountDto }): Promise<FtsAccountEntity> {
+  async addFtsAccountToUser({ user, ftsAccountData }: { user: User, ftsAccountData: FtsAccountDto }): Promise<FtsAccountEntity> {
     const ftsAccount = new FtsAccountEntity();
     ftsAccount.phone = ftsAccountData.phone;
     ftsAccount.password = ftsAccountData.password;
@@ -133,7 +133,7 @@ export class UserService {
         SELECT fe.id
         FROM fts_account_entity fe
                  FULL JOIN fts_account_usings_entity us on fe.phone = us.phone
-                 where fe."userId" = '${userId}' and us.uses is not null and us.uses > 14
+                 where fe."userId" = '${ userId }' and us.uses is not null and us.uses > 14
     `);
     return userAccounts.map(account => account.id);
   }

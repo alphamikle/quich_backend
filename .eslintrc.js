@@ -33,6 +33,7 @@ module.exports = {
     'no-useless-constructor': 'off',
     '@typescript-eslint/no-useless-constructor': 'error',
     '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/no-var-requires': 'off',
     'no-param-reassign': 'off',
     'quotes': [
       'error',
@@ -51,6 +52,8 @@ module.exports = {
       2,
     ],
     'import/no-cycle': 'off',
+    'import/no-unresolved': 'off',
+    'import/extensions': 'off',
     'semi': [
       'error',
       'always',

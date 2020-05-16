@@ -1,14 +1,14 @@
-import { BadRequestException, Body, Logger, Param }                                 from '@nestjs/common';
-import { SubscriptionService }                                                      from './subscription.service';
-import { GooglePlayHookDto }                                                        from './dto/google-play-hook.dto';
-import { GoogleApiService }                                                         from './google-api.service';
-import { Sku }                                                                      from './entities/subscription.entity';
-import { SubscriptionValidator }                                                    from './subscription.validator';
-import { RequestUser }                                                              from '../user/user.decorator';
-import { UserEntity }                                                               from '../user/entities/user.entity';
-import { UserPurchaseAssignDto }                                                    from './dto/user-purchase-assign.dto';
-import { SubscriptionInfoDto }                                                      from './dto/subscription-info.dto';
-import { INCORRECT_GOOGLE_PLAY_HOOK_DATA }                                          from '../helpers/text';
+import { BadRequestException, Body, Logger, Param } from '@nestjs/common';
+import { SubscriptionService } from './subscription.service';
+import { GooglePlayHookDto } from './dto/google-play-hook.dto';
+import { GoogleApiService } from './google-api.service';
+import { Sku } from './entities/subscription.entity';
+import { SubscriptionValidator } from './subscription.validator';
+import { RequestUser } from '../user/user.decorator';
+import { User } from '../user/entities/user';
+import { UserPurchaseAssignDto } from './dto/user-purchase-assign.dto';
+import { SubscriptionInfoDto } from './dto/subscription-info.dto';
+import { INCORRECT_GOOGLE_PLAY_HOOK_DATA } from '../helpers/text';
 import { GetAction, PostAction, SecureGetAction, SecurePatchAction, TagController } from '../helpers/decorators';
 
 @TagController('subscription')
@@ -24,7 +24,7 @@ export class SubscriptionController {
   async googleSubscriptionHook(@Body() hookDto: GooglePlayHookDto) {
     const validationResult = this.subscriptionValidator.validateHokDto(hookDto);
     if (validationResult !== true) {
-      Logger.error(`Invalid GooglePlay hook dto: ${JSON.stringify(hookDto)}`, null, SubscriptionController.name);
+      Logger.error(`Invalid GooglePlay hook dto: ${ JSON.stringify(hookDto) }`, null, SubscriptionController.name);
       throw new BadRequestException(validationResult);
     }
     hookDto = this.subscriptionService.extractAdditionalData(hookDto);
@@ -51,7 +51,7 @@ export class SubscriptionController {
   }
 
   @SecurePatchAction('Связывание данных подписки и пользователя', String)
-  async addUserToSubscriptionData(@RequestUser() user: UserEntity, @Body() purchaseAssignDto: UserPurchaseAssignDto) {
+  async addUserToSubscriptionData(@RequestUser() user: User, @Body() purchaseAssignDto: UserPurchaseAssignDto) {
     const { purchaseToken } = purchaseAssignDto;
     const validationResult = await this.subscriptionValidator.isSubscriptionExist(purchaseToken);
     if (validationResult !== true) {
@@ -88,7 +88,7 @@ export class SubscriptionController {
   }
 
   @SecureGetAction('Проверка наличия у пользователя активной подписки', SubscriptionInfoDto, 'subscription/is-active')
-  async hasUserSubscriptionWithoutGooglePlay(@RequestUser() user: UserEntity) {
+  async hasUserSubscriptionWithoutGooglePlay(@RequestUser() user: User) {
     const activeSubscription = await this.subscriptionService.getUserSubscriptionInfo(user.id);
     if (!activeSubscription) {
       throw new BadRequestException({ push: INCORRECT_GOOGLE_PLAY_HOOK_DATA });

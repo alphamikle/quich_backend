@@ -1,0 +1,11 @@
+syntax = "proto3";
+package quichx;
+
+message ShopDto {
+  oneof opId {
+    string id = 1;
+  }
+  string title = 2;
+  string tin = 3;
+  string address = 4;
+}

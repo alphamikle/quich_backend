@@ -1,18 +1,18 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { Test, TestingModule }                      from '@nestjs/testing';
-import { TypeOrmModule }                            from '@nestjs/typeorm';
-import { Injectable, Logger }                       from '@nestjs/common';
-import { RequestService }                           from '../proxy/dto/requestable.interface';
-import { OfdFetcher }                               from './ofd.ru/fetcher';
-import { TaxcomFetcher }                            from './taxcom.ru/fetcher';
-import { typeOrmOptions }                           from '../config';
-import { BillRequestEntity }                        from '../bill-request/entities/bill-request.entity';
-import { BillRequestService }                       from '../bill-request/bill-request.service';
-import { BillRequestModule }                        from '../bill-request/bill-request.module';
-import { FtsQrDto }                                 from '../fts/dto/fts-qr.dto';
-import { DateHelper }                               from '../helpers/date.helper';
-import { FirstOfdPuppeteerFetcher }                 from './1-ofd.ru/puppeteer-fetcher';
-import { PuppeteerService }                         from '../puppeteer/puppeteer.service';
+import { Test, TestingModule } from '@nestjs/testing';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Injectable, Logger } from '@nestjs/common';
+import { RequestService } from '../proxy/dto/requestable.interface';
+import { OfdFetcher } from './ofd.ru/fetcher';
+import { TaxcomFetcher } from './taxcom.ru/fetcher';
+import { typeOrmOptions } from '../config';
+import { BillRequestEntity } from '../bill-request/entities/bill-request.entity';
+import { BillRequestService } from '../bill-request/bill-request.service';
+import { BillRequestModule } from '../bill-request/bill-request.module';
+import { FtsQrDto } from '../fts/dto/fts-qr.dto';
+import { DateHelper } from '../helpers/date.helper';
+import { FirstOfdPuppeteerFetcher } from './1-ofd.ru/puppeteer-fetcher';
+import { PuppeteerService } from '../puppeteer/puppeteer.service';
 
 @Injectable()
 class TestRequestService implements RequestService {
@@ -34,7 +34,7 @@ describe('Ofd service test', () => {
     totalSum: 322.5,
     fiscalNumber: '9283440300110611',
     fiscalDocument: '430',
-    dateTime: '20190512T1432',
+    ftsDateTime: '20190512T1432',
     checkType: 1,
   };
 
@@ -86,7 +86,7 @@ describe('Ofd service test', () => {
       qrDto.totalSum = billRequestEntity.totalSum;
       qrDto.fiscalNumber = billRequestEntity.fiscalNumber;
       qrDto.fiscalDocument = billRequestEntity.fiscalDocument;
-      qrDto.dateTime = dateHelper.transformDateToFtsDate(billRequestEntity.billDate);
+      qrDto.ftsDateTime = dateHelper.transformDateToFtsDate(billRequestEntity.billDate);
       qrDto.checkType = 1;
       const fetcher = new FirstOfdPuppeteerFetcher(qrDto, puppeteerService, dateHelper);
       const billData = await fetcher.fetchBill() as unknown as string;

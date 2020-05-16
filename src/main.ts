@@ -1,35 +1,29 @@
-import { NestFactory }                    from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { Logger }      from '@nestjs/common';
-import { aBaseConfig } from './config';
-import { AppModule }   from './app.module';
-import * as pack                          from '../package.json';
+import { NestFactory } from '@nestjs/core';
+import { Logger } from '@nestjs/common';
+import { join } from 'path';
+import { Transport } from '@nestjs/microservices';
+import { aBaseConfig } from '~/config';
+import { AppModule } from '~/app.module';
+import { DateToTimestampInterceptor } from '~/providers/date-to-timestamp.interceptor';
 
-const { APP_PORT, NODE_ENV } = process.env;
+const { LOCALHOST } = process.env;
 
 aBaseConfig();
+const start = Date.now();
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  // ! Если использовать этот pipe без декораторов валидации - возникает ошибка в рантайме
-  // app.useGlobalPipes(new ValidationPipe({ forbidUnknownValues: true }));
-
-  const config = new DocumentBuilder()
-    .setTitle(pack.name)
-    .setDescription(pack.description)
-    .setVersion(pack.version)
-    .addTag('user')
-    .addBearerAuth('Authorization', 'header')
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('open-api', app, document, {
-    swaggerOptions: {},
+  const app = await NestFactory.createMicroservice(AppModule, {
+    transport: Transport.GRPC,
+    options: {
+      package: 'bos',
+      protoPath: join(__dirname, '..', 'proto/main.proto'),
+      url: LOCALHOST,
+      maxSendMessageLength: 314572800,
+      maxReceiveMessageLength: 314572800,
+    },
   });
-
-  await app.listen(Number(APP_PORT));
+  app.useGlobalInterceptors(new DateToTimestampInterceptor());
+  await app.listen(() => Logger.log('Microservice is started'));
 }
 
-bootstrap()
-  .then(() =>
-    Logger.log(`APP IS STARTED ON PORT ${APP_PORT} WITH URL http://localhost:${APP_PORT}/open-api`, `${NODE_ENV.toUpperCase()} MODE`),
-  );
+bootstrap().then(() => Logger.log(`App is loaded in ${ Date.now() - start }ms`));

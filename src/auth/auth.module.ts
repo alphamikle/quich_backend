@@ -1,17 +1,17 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { PassportModule }     from '@nestjs/passport';
-import { TypeOrmModule }      from '@nestjs/typeorm';
-import { AuthService }        from './auth.service';
-import { AuthValidator }      from './auth.validator';
-import { BearerStrategy }     from './strategies/bearer.strategy';
-import { UserModule }         from '../user/user.module';
-import { SessionEntity }      from '../user/entities/session.entity';
-import { DateHelper }         from '../helpers/date.helper';
-import { SubscriptionModule } from '../subscription/subscription.module';
+import { PassportModule } from '@nestjs/passport';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Session } from '~/user/entities/session';
+import { UserModule } from '~/user/user.module';
+import { SubscriptionModule } from '~/subscription/subscription.module';
+import { AuthService } from '~/auth/auth.service';
+import { AuthValidator } from '~/auth/auth.validator';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([SessionEntity]),
+    TypeOrmModule.forFeature([
+      Session,
+    ]),
     forwardRef(() => UserModule),
     PassportModule,
     SubscriptionModule,
@@ -19,8 +19,6 @@ import { SubscriptionModule } from '../subscription/subscription.module';
   providers: [
     AuthService,
     AuthValidator,
-    BearerStrategy,
-    DateHelper,
   ],
   exports: [
     AuthService,

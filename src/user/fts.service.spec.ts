@@ -1,20 +1,20 @@
-import { Test, TestingModule }  from '@nestjs/testing';
-import { TypeOrmModule }        from '@nestjs/typeorm';
-import { forwardRef, Logger }   from '@nestjs/common';
-import { UserService }          from './user.service';
-import { typeOrmOptions }       from '../config';
-import { UserValidator }        from './user.validator';
-import { DateHelper }           from '../helpers/date.helper';
-import { UserEntity }           from './entities/user.entity';
-import { SessionEntity }        from './entities/session.entity';
-import { FtsAccountEntity }     from './entities/fts-account.entity';
-import { BillEntity }           from '../bill/entities/bill.entity';
+import { Test, TestingModule } from '@nestjs/testing';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { forwardRef, Logger } from '@nestjs/common';
+import { UserService } from './user.service';
+import { typeOrmOptions } from '../config';
+import { UserValidator } from './user.validator';
+import { DateHelper } from '../helpers/date.helper';
+import { User } from './entities/user';
+import { Session } from './entities/session';
+import { FtsAccountEntity } from './entities/fts-account.entity';
+import { Bill } from '../bill/entities/bill';
 import { CategoryToUserEntity } from '../category/entities/category-to-user.entity';
-import { BillRequestEntity }    from '../bill-request/entities/bill-request.entity';
-import { AuthModule }           from '../auth/auth.module';
-import { FtsModule }            from '../fts/fts.module';
-import { EmailModule }          from '../email/email.module';
-import { SubscriptionModule }   from '../subscription/subscription.module';
+import { BillRequestEntity } from '../bill-request/entities/bill-request.entity';
+import { AuthModule } from '../auth/auth.module';
+import { FtsModule } from '../fts/fts.module';
+import { EmailModule } from '../email/email.module';
+import { SubscriptionModule } from '../subscription/subscription.module';
 import { UserQueryLimitEntity } from './entities/user-query-limit.entity';
 
 jest.setTimeout(600000);
@@ -30,10 +30,10 @@ describe('user service test', () => {
       imports: [
         TypeOrmModule.forRoot(typeOrmOptions),
         TypeOrmModule.forFeature([
-          UserEntity,
-          SessionEntity,
+          User,
+          Session,
           FtsAccountEntity,
-          BillEntity,
+          Bill,
           CategoryToUserEntity,
           BillRequestEntity,
           UserQueryLimitEntity,
@@ -57,7 +57,7 @@ describe('user service test', () => {
   it('Get next fts account of user with accounts', async () => {
     const firstAccount = await service.getFtsAccountForUser(hasAccountUserId);
     const secondAccount = await service.getFtsAccountForUser(hasAccountUserId);
-    Logger.log(`${firstAccount.id} - ${secondAccount.id}`);
+    Logger.log(`${ firstAccount.id } - ${ secondAccount.id }`);
     expect(firstAccount.id)
       .not
       .toBe(secondAccount.id);

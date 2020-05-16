@@ -1,7 +1,6 @@
 import 'reflect-metadata';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { ApiModelProperty }                                  from '@nestjs/swagger';
-import { UserEntity }                                        from '../../user/entities/user.entity';
+import { User } from '../../user/entities/user';
 
 export enum MessageType {
   info = 'info',
@@ -13,29 +12,29 @@ const types = Object.keys(MessageType);
 
 @Entity()
 export class MessageEntity {
-  @ApiModelProperty()
+
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @ApiModelProperty()
+
   @Column()
   title!: string;
 
-  @ApiModelProperty()
+
   @Column()
   content!: string;
 
-  @ApiModelProperty()
+
   @Column({ default: false })
   isRead!: boolean;
 
-  @OneToMany(() => UserEntity, user => user.messages)
-  user?: UserEntity;
+  @OneToMany(() => User, user => user.messages)
+  user?: User;
 
   @Column()
   userId!: string;
 
-  @ApiModelProperty({ enum: types })
+
   @Column({
     type: 'enum',
     enum: MessageType,

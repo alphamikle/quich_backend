@@ -1,15 +1,15 @@
-import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
+import * as shop from '~/proto-generated/shop';
 
-export class ShopDto {
-  @ApiModelPropertyOptional()
+export class ShopDto implements shop.ShopDto {
+
   id?: string;
 
-  @ApiModelProperty()
+
   title!: string;
 
-  @ApiModelProperty()
+
   tin!: string;
 
-  @ApiModelProperty()
+
   address!: string;
 }

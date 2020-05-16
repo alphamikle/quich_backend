@@ -1,13 +1,11 @@
-import { ApiModelProperty } from '@nestjs/swagger';
-
 export class FtsRegistrationDto {
-  @ApiModelProperty()
+
   email!: string;
 
-  @ApiModelProperty()
+
   phone!: string;
 
-  @ApiModelProperty()
+
   name!: string;
 
   constructor({ email, phone, name }: { email: string, phone: string, name?: string }) {

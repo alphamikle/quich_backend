@@ -1,10 +1,10 @@
-import { BadRequestException, Body, Param }                                                                         from '@nestjs/common';
-import { CategoryService }                                                                                          from './category.service';
-import { RequestUser }                                                                                              from '../user/user.decorator';
-import { UserEntity }                                                                                               from '../user/entities/user.entity';
-import { CategoryDto }                                                                                              from './dto/category.dto';
-import { CATEGORY_NOT_EXIST_ERROR, CATEGORY_TITLE_DOUBLE_ERROR, OK }                                                from '../helpers/text';
-import { PurchaseService }                                                                                          from '../purchase/purchase.service';
+import { BadRequestException, Body, Param } from '@nestjs/common';
+import { CategoryService } from './category.service';
+import { RequestUser } from '../user/user.decorator';
+import { User } from '../user/entities/user';
+import { CategoryDto } from './dto/category.dto';
+import { CATEGORY_NOT_EXIST_ERROR, CATEGORY_TITLE_DOUBLE_ERROR, OK } from '../helpers/text';
+import { PurchaseService } from '../purchase/purchase.service';
 import { SecureDeleteAction, SecureGetAction, SecurePatchAction, SecurePostAction, SecurePutAction, TagController } from '../helpers/decorators';
 
 @TagController('category')
@@ -16,12 +16,12 @@ export class CategoryController {
   }
 
   @SecureGetAction('Получение списка категорий пользователя', [CategoryDto])
-  async getUserCategories(@RequestUser() user: UserEntity): Promise<CategoryDto[]> {
+  async getUserCategories(@RequestUser() user: User): Promise<CategoryDto[]> {
     return this.categoryService.getUserCategories(user.id);
   }
 
   @SecurePostAction('Создание категории для пользователя', CategoryDto)
-  async createCategory(@RequestUser() user: UserEntity, @Body() categoryDto: CategoryDto): Promise<CategoryDto> {
+  async createCategory(@RequestUser() user: User, @Body() categoryDto: CategoryDto): Promise<CategoryDto> {
     const existCategory = await this.categoryService.getCategoryForUserByTitle({
       title: categoryDto.title,
       userId: user.id,
@@ -36,7 +36,7 @@ export class CategoryController {
   }
 
   @SecurePatchAction('Редактирование категории пользователя', CategoryDto, ':categoryId')
-  async editCategory(@RequestUser() user: UserEntity, @Body() categoryDto: CategoryDto, @Param('categoryId') categoryId: string): Promise<CategoryDto> {
+  async editCategory(@RequestUser() user: User, @Body() categoryDto: CategoryDto, @Param('categoryId') categoryId: string): Promise<CategoryDto> {
     const existCategory = await this.categoryService.getCategoryEntityById(categoryId);
     if (!existCategory) {
       throw new BadRequestException({ push: CATEGORY_NOT_EXIST_ERROR });
@@ -61,7 +61,7 @@ export class CategoryController {
   }
 
   @SecureDeleteAction('Удаление категории пользователя', String, ':categoryId')
-  async deleteCategory(@RequestUser() user: UserEntity, @Param('categoryId') categoryId: string): Promise<string> {
+  async deleteCategory(@RequestUser() user: User, @Param('categoryId') categoryId: string): Promise<string> {
     const existCategory = await this.categoryService.getCategoryEntityById(categoryId);
     if (!existCategory) {
       throw new BadRequestException({ push: CATEGORY_NOT_EXIST_ERROR });
@@ -74,7 +74,7 @@ export class CategoryController {
   }
 
   @SecurePutAction('Объединение категорий', String, ':recipientId/:donorId')
-  async mergeCategories(@RequestUser() user: UserEntity, @Param('recipientId') recipientId: string, @Param('donorId') donorId: string): Promise<string> {
+  async mergeCategories(@RequestUser() user: User, @Param('recipientId') recipientId: string, @Param('donorId') donorId: string): Promise<string> {
     await this.purchaseService.updateUserPurchasesCategoryId({
       oldCategoryId: donorId,
       newCategoryId: recipientId,

@@ -5,14 +5,18 @@
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "es2017",
+    "target": "es2018",
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
     "resolveJsonModule": true,
     "strict": true,
-    "strictNullChecks": false
+    "strictNullChecks": false,
+    "paths": {
+      "~/*": ["./src/*"],
+      "@/*": ["./proto/*"]
+    }
   },
   "exclude": ["node_modules", "dist"]
 }

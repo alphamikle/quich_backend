@@ -1,12 +1,12 @@
-import { Module }                from '@nestjs/common';
-import { TypeOrmModule }         from '@nestjs/typeorm';
-import { BillRequestService }    from './bill-request.service';
-import { BillRequestEntity }     from './entities/bill-request.entity';
-import { BillEntity }            from '../bill/entities/bill.entity';
-import { UserEntity }            from '../user/entities/user.entity';
-import { BillProviderEntity }    from '../bill-provider/entities/bill-provider.entity';
-import { DateHelper }            from '../helpers/date.helper';
-import { BillRequestValidator }  from './bill-request.validator';
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { BillRequestService } from './bill-request.service';
+import { BillRequestEntity } from './entities/bill-request.entity';
+import { Bill } from '../bill/entities/bill';
+import { User } from '../user/entities/user';
+import { BillProviderEntity } from '../bill-provider/entities/bill-provider.entity';
+import { DateHelper } from '../helpers/date.helper';
+import { BillRequestValidator } from './bill-request.validator';
 import { BillRequestController } from './bill-request.controller';
 
 @Module({
@@ -14,8 +14,8 @@ import { BillRequestController } from './bill-request.controller';
   imports: [
     TypeOrmModule.forFeature([
       BillRequestEntity,
-      BillEntity,
-      UserEntity,
+      Bill,
+      User,
       BillProviderEntity,
     ]),
   ],

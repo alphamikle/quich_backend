@@ -1,0 +1,6 @@
+syntax = "proto3";
+package quichx;
+
+import "bill.proto";
+import "purchase.proto";
+import "shop.proto";

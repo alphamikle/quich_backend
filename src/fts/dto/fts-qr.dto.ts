@@ -1,24 +1,16 @@
-import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
+import * as bill from '~/proto-generated/bill';
 
-export class FtsQrDto {
-  @ApiModelProperty()
+export class FtsQrDto implements bill.FtsQrDto {
+
   fiscalNumber!: string;
 
-  @ApiModelProperty()
   fiscalProp!: string;
 
-  @ApiModelProperty()
   fiscalDocument!: string;
 
-  @ApiModelProperty()
-  dateTime?: string;
+  ftsDateTime!: string;
 
-  @ApiModelPropertyOptional({ format: 'double' })
-  totalSum?: number; // ? Используется не для всех запросов
+  totalSum!: number; // ? Используется не для всех запросов
 
-  @ApiModelProperty({
-    type: 'integer',
-    example: 1,
-  })
   checkType?: number;
 }

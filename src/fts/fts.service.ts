@@ -1,20 +1,20 @@
-import { Injectable, Logger, RequestTimeoutException }                                                                                                                 from '@nestjs/common';
-import axios, { AxiosInstance }                                                                                                                                        from 'axios';
-import * as https                                                                                                                                                      from 'https';
-import { InjectRepository }                                                                                                                                            from '@nestjs/typeorm';
-import { Between, Repository }                                                                                                                                         from 'typeorm';
-import { FtsAccountDto }                                                                                                                                               from './dto/fts-account.dto';
-import { FtsRegistrationDto }                                                                                                                                          from './dto/fts-registration.dto';
+import { Injectable, Logger, RequestTimeoutException } from '@nestjs/common';
+import axios, { AxiosInstance } from 'axios';
+import * as https from 'https';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Between, Repository } from 'typeorm';
+import { FtsAccountDto } from './dto/fts-account.dto';
+import { FtsRegistrationDto } from './dto/fts-registration.dto';
 import { FTS_BILL_NOT_SEND_ERROR, FTS_TRY_MORE_ERROR, FTS_UNKNOWN_FETCHING_ERROR, FTS_USER_EXIST_ERROR, FTS_USER_NOT_EXIST_ERROR, INVALID_PHONE_ERROR, UNKNOWN_ERROR } from '../helpers/text';
-import { FtsRemindDto }                                                                                                                                                from './dto/fts-remind.dto';
-import { FtsAccountEntity }                                                                                                                                            from '../user/entities/fts-account.entity';
-import { FtsQrDto }                                                                                                                                                    from './dto/fts-qr.dto';
-import { DateHelper }                                                                                                                                                  from '../helpers/date.helper';
-import { FtsFetchResponse }                                                                                                                                            from './dto/fts-fetch-response/response.dto';
-import { FtsFetchResponseBill }                                                                                                                                        from './dto/fts-fetch-response/bill.dto';
-import { randomOS, randomUUID, wait }                                                                                                                                  from '../helpers/common.helper';
-import { FtsAccountUsingsEntity }                                                                                                                                      from './entities/fts-account-usings.entity';
-import { FtsFetchResponsePurchase }                                                                                                                                    from './dto/fts-fetch-response/purchase.dto';
+import { FtsRemindDto } from './dto/fts-remind.dto';
+import { FtsAccountEntity } from '../user/entities/fts-account.entity';
+import { FtsQrDto } from './dto/fts-qr.dto';
+import { DateHelper } from '../helpers/date.helper';
+import { FtsFetchResponse } from './dto/fts-fetch-response/response.dto';
+import { FtsFetchResponseBill } from './dto/fts-fetch-response/bill.dto';
+import { randomOS, randomUUID, wait } from '../helpers/common.helper';
+import { FtsAccountUsingsEntity } from './entities/fts-account-usings.entity';
+import { FtsFetchResponsePurchase } from './dto/fts-fetch-response/purchase.dto';
 
 export interface FtsHeaders {
   'Device-Id': string;
@@ -97,15 +97,15 @@ export class FtsService {
   }
 
   async checkBillExistence(qrDto: FtsQrDto, userCredentials: FtsAccountDto): Promise<boolean> {
-    const { fiscalNumber: fn, checkType: ct = 1, fiscalDocument: fd, fiscalProp: fp, dateTime, totalSum: ts } = qrDto;
+    const { fiscalNumber: fn, checkType: ct = 1, fiscalDocument: fd, fiscalProp: fp, ftsDateTime, totalSum: ts } = qrDto;
     const penny = ts * 100;
     const preUrl = '/v1/ofds/*/inns/*/fss/';
     const url = encodeURI(
-      `${preUrl}${fn}/operations/${ct}/tickets/${fd}?fiscalSign=${fp}&date=${dateTime}&sum=${penny}`,
+      `${ preUrl }${ fn }/operations/${ ct }/tickets/${ fd }?fiscalSign=${ fp }&date=${ ftsDateTime }&sum=${ penny }`,
     );
     try {
       await this.api.get(url, { headers: this.getHeaders(userCredentials) });
-      Logger.log(`Check bill existence was correct with data ${JSON.stringify(qrDto)} and credentials ${JSON.stringify(userCredentials)}`, FtsService.name);
+      Logger.log(`Check bill existence was correct with data ${ JSON.stringify(qrDto) } and credentials ${ JSON.stringify(userCredentials) }`, FtsService.name);
       return true;
     } catch (err) {
       Logger.error(err.message ?? err, err.stack, FtsService.name);
@@ -117,10 +117,10 @@ export class FtsService {
     if (count > 0) {
       await wait(500 * count);
     }
-    const url = `/v1/inns/*/kkts/*/fss/${fiscalNumber}/tickets/${fiscalDocument}?fiscalSign=${fiscalProp}&sendToEmail=no`;
+    const url = `/v1/inns/*/kkts/*/fss/${ fiscalNumber }/tickets/${ fiscalDocument }?fiscalSign=${ fiscalProp }&sendToEmail=no`;
     try {
       if (count >= limit) {
-        throw new RequestTimeoutException(`Manual request timeout  exception with ${count} tries`);
+        throw new RequestTimeoutException(`Manual request timeout  exception with ${ count } tries`);
       }
       const response: FtsFetchResponse = await this.api.get(url, {
         headers: this.getHeaders(ftsAccountDto),
@@ -142,7 +142,7 @@ export class FtsService {
       }
       return 'Неверная кодировка';
     } catch (err) {
-      Logger.error(`FETCHING ERROR ${JSON.stringify(err.message)}`, err.stack, FtsService.name);
+      Logger.error(`FETCHING ERROR ${ JSON.stringify(err.message) }`, err.stack, FtsService.name);
       if (count < limit) {
         return this.fetchBillData(
           {
@@ -192,8 +192,8 @@ export class FtsService {
   }
 
   private generateAuthorizationValue(userCredentials: FtsAccountDto): string {
-    return `Basic ${Buffer.from(`${userCredentials.phone}:${userCredentials.password}`)
-      .toString('base64')}`;
+    return `Basic ${ Buffer.from(`${ userCredentials.phone }:${ userCredentials.password }`)
+      .toString('base64') }`;
   }
 
   private getHeaders(userCredentials?: FtsAccountDto): FtsHeaders {

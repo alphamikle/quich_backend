@@ -1,17 +1,17 @@
-import { Injectable, Logger }       from '@nestjs/common';
-import { Repository }               from 'typeorm';
-import { InjectRepository }         from '@nestjs/typeorm';
-import { writeFileSync }            from 'fs';
-import { resolve }                  from 'path';
-import { FtsQrDto }                 from '../fts/dto/fts-qr.dto';
-import { OfdFetcher }               from './ofd.ru/fetcher';
-import { BillDto }                  from '../bill/dto/bill.dto';
-import { BillRequestEntity }        from '../bill-request/entities/bill-request.entity';
-import { DateHelper }               from '../helpers/date.helper';
-import { OfdFetcherClass }          from './base-ofd-fetcher';
-import { ProxyService }             from '../proxy/proxy.service';
+import { Injectable, Logger } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { writeFileSync } from 'fs';
+import { resolve } from 'path';
+import { FtsQrDto } from '../fts/dto/fts-qr.dto';
+import { OfdFetcher } from './ofd.ru/fetcher';
+import { BillDto } from '../bill/dto/bill.dto';
+import { BillRequestEntity } from '../bill-request/entities/bill-request.entity';
+import { DateHelper } from '../helpers/date.helper';
+import { OfdFetcherClass } from './base-ofd-fetcher';
+import { ProxyService } from '../proxy/proxy.service';
 import { FirstOfdPuppeteerFetcher } from './1-ofd.ru/puppeteer-fetcher';
-import { TaxcomFetcher }            from './taxcom.ru/fetcher';
+import { TaxcomFetcher } from './taxcom.ru/fetcher';
 
 @Injectable()
 export class OfdService {
@@ -63,11 +63,11 @@ export class OfdService {
         order by random()
         limit 100
     `);
-    Logger.log(`Found ${billRequestEntities.length} billRequestEntities`);
+    Logger.log(`Found ${ billRequestEntities.length } billRequestEntities`);
     const ftsQrDtos: FtsQrDto[] = billRequestEntities.map(billRequest => {
       const qrDto = new FtsQrDto();
       qrDto.checkType = 1;
-      qrDto.dateTime = this.dateHelper.transformDateToFtsDate(billRequest.billDate);
+      qrDto.ftsDateTime = this.dateHelper.transformDateToFtsDate(billRequest.billDate);
       qrDto.fiscalDocument = billRequest.fiscalDocument;
       qrDto.fiscalNumber = billRequest.fiscalNumber;
       qrDto.fiscalProp = billRequest.fiscalProp;
@@ -94,7 +94,7 @@ export class OfdService {
           response,
         };
         data.push(info);
-        Logger.debug(`Iteration: ${i}, Fetcher: ${OfdClass.name}, QrDto: ${JSON.stringify(qrDto)}, Duration: ${Date.now() - start}ms`);
+        Logger.debug(`Iteration: ${ i }, Fetcher: ${ OfdClass.name }, QrDto: ${ JSON.stringify(qrDto) }, Duration: ${ Date.now() - start }ms`);
       }));
       i += 1;
     }));

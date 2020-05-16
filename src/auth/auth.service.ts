@@ -1,11 +1,11 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { compare, hash }                  from 'bcrypt';
-import { InjectRepository }               from '@nestjs/typeorm';
-import { Repository }                     from 'typeorm';
-import { UserCredentialsDto }             from '../user/dto/user-credentials.dto';
-import { UserEntity }                     from '../user/entities/user.entity';
-import { UserService }                    from '../user/user.service';
-import { SessionEntity }                  from '../user/entities/session.entity';
+import { compare, hash } from 'bcrypt';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { UserService } from '~/user/user.service';
+import { Session } from '~/user/entities/session';
+import { User } from '~/user/entities/user';
+import { UserCredentialsDto } from '~/user/dto/user-credentials.dto';
 
 const { ROUNDS } = process.env;
 
@@ -14,8 +14,8 @@ export class AuthService {
   constructor(
     @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
-    @InjectRepository(SessionEntity)
-    private readonly sessionEntityRepository: Repository<SessionEntity>,
+    @InjectRepository(Session)
+    private readonly sessionEntityRepository: Repository<Session>,
   ) {
   }
 
@@ -34,7 +34,7 @@ export class AuthService {
       .join('');
   }
 
-  async signUp({ email, password }: UserCredentialsDto): Promise<UserEntity> {
+  async signUp({ email, password }: UserCredentialsDto): Promise<User> {
     const passwordHash: string = await this.getHashOf(password);
     return this.userService.createUser({
       email,
@@ -42,7 +42,7 @@ export class AuthService {
     });
   }
 
-  async signIn(user: UserEntity): Promise<string> {
+  async signIn(user: User): Promise<string> {
     const dateMark = Date.now();
     const token = await this.generateAuthToken({
       dateMark,
@@ -67,7 +67,7 @@ export class AuthService {
     return this.getHashOf(dateMark.toString() + email);
   }
 
-  async getSessionByToken(token: string): Promise<SessionEntity> {
+  async getSessionByToken(token: string): Promise<Session> {
     return this.sessionEntityRepository.findOne({ where: { token } });
   }
 }

@@ -1,0 +1,17 @@
+syntax = "proto3";
+package quichx;
+
+message PurchaseDto {
+  oneof opId {
+    string id = 1;
+  }
+  string title = 2;
+  float price = 3;
+  float quantity = 4;
+  oneof opRate {
+    float rate = 5;
+  }
+  oneof opCategoryId {
+    string categoryId = 6;
+  }
+}

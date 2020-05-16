@@ -1,28 +1,33 @@
-import { BadRequestException, Body, Param }                                                                                from '@nestjs/common';
-import { RequestUser }                                                                                                     from '../user/user.decorator';
-import { UserEntity }                                                                                                      from '../user/entities/user.entity';
-import { FtsQrDto }                                                                                                        from '../fts/dto/fts-qr.dto';
-import { BillRequestService }                                                                                              from '../bill-request/bill-request.service';
-import { FtsService }                                                                                                      from '../fts/fts.service';
-import { UserService }                                                                                                     from '../user/user.service';
-import { FtsAccountDto }                                                                                                   from '../fts/dto/fts-account.dto';
-import { FtsTransformer }                                                                                                  from '../fts/fts.transformer';
-import { BillDto }                                                                                                         from './dto/bill.dto';
-import { OfdService }                                                                                                      from '../ofd/ofd.service';
-import { ShopService }                                                                                                     from '../shop/shop.service';
-import { PurchaseService }                                                                                                 from '../purchase/purchase.service';
-import { BillService }                                                                                                     from './bill.service';
-import { BillEntity }                                                                                                      from './entities/bill.entity';
-import { ShopDto }                                                                                                         from '../shop/dto/shop.dto';
-import { BILL_IS_BEEN_SAVED, FTS_UNKNOWN_FETCHING_ERROR, INVALID_ID_ERROR, INVALID_USER_ERROR, NOT_FOUND_FTS_ACCOUNT, OK } from '../helpers/text';
-import { DateHelper }                                                                                                      from '../helpers/date.helper';
-import { SecureDeleteAction, SecureGetAction, SecurePatchAction, SecurePostAction, TagController }                         from '../helpers/decorators';
-import { SubscriptionValidator }                                                                                           from '../subscription/subscription.validator';
-import { BillRequestEntity }                                                                                               from '../bill-request/entities/bill-request.entity';
-import { BillProviderService, ProviderCode }                                                                               from '../bill-provider/bill-provider.service';
+import { BadRequestException, Controller } from '@nestjs/common';
+import { Metadata } from 'grpc';
+import { User } from '~/user/entities/user';
+import { FtsQrDto } from '~/fts/dto/fts-qr.dto';
+import { BillRequestService } from '~/bill-request/bill-request.service';
+import { FtsService } from '~/fts/fts.service';
+import { UserService } from '~/user/user.service';
+import { FtsAccountDto } from '~/fts/dto/fts-account.dto';
+import { FtsTransformer } from '~/fts/fts.transformer';
+import { BillDto } from '~/bill/dto/bill.dto';
+import { OfdService } from '~/ofd/ofd.service';
+import { ShopService } from '~/shop/shop.service';
+import { PurchaseService } from '~/purchase/purchase.service';
+import { BillService } from '~/bill/bill.service';
+import { Bill } from '~/bill/entities/bill';
+import { ShopDto } from '~/shop/dto/shop.dto';
+import { BILL_IS_BEEN_SAVED, FTS_UNKNOWN_FETCHING_ERROR, INVALID_ID_ERROR, INVALID_USER_ERROR, NOT_FOUND_FTS_ACCOUNT } from '~/helpers/text';
+import { DateHelper } from '~/helpers/date.helper';
+import { SubscriptionValidator } from '~/subscription/subscription.validator';
+import { BillRequestEntity } from '~/bill-request/entities/bill-request.entity';
+import { BillProviderService, ProviderCode } from '~/bill-provider/bill-provider.service';
+import { securedGrpc } from '~/providers/decorators';
+import { Bills } from '~/bill/dto/bills.dto';
+import * as bill from '~/proto-generated/bill';
+import { Empty } from '~/providers/empty';
+import { RequestIdDto } from '~/bill/dto/request-id.dto';
+import { BillIdDto } from '~/bill/dto/bill-id.dto';
 
-@TagController('bill')
-export class BillController {
+@Controller()
+export class BillController implements bill.BillController {
   private billRequestIdCache: Map<string, string> = new Map();
 
   constructor(
@@ -40,15 +45,15 @@ export class BillController {
   ) {
   }
 
-  @SecureGetAction('Получение списка чеков пользователя', [BillEntity])
-  async getUserBills(@RequestUser() user: UserEntity): Promise<BillEntity[]> {
-    return this.billService.getUserBills(user.id);
+  @securedGrpc
+  async getUserBills(request: Empty, { user }: Metadata): Promise<Bills> {
+    return new Bills(await this.billService.getUserBills(user.id));
   }
 
-  @SecurePostAction('Получение информации о чеке', BillDto, 'data')
-  async getBillData(@RequestUser() user: UserEntity, @Body() ftsQrDto: FtsQrDto): Promise<BillDto> {
+  @securedGrpc
+  async getBillData(request: FtsQrDto, { user }: Metadata): Promise<BillDto> {
     this.validateLimits(user);
-    const billData = await this.getBillDataFromFtsOrOfd(user, ftsQrDto);
+    const billData = await this.getBillDataFromFtsOrOfd(user, request);
     if (typeof billData === 'string') {
       throw new BadRequestException({ push: billData });
     }
@@ -59,7 +64,7 @@ export class BillController {
     });
     const billRequestId = this.extractBillRequestIdFromCache({
       userId: user.id,
-      ftsQrDto,
+      ftsQrDto: request,
     });
     await this.billRequestService.setRawData({
       id: billRequestId,
@@ -68,8 +73,8 @@ export class BillController {
     return billData;
   }
 
-  @SecurePostAction('Получение информации о чеке по id BillRequest', BillDto, 'data/request/:requestId')
-  async getBillDataByBillRequestId(@RequestUser() user: UserEntity, @Param('requestId') requestId: string): Promise<BillDto> {
+  @securedGrpc
+  async getBillDataByBillRequestId({ requestId }: RequestIdDto, { user }: Metadata): Promise<BillDto> {
     this.validateLimits(user);
     const billRequest = await this.billRequestService.getBillRequestById(requestId);
     if (!billRequest) {
@@ -83,7 +88,7 @@ export class BillController {
     }
     const ftsQrDto: FtsQrDto = {
       totalSum: billRequest.totalSum,
-      dateTime: this.dateHelper.transformDateToFtsDate(billRequest.billDate),
+      ftsDateTime: this.dateHelper.transformDateToFtsDate(billRequest.billDate),
       fiscalDocument: billRequest.fiscalDocument,
       fiscalNumber: billRequest.fiscalNumber,
       fiscalProp: billRequest.fiscalProp,
@@ -105,11 +110,11 @@ export class BillController {
     return billData;
   }
 
-  @SecurePostAction('Создание формы чека', BillEntity)
-  async createBill(@RequestUser() user: UserEntity, @Body() billDto: BillDto): Promise<BillEntity> {
-    const shop = await this.shopService.findOrCreateShop(billDto.shop);
-    const bill = await this.billService.createBillForUser({
-      billDto,
+  @securedGrpc
+  async createBill(request: BillDto, { user }: Metadata): Promise<Bill> {
+    const shop = await this.shopService.findOrCreateShop(request.shop);
+    const newBill = await this.billService.createBillForUser({
+      billDto: request,
       shopId: shop.id,
       userId: user.id,
     });
@@ -118,41 +123,41 @@ export class BillController {
      * быть два продукта с одинаковым названием, но разной ценой
      * и сохранится только один из них
      */
-    for await (const purchaseDto of billDto.purchases) {
+    for await (const purchaseDto of request.purchases) {
       await this.purchaseService.createPurchase({
         purchaseDto,
-        billId: bill.id,
+        billId: newBill.id,
       });
     }
-    if (billDto.billRequestId) {
+    if (request.billRequestId) {
       await this.billRequestService.setBillIdToBillRequest({
-        billRequestId: billDto.billRequestId,
-        billId: bill.id,
+        billRequestId: request.billRequestId,
+        billId: newBill.id,
       });
     }
-    return bill;
+    return newBill;
   }
 
-  @SecurePatchAction('Редактирование формы чека', BillEntity, ':billId')
-  async editBill(@RequestUser() user: UserEntity, @Param('billId') billId: string, @Body() billDto: BillDto): Promise<BillEntity> {
-    const billEntity = await this.billService.getBillById(billId);
-    const shop = await this.shopService.editShop(billDto.shop);
-    billDto.shop.id = shop.id;
+  @securedGrpc
+  async editBill(request: BillDto, meta: Metadata): Promise<Bill> {
+    const billEntity = await this.billService.getBillById(request.id);
+    const shop = await this.shopService.editShop(request.shop);
+    request.shop.id = shop.id;
     const editedBill = await this.billService.editBill({
-      billDto,
+      billDto: request,
       billEntity,
     });
     await this.purchaseService.editPurchases({
-      purchases: billDto.purchases,
-      billId: billDto.id,
+      purchases: request.purchases,
+      billId: request.id,
     });
     return editedBill;
   }
 
-  @SecureDeleteAction('Удаление чека', String, ':billId')
-  async deleteBill(@RequestUser() user: UserEntity, @Param('billId') billId: string): Promise<string> {
+  @securedGrpc
+  async deleteBill({ billId }: BillIdDto, meta: Metadata): Promise<Empty> {
     await this.billService.deleteBill(billId);
-    return OK;
+    return new Empty();
   }
 
   private async extractShopDtoInfo(shopDto: ShopDto): Promise<ShopDto> {
@@ -162,7 +167,7 @@ export class BillController {
     return shopDto;
   }
 
-  private async getBillDataFromFtsOrOfd(user: UserEntity, ftsQrDto: FtsQrDto): Promise<string | BillDto> {
+  private async getBillDataFromFtsOrOfd(user: User, ftsQrDto: FtsQrDto): Promise<string | BillDto> {
     const billRequest = await this.billRequestService.findOrCreateBillRequest({
       userId: user.id,
       ftsQrDto,
@@ -203,7 +208,7 @@ export class BillController {
     return 'Чек не найден в источниках';
   }
 
-  private async makeBillRequestFetched(billRequestId: string, providerCode: string): Promise<void> {
+  private async makeBillRequestFetched(billRequestId: string, providerCode: ProviderCode): Promise<void> {
     const billProvider = await this.providerService.extractBillProvider(providerCode ?? ProviderCode.FTS);
     await this.billRequestService.makeBillRequestFetched(billRequestId, billProvider.id);
   }
@@ -229,12 +234,12 @@ export class BillController {
   }
 
   private generateBillRequestCacheKey({ userId, ftsQrDto }: { userId: string; ftsQrDto: FtsQrDto }) {
-    return `${userId}${ftsQrDto.fiscalProp}${ftsQrDto.fiscalNumber}${
+    return `${ userId }${ ftsQrDto.fiscalProp }${ ftsQrDto.fiscalNumber }${
       ftsQrDto.fiscalDocument
     }`;
   }
 
-  private async getBillDataFromFts(user: UserEntity, ftsQrDto: FtsQrDto, billRequest: BillRequestEntity): Promise<string | BillDto> {
+  private async getBillDataFromFts(user: User, ftsQrDto: FtsQrDto, billRequest: BillRequestEntity): Promise<string | BillDto> {
     const ftsAccount = await this.userService.getFtsAccountForUser(user.id);
     if (!ftsAccount) {
       // ? Ждем до получения чека от ОФД
@@ -276,7 +281,7 @@ export class BillController {
     return FTS_UNKNOWN_FETCHING_ERROR;
   }
 
-  private validateLimits(user: UserEntity): void {
+  private validateLimits(user: User): void {
     const validateResult = this.subscriptionValidator.validateUserUsingLimits(user);
     if (validateResult !== true) {
       throw new BadRequestException(validateResult);

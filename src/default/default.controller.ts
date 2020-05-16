@@ -1,7 +1,7 @@
-import { DefaultService }                                              from './default.service';
-import { RequestUser }                                                 from '../user/user.decorator';
-import { UserEntity }                                                  from '../user/entities/user.entity';
-import { AllUserDataDto }                                              from './dto/AllUserData.dto';
+import { DefaultService } from './default.service';
+import { RequestUser } from '../user/user.decorator';
+import { User } from '../user/entities/user';
+import { AllUserDataDto } from './dto/AllUserData.dto';
 import { GetAction, SecureGetAction, SecureHeadAction, TagController } from '../helpers/decorators';
 
 @TagController('default')
@@ -22,7 +22,7 @@ export class DefaultController {
   }
 
   @SecureGetAction('Получение всех данных пользователя в приложении', AllUserDataDto, 'data')
-  async getAllUserData(@RequestUser() user: UserEntity): Promise<AllUserDataDto> {
+  async getAllUserData(@RequestUser() user: User): Promise<AllUserDataDto> {
     const data = await this.defaultService.getAllUserData(user.id);
     return data;
   }

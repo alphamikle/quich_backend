@@ -1,8 +1,8 @@
-import leven               from 'leven';
-import { Logger }          from '@nestjs/common';
-import { v4 }              from 'uuid';
+import leven from 'leven';
+import { Logger } from '@nestjs/common';
+import { v4 } from 'uuid';
 import { AllHtmlEntities } from 'html-entities';
-import { createHash }      from 'crypto';
+import { createHash } from 'crypto';
 
 const md5 = () => createHash('md5');
 
@@ -19,7 +19,7 @@ export function toDouble(num: number): number {
   const asNum = Number(num);
   if (Number.isNaN(asNum)) {
     Logger.error(
-      `Not number provided in toDouble function ${num}`,
+      `Not number provided in toDouble function ${ num }`,
       null,
       'common.helper:toDouble',
     );
@@ -47,12 +47,13 @@ function randomAndroid(): string {
     '8.1.0',
     '9',
     '10',
+    '11',
   ];
-  return `Android ${android[randomInt(0, android.length - 1)]}`;
+  return `Android ${ android[randomInt(0, android.length - 1)] }`;
 }
 
 function randomIOS(): string {
-  return `IOS ${randomInt(8, 13)}`;
+  return `IOS ${ randomInt(8, 13) }`;
 }
 
 export function randomOS(): string {
@@ -94,7 +95,7 @@ export interface ErrorInfo {
 
 export function getInfoFromError(error: any): ErrorInfo {
   const info: ErrorInfo = {
-    message: `error_${(new Date()).toISOString()}`,
+    message: `error_${ (new Date()).toISOString() }`,
     content: '',
     extension: 'txt',
   };

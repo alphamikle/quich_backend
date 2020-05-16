@@ -1,12 +1,12 @@
-import { Injectable }             from '@nestjs/common';
-import { InjectRepository }        from '@nestjs/typeorm';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Not, Repository } from 'typeorm';
-import { BillRequestEntity }       from './entities/bill-request.entity';
+import { BillRequestEntity } from './entities/bill-request.entity';
 import { BillRequestCreatingDto } from './dto/bill-request-creating.dto';
-import { FtsQrDto }               from '../fts/dto/fts-qr.dto';
-import { FtsFetchResponseBill }   from '../fts/dto/fts-fetch-response/bill.dto';
-import { DateHelper }             from '../helpers/date.helper';
-import { BillDto }                from '../bill/dto/bill.dto';
+import { FtsQrDto } from '../fts/dto/fts-qr.dto';
+import { FtsFetchResponseBill } from '../fts/dto/fts-fetch-response/bill.dto';
+import { DateHelper } from '../helpers/date.helper';
+import { BillDto } from '../bill/dto/bill.dto';
 
 @Injectable()
 export class BillRequestService {
@@ -84,7 +84,7 @@ export class BillRequestService {
     if (!billRequest) {
       billRequest = await this.createBillRequest({
         userId,
-        billDate: this.dateHelper.transformFtsDateToDate(ftsQrDto.dateTime),
+        billDate: this.dateHelper.transformFtsDateToDate(ftsQrDto.ftsDateTime),
         totalSum: ftsQrDto.totalSum,
         fiscalProp: ftsQrDto.fiscalProp,
         fiscalNumber: ftsQrDto.fiscalNumber,
