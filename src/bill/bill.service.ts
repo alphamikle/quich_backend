@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Bill } from './entities/bill.entity';
-import { BillDto } from './dto/bill.dto';
+import { Bill } from '~/bill/entities/bill.entity';
+import { BillDto } from '~/bill/dto/bill.dto';
 
 @Injectable()
 export class BillService {

@@ -1,6 +1,7 @@
 import { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { Observable } from 'rxjs';
-import { Timestamp } from '~/protobuf/generated/google/protobuf/timestamp';
+import { Timestamp } from '~/proto-generated/google/protobuf/timestamp';
 
 function toTimestamp(date: Date): Timestamp {
   const seconds = date.getTime() / 1_000;

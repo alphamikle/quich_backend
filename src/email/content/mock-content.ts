@@ -1,4 +1,4 @@
-import { EmailContent } from '../entities/email-content.entity';
+import { EmailContent } from '~/email/entities/email-content.entity';
 
 const { MAIL_USERNAME } = process.env;
 

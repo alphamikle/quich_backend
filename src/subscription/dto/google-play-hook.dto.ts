@@ -1,5 +1,5 @@
-import { GooglePlayMessageDto } from './google-play-message.dto';
-import { Sku, Status } from '../entities/subscription.entity';
+import { GooglePlayMessageDto } from '~/subscription/dto/google-play-message.dto';
+import { Sku, Status } from '~/subscription/entities/subscription.entity';
 
 export class GooglePlayHookDto {
 

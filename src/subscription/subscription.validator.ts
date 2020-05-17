@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { GooglePlayHookDto } from './dto/google-play-hook.dto';
-import { INCORRECT_GOOGLE_PLAY_HOOK_DATA, SUBSCRIPTION_NOT_EXIST, UNKNOWN_ERROR, YOU_NEED_TO_BUY_SUBSCRIPTION } from '../helpers/text';
-import { Sku, Subscription } from './entities/subscription.entity';
-import { User } from '../user/entities/user.entity';
+import { GooglePlayHookDto } from '~/subscription/dto/google-play-hook.dto';
+import { INCORRECT_GOOGLE_PLAY_HOOK_DATA, SUBSCRIPTION_NOT_EXIST, UNKNOWN_ERROR, YOU_NEED_TO_BUY_SUBSCRIPTION } from '~/helpers/text';
+import { Sku, Subscription } from '~/subscription/entities/subscription.entity';
+import { User } from '~/user/entities/user.entity';
 
 const { GOOGLE_PLAY_HOOK_THEME } = process.env;
 

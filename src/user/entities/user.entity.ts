@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { FtsAccount } from './fts-account.entity';
 import { Session } from '~/user/entities/session.entity';

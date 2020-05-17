@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '~/user/entities/user.entity';
 
 export enum MessageType {
@@ -23,11 +23,11 @@ export class MessageEntity {
   @Column({ default: false })
   isRead!: boolean;
 
-  @OneToMany(() => User, user => user.messages)
+  @ManyToOne(() => User, user => user.messages)
   user?: User;
 
-  @Column()
-  userId!: string;
+  @Column({ nullable: true })
+  userId?: string;
 
   @Column({ enum: Object.values(MessageType), default: MessageType.INFO })
   type!: MessageType;

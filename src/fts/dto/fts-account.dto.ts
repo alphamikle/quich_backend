@@ -1,6 +1,6 @@
-import * as user from '~/proto-generated/user';
+import * as fts from '~/proto-generated/fts';
 
-export class FtsAccountDto implements user.FtsAccountDto {
+export class FtsAccountDto implements fts.FtsAccountDto {
 
   phone!: string;
 

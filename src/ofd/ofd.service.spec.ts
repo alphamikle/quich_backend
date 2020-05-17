@@ -2,17 +2,17 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Injectable, Logger } from '@nestjs/common';
-import { RequestService } from '../proxy/dto/requestable.interface';
-import { OfdFetcher } from './ofd.ru/fetcher';
-import { TaxcomFetcher } from './taxcom.ru/fetcher';
-import { typeOrmOptions } from '../config';
-import { BillRequest } from '../bill-request/entities/bill-request.entity';
-import { BillRequestService } from '../bill-request/bill-request.service';
-import { BillRequestModule } from '../bill-request/bill-request.module';
-import { FtsQrDto } from '../fts/dto/fts-qr.dto';
-import { DateHelper } from '../helpers/date.helper';
-import { FirstOfdPuppeteerFetcher } from './1-ofd.ru/puppeteer-fetcher';
-import { PuppeteerService } from '../puppeteer/puppeteer.service';
+import { RequestService } from '~/proxy/dto/requestable.interface';
+import { OfdFetcher } from '~/ofd/ofd.ru/fetcher';
+import { TaxcomFetcher } from '~/ofd/taxcom.ru/fetcher';
+import { typeOrmOptions } from '~/config';
+import { BillRequest } from '~/bill-request/entities/bill-request.entity';
+import { BillRequestService } from '~/bill-request/bill-request.service';
+import { BillRequestModule } from '~/bill-request/bill-request.module';
+import { FtsQrDto } from '~/fts/dto/fts-qr.dto';
+import { DateHelper } from '~/helpers/date.helper';
+import { FirstOfdPuppeteerFetcher } from '~/ofd/1-ofd.ru/puppeteer-fetcher';
+import { PuppeteerService } from '~/puppeteer/puppeteer.service';
 
 @Injectable()
 class TestRequestService implements RequestService {
@@ -38,20 +38,20 @@ describe('Ofd service test', () => {
     checkType: 1,
   };
 
-  const ofdQrDto = {
+  const ofdQrDto: FtsQrDto = {
     fiscalProp: '2834357247',
     totalSum: 328,
     fiscalNumber: '9282000100387649',
     fiscalDocument: '21303',
     dateTime: '20200125T1328',
     checkType: 1,
-  };
+  } as unknown as FtsQrDto;
 
   const firstOfdQrDto: FtsQrDto = {
     fiscalProp: '2618158950',
     fiscalNumber: '9289000100402029',
     fiscalDocument: '15535',
-  };
+  } as FtsQrDto;
 
   Logger.log('Ofd service test');
 
@@ -113,7 +113,7 @@ describe('Ofd service test', () => {
   });
 
   it('Ofd service test', async (done) => {
-    const ofdFetcher = new OfdFetcher(ofdQrDto, { proxyService: requestService });
+    const ofdFetcher = new OfdFetcher(ofdQrDto as FtsQrDto, { proxyService: requestService });
     const billDto = await ofdFetcher.fetchBill();
     expect(billDto)
       .not

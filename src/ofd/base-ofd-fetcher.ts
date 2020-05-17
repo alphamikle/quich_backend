@@ -7,7 +7,7 @@ import { PurchaseDto } from '~/purchase/dto/purchase.dto';
 import { Item } from '~/ofd/1-ofd.ru/interfaces';
 import { DateHelper } from '~/helpers/date.helper';
 import { RequestService } from '~/proxy/dto/requestable.interface';
-import { ProviderCode } from '~/bill-provider/bill-provider.service';
+import { ProviderCode } from '~/bill-provider/entities/bill-provider.entity';
 
 export interface FetcherParams {
   dateHelper?: DateHelper;

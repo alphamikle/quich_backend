@@ -18,13 +18,14 @@ import { BILL_IS_BEEN_SAVED, FTS_UNKNOWN_FETCHING_ERROR, INVALID_ID_ERROR, INVAL
 import { DateHelper } from '~/helpers/date.helper';
 import { SubscriptionValidator } from '~/subscription/subscription.validator';
 import { BillRequest } from '~/bill-request/entities/bill-request.entity';
-import { BillProviderService, ProviderCode } from '~/bill-provider/bill-provider.service';
+import { BillProviderService } from '~/bill-provider/bill-provider.service';
 import { securedGrpc } from '~/providers/decorators';
 import { Bills } from '~/bill/dto/bills.dto';
 import * as bill from '~/proto-generated/bill';
 import { Empty } from '~/providers/empty';
 import { RequestIdDto } from '~/bill/dto/request-id.dto';
 import { BillIdDto } from '~/bill/dto/bill-id.dto';
+import { ProviderCode } from '~/bill-provider/entities/bill-provider.entity';
 
 @Controller()
 export class BillController implements bill.BillController {

@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { forwardRef, Global, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Session } from '~/user/entities/session.entity';
@@ -7,6 +7,7 @@ import { SubscriptionModule } from '~/subscription/subscription.module';
 import { AuthService } from '~/auth/auth.service';
 import { AuthValidator } from '~/auth/auth.validator';
 
+@Global()
 @Module({
   imports: [
     TypeOrmModule.forFeature([

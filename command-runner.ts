@@ -5,9 +5,9 @@ import { resolve } from 'path';
 import { Repository } from 'typeorm';
 import * as jestMock from 'jest-mock';
 import { Logger } from '@nestjs/common';
-import { aBaseConfig } from './src/config';
-import { EmailService } from './src/email/email.service';
-import { EmailContent } from './src/email/entities/email-content.entity';
+import { aBaseConfig } from '~/config';
+import { EmailService } from '~/email/email.service';
+import { EmailContent } from '~/email/entities/email-content.entity';
 
 aBaseConfig();
 

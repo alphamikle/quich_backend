@@ -1,14 +1,14 @@
 import { HTMLElement, parse } from 'node-html-parser';
 import { Logger } from '@nestjs/common';
-import { BaseOfdFetcher, FetcherParams } from '../base-ofd-fetcher';
-import { PurchaseDto } from '../../purchase/dto/purchase.dto';
-import { ShopDto } from '../../shop/dto/shop.dto';
-import { FtsQrDto } from '../../fts/dto/fts-qr.dto';
-import { RequestService } from '../../proxy/dto/requestable.interface';
-import { decodeHtmlEntities } from '../../helpers/common.helper';
-import { BillDto } from '../../bill/dto/bill.dto';
-import { DateHelper } from '../../helpers/date.helper';
-import { ProviderCode } from '../../bill-provider/bill-provider.service';
+import { BaseOfdFetcher, FetcherParams } from '~/ofd/base-ofd-fetcher';
+import { PurchaseDto } from '~/purchase/dto/purchase.dto';
+import { ShopDto } from '~/shop/dto/shop.dto';
+import { FtsQrDto } from '~/fts/dto/fts-qr.dto';
+import { RequestService } from '~/proxy/dto/requestable.interface';
+import { decodeHtmlEntities } from '~/helpers/common.helper';
+import { BillDto } from '~/bill/dto/bill.dto';
+import { DateHelper } from '~/helpers/date.helper';
+import { ProviderCode } from '~/bill-provider/entities/bill-provider.entity';
 
 export class TaxcomFetcher extends BaseOfdFetcher {
 

@@ -49,6 +49,6 @@ export const localeIsNotEmpty = IsNotEmpty({ message: RU.isNotEmptyError });
 
 export const localeIsTooShort = Length(6, 20, { message: RU.isTooShortError });
 
-export const localeIsMobilePhone = IsMobilePhone('ru-RU', { message: RU.incorrectPhone });
+export const localeIsMobilePhone = IsMobilePhone('ru-RU', {}, { message: RU.incorrectPhone });
 
 export const localeArrayIsNotEmpty = ArrayNotEmpty({ message: 'Выберите хотя-бы одно значение' });

@@ -1,6 +1,6 @@
-import { Injectable, Logger }                             from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { AxiosInstance, AxiosResponse, default as axios } from 'axios';
-import { GeocoderResponse }                               from './dto/response.interface';
+import { GeocoderResponse } from '~/maps/dto/response.interface';
 
 const { YANDEX_TOKEN } = process.env;
 

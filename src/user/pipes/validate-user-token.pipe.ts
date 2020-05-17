@@ -7,7 +7,7 @@ import { PropertyError } from '~/providers/property-error';
 import { RU } from '~/locale/ru';
 import { DateProvider } from '~/providers/date.provider';
 import { User } from '~/user/entities/user.entity';
-import { Session } from '~/auth/entities/session.entity';
+import { Session } from '~/user/entities/session.entity';
 
 interface SessionCache {
   user: User;
@@ -35,7 +35,7 @@ export class ValidateUserTokenPipe implements PipeTransform {
       if (user === null) {
         const session = await this.getSession(token);
         await this.validateSession(session);
-        user = await this.userService.getUserById(session.userId) as User;
+        user = await this.userService.getUserByToken(session.userId) as User;
         this.setUserToCache(token, user);
       }
       value.user = user;
@@ -54,7 +54,7 @@ export class ValidateUserTokenPipe implements PipeTransform {
   private async validateSession(session: Session): Promise<void> {
     const isSessionValid = await this.authService.isSessionValid(session);
     if (!isSessionValid) {
-      throw rpcJsonException(PropertyError.fromString(`${ RU.sessionInvalidated } ${ this.dateProvider.format(session.expirationDate, 'dd-MM-yyyy HH:ss') }`), status.UNAUTHENTICATED);
+      throw rpcJsonException(PropertyError.fromString(`${ RU.sessionInvalidated } ${ this.dateProvider.format(session.expiredAt, 'dd-MM-yyyy HH:ss') }`), status.UNAUTHENTICATED);
     }
   }
 

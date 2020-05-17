@@ -1,14 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BillProvider } from '~/bill-provider/entities/bill-provider.entity';
-
-export enum ProviderCode {
-  FTS,
-  FIRST_OFD,
-  OFD,
-  TAXCOM,
-}
+import { BillProvider, ProviderCode } from '~/bill-provider/entities/bill-provider.entity';
 
 @Injectable()
 export class BillProviderService {

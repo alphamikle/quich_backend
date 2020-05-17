@@ -1,13 +1,13 @@
 import { Browser, Page, Response } from 'puppeteer';
-import { BaseOfdFetcher }          from '../base-ofd-fetcher';
-import { PurchaseDto }             from '../../purchase/dto/purchase.dto';
-import { ShopDto }                 from '../../shop/dto/shop.dto';
-import { BillDto }                 from '../../bill/dto/bill.dto';
-import { FtsQrDto }                from '../../fts/dto/fts-qr.dto';
-import { PuppeteerService }        from '../../puppeteer/puppeteer.service';
-import { ProviderCode }            from '../../bill-provider/bill-provider.service';
-import { FetchResponse, Item }     from './interfaces';
-import { DateHelper }              from '../../helpers/date.helper';
+import { BaseOfdFetcher } from '~/ofd/base-ofd-fetcher';
+import { PurchaseDto } from '~/purchase/dto/purchase.dto';
+import { ShopDto } from '~/shop/dto/shop.dto';
+import { BillDto } from '~/bill/dto/bill.dto';
+import { FtsQrDto } from '~/fts/dto/fts-qr.dto';
+import { PuppeteerService } from '~/puppeteer/puppeteer.service';
+import { FetchResponse, Item } from '~/ofd/1-ofd.ru/interfaces';
+import { DateHelper } from '~/helpers/date.helper';
+import { ProviderCode } from '~/bill-provider/entities/bill-provider.entity';
 
 export class FirstOfdPuppeteerFetcher extends BaseOfdFetcher {
   page: Page;

@@ -1,4 +1,4 @@
-import { FtsFetchResponsePurchase } from './purchase.dto';
+import { FtsFetchResponsePurchase } from '~/fts/dto/fts-fetch-response/purchase.dto';
 
 export class FtsFetchResponseBill {
 

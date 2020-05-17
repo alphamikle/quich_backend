@@ -1,13 +1,13 @@
-import { HTMLElement, NodeType, parse }  from 'node-html-parser';
-import * as assert                       from 'assert';
-import { BaseOfdFetcher, FetcherParams } from '../base-ofd-fetcher';
-import { ShopDto }                       from '../../shop/dto/shop.dto';
-import { PurchaseDto }                   from '../../purchase/dto/purchase.dto';
-import { FtsQrDto }                      from '../../fts/dto/fts-qr.dto';
-import { BillDto }                       from '../../bill/dto/bill.dto';
-import { RequestService }                from '../../proxy/dto/requestable.interface';
-import { decodeHtmlEntities }            from '../../helpers/common.helper';
-import { ProviderCode }                  from '../../bill-provider/bill-provider.service';
+import { HTMLElement, NodeType, parse } from 'node-html-parser';
+import * as assert from 'assert';
+import { BaseOfdFetcher, FetcherParams } from '~/ofd/base-ofd-fetcher';
+import { ShopDto } from '~/shop/dto/shop.dto';
+import { PurchaseDto } from '~/purchase/dto/purchase.dto';
+import { FtsQrDto } from '~/fts/dto/fts-qr.dto';
+import { BillDto } from '~/bill/dto/bill.dto';
+import { RequestService } from '~/proxy/dto/requestable.interface';
+import { decodeHtmlEntities } from '~/helpers/common.helper';
+import { ProviderCode } from '~/bill-provider/entities/bill-provider.entity';
 
 export class OfdFetcher extends BaseOfdFetcher {
   private body: HTMLElement;
@@ -76,7 +76,7 @@ export class OfdFetcher extends BaseOfdFetcher {
   }
 
   private async getRawData(): Promise<string> {
-    const url = `https://check.ofd.ru/rec/${this.fiscalNumber}/${this.fiscalDocument}/${this.fiscalProp}`;
+    const url = `https://check.ofd.ru/rec/${ this.fiscalNumber }/${ this.fiscalDocument }/${ this.fiscalProp }`;
     const rawResponse = await this.proxyService.request<string>({
       url,
       method: 'GET',
@@ -122,7 +122,7 @@ export class OfdFetcher extends BaseOfdFetcher {
     const [date, time] = stringDate.split(' ');
     const [day, month, year] = date.split('.');
     const [hours, minutes] = time.split(':');
-    return new Date(Number(`20${year}`), Number(month) - 1, Number(day), Number(hours), Number(minutes));
+    return new Date(Number(`20${ year }`), Number(month) - 1, Number(day), Number(hours), Number(minutes));
   }
 
   private getShopAddress(): string {

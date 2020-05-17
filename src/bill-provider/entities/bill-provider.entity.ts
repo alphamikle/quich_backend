@@ -1,7 +1,13 @@
 import 'reflect-metadata';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { BillRequest } from '~/bill-request/entities/bill-request.entity';
-import { ProviderCode } from '~/bill-provider/bill-provider.service';
+
+export enum ProviderCode {
+  FTS,
+  FIRST_OFD,
+  OFD,
+  TAXCOM,
+}
 
 // TODO: Прописать провайдеров для всех ОФД
 /**
@@ -12,7 +18,7 @@ export class BillProvider {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ enum: Object.values(ProviderCode) })
+  @Column({ enum: Object.values(ProviderCode), nullable: true })
   title!: ProviderCode;
 
   @OneToMany(() => BillRequest, billRequest => billRequest.billProvider)

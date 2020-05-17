@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmModule }       from '@nestjs/typeorm';
-import { ProxyService }        from './proxy.service';
-import { PuppeteerService }    from '../puppeteer/puppeteer.service';
-import { ProxyEntity }         from './entity/proxy.entity';
-import { PuppeteerModule }     from '../puppeteer/puppeteer.module';
-import { typeOrmOptions }      from '../config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ProxyService } from '~/proxy/proxy.service';
+import { PuppeteerService } from '~/puppeteer/puppeteer.service';
+import { ProxyEntity } from '~/proxy/entity/proxy.entity';
+import { PuppeteerModule } from '~/puppeteer/puppeteer.module';
+import { typeOrmOptions } from '~/config';
 
 jest.setTimeout(600000);
 

@@ -1,10 +1,10 @@
-import { Injectable }                            from '@nestjs/common';
-import { FtsService }                            from './fts.service';
-import { FtsAccountDto }                         from './dto/fts-account.dto';
-import { FtsRegistrationDto }                    from './dto/fts-registration.dto';
-import { CommonValidator }                       from '../helpers/common.validator';
-import { BAD_FTS_SIGN_IN_DATA, NOT_EMPTY_ERROR } from '../helpers/text';
-import { FtsRemindDto }                          from './dto/fts-remind.dto';
+import { Injectable } from '@nestjs/common';
+import { FtsService } from '~/fts/fts.service';
+import { FtsAccountDto } from '~/fts/dto/fts-account.dto';
+import { FtsRegistrationDto } from '~/fts/dto/fts-registration.dto';
+import { CommonValidator } from '~/helpers/common.validator';
+import { BAD_FTS_SIGN_IN_DATA, NOT_EMPTY_ERROR } from '~/helpers/text';
+import { FtsRemindDto } from '~/fts/dto/fts-remind.dto';
 
 @Injectable()
 export class FtsValidator {

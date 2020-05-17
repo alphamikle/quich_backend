@@ -1,15 +1,15 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, FindConditions, In, Not, Repository } from 'typeorm';
-import { User } from './entities/user.entity';
-import { Session } from './entities/session.entity';
-import { DateHelper } from '../helpers/date.helper';
-import { FtsAccount } from './entities/fts-account.entity';
-import { FtsAccountDto } from '../fts/dto/fts-account.dto';
-import { FTS_ACCOUNTS_ALL_BUSY_ERROR } from '../helpers/text';
-import { UserQueryLimit } from './entities/user-query-limit.entity';
-import { FtsQrDto } from '../fts/dto/fts-qr.dto';
-import { getHash } from '../helpers/common.helper';
+import { User } from '~/user/entities/user.entity';
+import { Session } from '~/user/entities/session.entity';
+import { DateHelper } from '~/helpers/date.helper';
+import { FtsAccount } from '~/user/entities/fts-account.entity';
+import { FtsAccountDto } from '~/fts/dto/fts-account.dto';
+import { FTS_ACCOUNTS_ALL_BUSY_ERROR } from '~/helpers/text';
+import { UserQueryLimit } from '~/user/entities/user-query-limit.entity';
+import { FtsQrDto } from '~/fts/dto/fts-qr.dto';
+import { getHash } from '~/helpers/common.helper';
 
 const { TOKEN_DURATION } = process.env;
 
@@ -128,16 +128,6 @@ export class UserService {
     return account;
   }
 
-  private async getUserAccountsWithExceededLimit(userId: string): Promise<string[]> {
-    const userAccounts: Array<{ id: string }> = await this.ftsAccountEntityRepository.query(`
-        SELECT fe.id
-        FROM fts_account_entity fe
-                 FULL JOIN fts_account_usings_entity us on fe.phone = us.phone
-                 where fe."userId" = '${ userId }' and us.uses is not null and us.uses > 14
-    `);
-    return userAccounts.map(account => account.id);
-  }
-
   async getFtsAccountForUser(userId: string): Promise<FtsAccount> {
     const hasUserFtsAccount = await this.hasUserFtsAccount(userId);
     let ftsAccount: FtsAccount;
@@ -192,5 +182,15 @@ export class UserService {
         usingDay: Between(currentDate, nextDate),
       },
     });
+  }
+
+  private async getUserAccountsWithExceededLimit(userId: string): Promise<string[]> {
+    const userAccounts: Array<{ id: string }> = await this.ftsAccountEntityRepository.query(`
+        SELECT fe.id
+        FROM fts_account_entity fe
+                 FULL JOIN fts_account_usings_entity us on fe.phone = us.phone
+                 where fe."userId" = '${ userId }' and us.uses is not null and us.uses > 14
+    `);
+    return userAccounts.map(account => account.id);
   }
 }

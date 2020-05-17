@@ -63,6 +63,10 @@ export class AuthService {
     return compare(value, encrypted);
   }
 
+  async isSessionValid(session: Session): Promise<boolean> {
+    return true;
+  }
+
   async generateAuthToken({ dateMark, email }: { dateMark: number, email: string }): Promise<string> {
     return this.getHashOf(dateMark.toString() + email);
   }

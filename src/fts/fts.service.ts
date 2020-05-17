@@ -3,18 +3,18 @@ import axios, { AxiosInstance } from 'axios';
 import * as https from 'https';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Repository } from 'typeorm';
-import { FtsAccountDto } from './dto/fts-account.dto';
-import { FtsRegistrationDto } from './dto/fts-registration.dto';
-import { FTS_BILL_NOT_SEND_ERROR, FTS_TRY_MORE_ERROR, FTS_UNKNOWN_FETCHING_ERROR, FTS_USER_EXIST_ERROR, FTS_USER_NOT_EXIST_ERROR, INVALID_PHONE_ERROR, UNKNOWN_ERROR } from '../helpers/text';
-import { FtsRemindDto } from './dto/fts-remind.dto';
-import { FtsAccount } from '../user/entities/fts-account.entity';
-import { FtsQrDto } from './dto/fts-qr.dto';
-import { DateHelper } from '../helpers/date.helper';
-import { FtsFetchResponse } from './dto/fts-fetch-response/response.dto';
-import { FtsFetchResponseBill } from './dto/fts-fetch-response/bill.dto';
-import { randomOS, randomUUID, wait } from '../helpers/common.helper';
-import { FtsAccountUsings } from './entities/fts-account-usings.entity';
-import { FtsFetchResponsePurchase } from './dto/fts-fetch-response/purchase.dto';
+import { FtsAccountDto } from '~/fts/dto/fts-account.dto';
+import { FtsRegistrationDto } from '~/fts/dto/fts-registration.dto';
+import { FTS_BILL_NOT_SEND_ERROR, FTS_TRY_MORE_ERROR, FTS_UNKNOWN_FETCHING_ERROR, FTS_USER_EXIST_ERROR, FTS_USER_NOT_EXIST_ERROR, INVALID_PHONE_ERROR, UNKNOWN_ERROR } from '~/helpers/text';
+import { FtsRemindDto } from '~/fts/dto/fts-remind.dto';
+import { FtsAccount } from '~/user/entities/fts-account.entity';
+import { FtsQrDto } from '~/fts/dto/fts-qr.dto';
+import { DateHelper } from '~/helpers/date.helper';
+import { FtsFetchResponse } from '~/fts/dto/fts-fetch-response/response.dto';
+import { FtsFetchResponseBill } from '~/fts/dto/fts-fetch-response/bill.dto';
+import { randomOS, randomUUID, wait } from '~/helpers/common.helper';
+import { FtsAccountUsings } from '~/fts/entities/fts-account-usings.entity';
+import { FtsFetchResponsePurchase } from '~/fts/dto/fts-fetch-response/purchase.dto';
 
 export interface FtsHeaders {
   'Device-Id': string;
@@ -131,7 +131,7 @@ export class FtsService {
             fiscalNumber,
             fiscalDocument,
             fiscalProp,
-          },
+          } as FtsQrDto,
           ftsAccountDto,
           count + 1,
         );
@@ -149,7 +149,7 @@ export class FtsService {
             fiscalNumber,
             fiscalDocument,
             fiscalProp,
-          },
+          } as FtsQrDto,
           ftsAccountDto,
           count + 1,
         );

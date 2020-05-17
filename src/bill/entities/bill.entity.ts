@@ -4,10 +4,10 @@ import { Shop } from '~/shop/entities/shop.entity';
 import { User } from '~/user/entities/user.entity';
 import { Purchase } from '~/purchase/entities/purchase.entity';
 import { BillRequest } from '~/bill-request/entities/bill-request.entity';
-import * as bill from '~/proto-generated/bill';
+import * as toExport from '~/proto-generated/export';
 
 @Entity('bill_entity')
-export class Bill implements bill.Bill {
+export class Bill implements toExport.Bill {
 
   @PrimaryGeneratedColumn('uuid')
   id!: string;

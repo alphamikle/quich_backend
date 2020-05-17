@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@Entity('fts_account_usings_entity')
 export class FtsAccountUsings {
   @PrimaryGeneratedColumn('uuid')
   id!: string;

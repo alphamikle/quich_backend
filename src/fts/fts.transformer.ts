@@ -1,10 +1,10 @@
-import { Injectable }               from '@nestjs/common';
-import { FtsFetchResponseBill }     from './dto/fts-fetch-response/bill.dto';
-import { BillDto }                  from '../bill/dto/bill.dto';
-import { ShopDto }                  from '../shop/dto/shop.dto';
-import { PurchaseDto }              from '../purchase/dto/purchase.dto';
-import { FtsFetchResponsePurchase } from './dto/fts-fetch-response/purchase.dto';
-import { DateHelper }               from '../helpers/date.helper';
+import { Injectable } from '@nestjs/common';
+import { FtsFetchResponseBill } from '~/fts/dto/fts-fetch-response/bill.dto';
+import { BillDto } from '~/bill/dto/bill.dto';
+import { ShopDto } from '~/shop/dto/shop.dto';
+import { PurchaseDto } from '~/purchase/dto/purchase.dto';
+import { FtsFetchResponsePurchase } from '~/fts/dto/fts-fetch-response/purchase.dto';
+import { DateHelper } from '~/helpers/date.helper';
 
 @Injectable()
 export class FtsTransformer {

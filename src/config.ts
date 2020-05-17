@@ -18,7 +18,8 @@ export const typeOrmOptions: TypeOrmModuleOptions = {
   username: DB_USERNAME,
   password: DB_PASSWORD,
   database: DB_NAME,
-  entities: [`${ __dirname }/**/*entities/*{.ts,.js}`], // TODO: check entities
+  entities: [`${ __dirname }/**/*.entity{.ts,.js}`], // TODO: check entities
   synchronize: DB_SYNC === 'true',
   uuidExtension: 'pgcrypto',
+  // logging: 'all',
 };

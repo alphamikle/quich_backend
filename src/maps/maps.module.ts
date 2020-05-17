@@ -1,5 +1,5 @@
-import { Module }      from '@nestjs/common';
-import { MapsService } from './maps.service';
+import { Module } from '@nestjs/common';
+import { MapsService } from '~/maps/maps.service';
 
 @Module({
   providers: [MapsService],

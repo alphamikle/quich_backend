@@ -1,5 +1,5 @@
-import { Injectable }                                                from '@nestjs/common';
-import { INVALID_EMAIL_ERROR, INVALID_PHONE_ERROR, NOT_EMPTY_ERROR } from './text';
+import { Injectable } from '@nestjs/common';
+import { INVALID_EMAIL_ERROR, INVALID_PHONE_ERROR, NOT_EMPTY_ERROR } from '~/helpers/text';
 
 @Injectable()
 export class CommonValidator {

@@ -1,7 +1,7 @@
 import { ShopDto } from '~/shop/dto/shop.dto';
 import { PurchaseDto } from '~/purchase/dto/purchase.dto';
-import { ProviderCode } from '~/bill-provider/bill-provider.service';
 import * as bill from '~/proto-generated/bill';
+import { ProviderCode } from '~/bill-provider/entities/bill-provider.entity';
 
 export class BillDto implements bill.BillDto {
 

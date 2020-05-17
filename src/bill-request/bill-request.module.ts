@@ -9,7 +9,9 @@ import { BillRequestValidator } from '~/bill-request/bill-request.validator';
 import { BillRequestController } from '~/bill-request/bill-request.controller';
 
 @Module({
-  controllers: [BillRequestController],
+  controllers: [
+    BillRequestController,
+  ],
   imports: [
     TypeOrmModule.forFeature([
       BillRequest,

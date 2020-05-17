@@ -1,4 +1,4 @@
-import { Sku, Status } from '../entities/subscription.entity';
+import { Sku, Status } from '~/subscription/entities/subscription.entity';
 
 export class GooglePlayDataDto {
   version!: string;

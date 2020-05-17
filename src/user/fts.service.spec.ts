@@ -1,21 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { forwardRef, Logger } from '@nestjs/common';
-import { UserService } from './user.service';
-import { typeOrmOptions } from '../config';
-import { UserValidator } from './user.validator';
-import { DateHelper } from '../helpers/date.helper';
-import { User } from './entities/user.entity';
-import { Session } from './entities/session.entity';
-import { FtsAccount } from './entities/fts-account.entity';
-import { Bill } from '../bill/entities/bill.entity';
-import { CategoryToUserRel } from '../category/entities/category-to-user-rel.entity';
-import { BillRequest } from '../bill-request/entities/bill-request.entity';
-import { AuthModule } from '../auth/auth.module';
-import { FtsModule } from '../fts/fts.module';
-import { EmailModule } from '../email/email.module';
-import { SubscriptionModule } from '../subscription/subscription.module';
-import { UserQueryLimit } from './entities/user-query-limit.entity';
+import { UserService } from '~/user/user.service';
+import { typeOrmOptions } from '~/config';
+import { UserValidator } from '~/user/user.validator';
+import { DateHelper } from '~/helpers/date.helper';
+import { User } from '~/user/entities/user.entity';
+import { Session } from '~/user/entities/session.entity';
+import { FtsAccount } from '~/user/entities/fts-account.entity';
+import { Bill } from '~/bill/entities/bill.entity';
+import { CategoryToUserRel } from '~/category/entities/category-to-user-rel.entity';
+import { BillRequest } from '~/bill-request/entities/bill-request.entity';
+import { AuthModule } from '~/auth/auth.module';
+import { FtsModule } from '~/fts/fts.module';
+import { EmailModule } from '~/email/email.module';
+import { SubscriptionModule } from '~/subscription/subscription.module';
+import { UserQueryLimit } from '~/user/entities/user-query-limit.entity';
 
 jest.setTimeout(600000);
 
@@ -81,10 +81,10 @@ describe('user service test', () => {
       .toBe(undefined);
   });
 
-  it('Increment usings of account for user', async () => {
-    await service.incrementUserQueriesLimit({
-      userId: hasAccountUserId,
-      accountId,
-    });
-  });
+  // it('Increment usings of account for user', async () => {
+  //   await service.incrementUserQueriesLimit({
+  //     userId: hasAccountUserId,
+  //     accountId,
+  //   });
+  // });
 });

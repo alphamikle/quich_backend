@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PuppeteerService }    from './puppeteer.service';
+import { PuppeteerService } from '~/puppeteer/puppeteer.service';
 
 jest.setTimeout(60 * 1000);
 

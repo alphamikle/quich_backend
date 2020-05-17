@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from '../../user/entities/user.entity';
-import { GooglePlayHookDto } from '../dto/google-play-hook.dto';
-import { GooglePlaySubscriptionInfo } from '../interface/google-api.interface';
+import { User } from '~/user/entities/user.entity';
+import { GooglePlayHookDto } from '~/subscription/dto/google-play-hook.dto';
+import { GooglePlaySubscriptionInfo } from '~/subscription/interface/google-api.interface';
 
 export enum Platform {
   IOS = 'IOS',
@@ -57,7 +57,7 @@ export class Subscription {
   @Column({ nullable: true })
   userId?: string;
 
-  @ManyToOne(() => User, user => user.subscriptions, { nullable: true })
+  @ManyToOne(() => User, user => user.subscriptions, { nullable: true, onDelete: 'SET NULL' })
   user?: User;
 
   @Column({
