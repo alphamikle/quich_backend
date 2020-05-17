@@ -1,4 +1,4 @@
-import { BadRequestException, Controller } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { Metadata } from 'grpc';
 import { BillRequestService } from '~/bill-request/bill-request.service';
 import { BillRequestValidator } from '~/bill-request/bill-request.validator';
@@ -6,6 +6,8 @@ import { securedGrpc } from '~/providers/decorators';
 import { BillRequestIdDto } from '~/bill-request/dto/bill-request-id.dto';
 import * as billRequest from '~/proto-generated/bill-request';
 import { Empty } from '~/providers/empty';
+import { rpcJsonException } from '~/providers/rpc-json-exception';
+import { PropertyError } from '~/providers/property-error';
 
 @Controller()
 export class BillRequestController implements billRequest.BillRequestController {
@@ -22,7 +24,7 @@ export class BillRequestController implements billRequest.BillRequestController 
       billRequestId,
     });
     if (validationResult) {
-      throw new BadRequestException({ push: validationResult });
+      throw rpcJsonException(PropertyError.fromObject({ push: validationResult }));
     }
     await this.billRequestService.deleteBillRequestById(billRequestId);
     return new Empty();

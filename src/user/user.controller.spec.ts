@@ -2,6 +2,7 @@ import 'module-alias/register';
 import { Test } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PassportModule } from '@nestjs/passport';
+import { Logger } from '@nestjs/common';
 import { typeOrmOptions } from '~/config';
 import { UserController } from '~/user/user.controller';
 import { UserModule } from '~/user/user.module';
@@ -25,7 +26,6 @@ import { PuppeteerModule } from '~/puppeteer/puppeteer.module';
 import { MessageModule } from '~/message/message.module';
 import { ProvidersModule } from '~/providers/providers.module';
 import { Empty } from '~/providers/empty';
-import { Logger } from '@nestjs/common';
 import { TokenDto } from '~/user/dto/token.dto';
 
 jest.setTimeout(30 * 1000);

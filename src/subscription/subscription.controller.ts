@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Logger, Post } from '@nestjs/common';
+import { Body, Controller, Logger, Post } from '@nestjs/common';
 import { Metadata } from 'grpc';
 import { SubscriptionService } from '~/subscription/subscription.service';
 import { GooglePlayHookDto } from '~/subscription/dto/google-play-hook.dto';
@@ -13,6 +13,8 @@ import { SkuDto } from '~/subscription/dto/sku.dto';
 import * as user from '~/proto-generated/user';
 import { GooglePlayProduct } from '~/subscription/dto/google-play-product';
 import { GooglePlaySubscriptionInfo } from '~/subscription/interface/google-api.interface';
+import { rpcJsonException } from '~/providers/rpc-json-exception';
+import { PropertyError } from '~/providers/property-error';
 
 @Controller('subscription')
 export class SubscriptionController implements user.SubscriptionController {
@@ -28,7 +30,7 @@ export class SubscriptionController implements user.SubscriptionController {
     const validationResult = this.subscriptionValidator.validateHokDto(hookDto);
     if (validationResult !== true) {
       Logger.error(`Invalid GooglePlay hook dto: ${ JSON.stringify(hookDto) }`, null, SubscriptionController.name);
-      throw new BadRequestException(validationResult);
+      throw rpcJsonException(PropertyError.fromObject(validationResult));
     }
     hookDto = this.subscriptionService.extractAdditionalData(hookDto);
     const fallbackStartDate = new Date(1990, 1, 1);
@@ -56,7 +58,7 @@ export class SubscriptionController implements user.SubscriptionController {
   async addUserToSubscriptionData({ purchaseToken }: PurchaseTokenDto, meta: Metadata): Promise<Empty> {
     const validationResult = await this.subscriptionValidator.isSubscriptionExist(purchaseToken);
     if (validationResult !== true) {
-      throw new BadRequestException(validationResult);
+      throw rpcJsonException(PropertyError.fromObject(validationResult));
     }
     await this.subscriptionService.setUserIdToSubscriptionsByToken({
       userId: meta.user.id,
@@ -69,7 +71,7 @@ export class SubscriptionController implements user.SubscriptionController {
   async getGooglePlayProductInfo({ sku }: SkuDto): Promise<GooglePlayProduct> {
     const validationResult = this.subscriptionValidator.validateProductInfo(sku as Sku);
     if (validationResult !== true) {
-      throw new BadRequestException(validationResult);
+      throw rpcJsonException(PropertyError.fromObject(validationResult));
     }
     return this.googleApiService.getProductInfoBySku(sku as Sku);
   }
@@ -80,7 +82,7 @@ export class SubscriptionController implements user.SubscriptionController {
       token: purchaseToken,
     });
     if (validationResult !== true) {
-      throw new BadRequestException(validationResult);
+      throw rpcJsonException(PropertyError.fromObject(validationResult));
     }
     return this.googleApiService.getSubscriptionInfo({
       token: purchaseToken,
@@ -91,7 +93,7 @@ export class SubscriptionController implements user.SubscriptionController {
   async hasUserSubscriptionWithoutGooglePlay(request: Empty, meta: Metadata) {
     const activeSubscription = await this.subscriptionService.getUserSubscriptionInfo(meta.user.id);
     if (!activeSubscription) {
-      throw new BadRequestException({ push: INCORRECT_GOOGLE_PLAY_HOOK_DATA });
+      throw rpcJsonException(PropertyError.fromObject({ push: INCORRECT_GOOGLE_PLAY_HOOK_DATA }));
     }
     return activeSubscription;
   }

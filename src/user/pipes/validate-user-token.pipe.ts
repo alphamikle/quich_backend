@@ -35,7 +35,7 @@ export class ValidateUserTokenPipe implements PipeTransform {
       if (user === null) {
         const session = await this.getSession(token);
         await this.validateSession(session);
-        user = await this.userService.getUserByToken(session.userId) as User;
+        user = await this.userService.getUserByToken(session.token) as User;
         this.setUserToCache(token, user);
       }
       value.user = user;
@@ -45,7 +45,7 @@ export class ValidateUserTokenPipe implements PipeTransform {
 
   private async getSession(token: string): Promise<Session> {
     const session = await this.authService.getSessionByToken(token);
-    if (session === null) {
+    if (!session) {
       throw rpcJsonException(PropertyError.fromString(RU.notFoundSession), status.UNAUTHENTICATED);
     }
     return session;

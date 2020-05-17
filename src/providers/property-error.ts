@@ -4,7 +4,7 @@ export enum Fields {
   EMAIL = 'email',
   PHONE = 'phone',
   PASSWORD = 'password',
-  NOTIFICATION = 'notification',
+  PUSH = 'push',
 }
 
 export class PropertyError {
@@ -24,7 +24,16 @@ export class PropertyError {
   }
 
   static fromString(message: string): PropertyError {
-    return this.manual(message, Fields.NOTIFICATION);
+    return this.manual(message, Fields.PUSH);
+  }
+
+  static fromObject(object: { [property: string]: string }): PropertyError[] {
+    const properties = Object.keys(object);
+    const errors: PropertyError[] = [];
+    for (const property of properties) {
+      errors.push(PropertyError.manual(object[property], property));
+    }
+    return errors;
   }
 
   static manual(message: string, property: string): PropertyError {

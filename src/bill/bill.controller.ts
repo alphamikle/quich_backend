@@ -1,4 +1,4 @@
-import { BadRequestException, Controller } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { Metadata } from 'grpc';
 import { User } from '~/user/entities/user.entity';
 import { FtsQrDto } from '~/fts/dto/fts-qr.dto';
@@ -26,6 +26,8 @@ import { Empty } from '~/providers/empty';
 import { RequestIdDto } from '~/bill/dto/request-id.dto';
 import { BillIdDto } from '~/bill/dto/bill-id.dto';
 import { ProviderCode } from '~/bill-provider/entities/bill-provider.entity';
+import { rpcJsonException } from '~/providers/rpc-json-exception';
+import { PropertyError } from '~/providers/property-error';
 
 @Controller()
 export class BillController implements bill.BillController {
@@ -56,7 +58,7 @@ export class BillController implements bill.BillController {
     this.validateLimits(user);
     const billData = await this.getBillDataFromFtsOrOfd(user, request);
     if (typeof billData === 'string') {
-      throw new BadRequestException({ push: billData });
+      throw rpcJsonException(PropertyError.fromObject({ push: billData }));
     }
     billData.shop = await this.extractShopDtoInfo(billData.shop);
     billData.purchases = await this.purchaseService.extractCategoriesIdsForPurchaseDtos({
@@ -79,10 +81,10 @@ export class BillController implements bill.BillController {
     this.validateLimits(user);
     const billRequest = await this.billRequestService.getBillRequestById(requestId);
     if (!billRequest) {
-      throw new BadRequestException({ push: INVALID_ID_ERROR });
+      throw rpcJsonException(PropertyError.fromObject({ push: INVALID_ID_ERROR }));
     }
     if (billRequest.userId !== user.id) {
-      throw new BadRequestException({ push: INVALID_USER_ERROR });
+      throw rpcJsonException(PropertyError.fromObject({ push: INVALID_USER_ERROR }));
     }
     if (billRequest.isFetched && billRequest.rawData !== null) {
       return billRequest.rawData;
@@ -97,7 +99,7 @@ export class BillController implements bill.BillController {
     await this.billRequestService.incrementIterations(requestId);
     const billData = await this.getBillDataFromFtsOrOfd(user, ftsQrDto);
     if (typeof billData === 'string') {
-      throw new BadRequestException({ push: billData });
+      throw rpcJsonException(PropertyError.fromObject({ push: billData }));
     }
     billData.shop = await this.extractShopDtoInfo(billData.shop);
     billData.purchases = await this.purchaseService.extractCategoriesIdsForPurchaseDtos({
@@ -285,7 +287,7 @@ export class BillController implements bill.BillController {
   private validateLimits(user: User): void {
     const validateResult = this.subscriptionValidator.validateUserUsingLimits(user);
     if (validateResult !== true) {
-      throw new BadRequestException(validateResult);
+      throw rpcJsonException(PropertyError.fromObject(validateResult));
     }
   }
 }

@@ -1,4 +1,4 @@
-import { BadRequestException, Controller } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { Metadata } from 'grpc';
 import { CategoryService } from '~/category/category.service';
 import { RequestUser } from '~/user/user.decorator';
@@ -11,6 +11,8 @@ import * as category from '~/proto-generated/category';
 import { CategoryIdDto } from '~/category/dto/category-id.dto';
 import { Empty } from '~/providers/empty';
 import { MergeCategoriesDto } from '~/category/dto/merge-categories.dto';
+import { rpcJsonException } from '~/providers/rpc-json-exception';
+import { PropertyError } from '~/providers/property-error';
 
 @Controller()
 export class CategoryController implements category.CategoryController {
@@ -32,7 +34,7 @@ export class CategoryController implements category.CategoryController {
       userId: user.id,
     });
     if (existCategory) {
-      throw new BadRequestException({ title: CATEGORY_TITLE_DOUBLE_ERROR });
+      throw rpcJsonException(PropertyError.fromObject({ title: CATEGORY_TITLE_DOUBLE_ERROR }));
     }
     return this.categoryService.createCategoryForUserId({
       categoryDto: request,
@@ -44,14 +46,14 @@ export class CategoryController implements category.CategoryController {
   async editCategory(request: CategoryDto, { user }: Metadata): Promise<CategoryDto> {
     const existCategory = await this.categoryService.getCategoryEntityById(request.id);
     if (!existCategory) {
-      throw new BadRequestException({ push: CATEGORY_NOT_EXIST_ERROR });
+      throw rpcJsonException(PropertyError.fromObject({ push: CATEGORY_NOT_EXIST_ERROR }));
     }
     const categoryByTitle = await this.categoryService.getCategoryForUserByTitle({
       title: request.title,
       userId: user.id,
     });
     if (categoryByTitle && categoryByTitle.title !== existCategory.title) {
-      throw new BadRequestException({ title: CATEGORY_TITLE_DOUBLE_ERROR });
+      throw rpcJsonException(PropertyError.fromObject({ title: CATEGORY_TITLE_DOUBLE_ERROR }));
     }
     const editedCategory = await this.categoryService.editCategory({
       categoryDto: request,
@@ -69,7 +71,7 @@ export class CategoryController implements category.CategoryController {
   async deleteCategory({ categoryId }: CategoryIdDto, { user }: Metadata): Promise<Empty> {
     const existCategory = await this.categoryService.getCategoryEntityById(categoryId);
     if (!existCategory) {
-      throw new BadRequestException({ push: CATEGORY_NOT_EXIST_ERROR });
+      throw rpcJsonException(PropertyError.fromObject({ push: CATEGORY_NOT_EXIST_ERROR }));
     }
     await this.categoryService.deleteCategoryFromUser({
       categoryId,

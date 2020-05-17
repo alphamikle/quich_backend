@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, ForbiddenException, forwardRef, Inject } from '@nestjs/common';
+import { Controller, ForbiddenException, forwardRef, Inject } from '@nestjs/common';
 import { Metadata } from 'grpc';
 import { UserService } from '~/user/user.service';
 import { UserCredentialsDto } from '~/user/dto/user-credentials.dto';
@@ -21,6 +21,8 @@ import { EmailDto } from '~/user/dto/email.dto';
 import { TokenDto } from '~/user/dto/token.dto';
 import { Accounts } from '~/user/entities/accounts.dto';
 import { PhoneDto } from '~/user/dto/phone.dto';
+import { rpcJsonException } from '~/providers/rpc-json-exception';
+import { PropertyError } from '~/providers/property-error';
 
 @Controller()
 export class UserController implements generatedUser.UserController {
@@ -43,7 +45,7 @@ export class UserController implements generatedUser.UserController {
   async signUp({ email, password }: UserCredentialsDto): Promise<Empty> {
     const isUserExits = await this.userValidator.isUserExist(email);
     if (isUserExits) {
-      throw new BadRequestException({ email: REG_ERROR });
+      throw rpcJsonException(PropertyError.fromObject({ email: REG_ERROR }));
     }
     await this.authService.signUp({
       email,
@@ -78,7 +80,7 @@ export class UserController implements generatedUser.UserController {
   async signIn({ email, password }: UserCredentialsDto): Promise<TokenDto> {
     const isUserExits = await this.userValidator.isUserExist(email);
     if (!isUserExits) {
-      throw new BadRequestException({ email: SIGN_IN_NO_USER });
+      throw rpcJsonException(PropertyError.fromObject({ email: SIGN_IN_NO_USER }));
     }
     const user: User = await this.userService.getUserByEmail(email);
     const isPasswordValid: boolean = await this.authValidator.isPasswordValid({
@@ -105,22 +107,22 @@ export class UserController implements generatedUser.UserController {
       });
       const result = await this.ftsService.signUp(ftsRegistrationDto);
       if (result === true) {
-        throw new BadRequestException({ push: SENDING_FTS_SMS });
+        throw rpcJsonException(PropertyError.fromObject({ push: SENDING_FTS_SMS }));
       } else {
         await this.ftsService.remindPassword({ phone: ftsAccountData.phone });
-        throw new BadRequestException({ push: SENDING_FTS_SMS });
+        throw rpcJsonException(PropertyError.fromObject({ push: SENDING_FTS_SMS }));
       }
     }
     const isCredentialsValid = await this.ftsValidator.isSignInDataValid(ftsAccountData);
     if (!isCredentialsValid) {
-      throw new BadRequestException({ push: BAD_FTS_SIGN_IN_DATA });
+      throw rpcJsonException(PropertyError.fromObject({ push: BAD_FTS_SIGN_IN_DATA }));
     }
     const isAccountExist = await this.userValidator.isFtsAccountExistOnUser({
       user,
       phone: ftsAccountData.phone,
     });
     if (isAccountExist) {
-      throw new BadRequestException({ phone: DUPLICATE_FTS_PHONE });
+      throw rpcJsonException(PropertyError.fromObject({ phone: DUPLICATE_FTS_PHONE }));
     }
     return this.userService.addFtsAccountToUser({
       user,
@@ -135,7 +137,7 @@ export class UserController implements generatedUser.UserController {
       phone,
     });
     if (!isAccountExist) {
-      throw new BadRequestException({ phone: NOT_EXIST_FTS_PHONE });
+      throw rpcJsonException(PropertyError.fromObject({ phone: NOT_EXIST_FTS_PHONE }));
     }
     await this.userService.deleteFtsAccountFromUser({
       userId: user.id,
@@ -151,14 +153,14 @@ export class UserController implements generatedUser.UserController {
       phone,
     });
     if (!isAccountExist) {
-      throw new BadRequestException({ phone: NOT_EXIST_FTS_PHONE });
+      throw rpcJsonException(PropertyError.fromObject({ phone: NOT_EXIST_FTS_PHONE }));
     }
     const ftsAccountValidation = await this.ftsValidator.validateFtsAccountDto({
       phone,
       password,
     });
     if (ftsAccountValidation !== true) {
-      throw new BadRequestException(ftsAccountValidation);
+      throw rpcJsonException(PropertyError.fromObject(ftsAccountValidation));
     }
     return this.ftsService.changeFtsAccountPassword({
       password,

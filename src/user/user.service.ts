@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, FindConditions, In, Not, Repository } from 'typeorm';
 import { User } from '~/user/entities/user.entity';
@@ -10,6 +10,8 @@ import { FTS_ACCOUNTS_ALL_BUSY_ERROR } from '~/helpers/text';
 import { UserQueryLimit } from '~/user/entities/user-query-limit.entity';
 import { FtsQrDto } from '~/fts/dto/fts-qr.dto';
 import { getHash } from '~/helpers/common.helper';
+import { rpcJsonException } from '~/providers/rpc-json-exception';
+import { PropertyError } from '~/providers/property-error';
 
 const { TOKEN_DURATION } = process.env;
 
@@ -138,7 +140,7 @@ export class UserService {
       ftsAccount = await this.getRandomFtsAccount();
     }
     if (!ftsAccount) {
-      throw new BadRequestException({ push: FTS_ACCOUNTS_ALL_BUSY_ERROR });
+      throw rpcJsonException(PropertyError.fromObject({ push: FTS_ACCOUNTS_ALL_BUSY_ERROR }));
     }
     return ftsAccount;
   }
