@@ -6,7 +6,7 @@ import { rpcJsonException } from '~/providers/rpc-json-exception';
 import { PropertyError } from '~/providers/property-error';
 import { RU } from '~/locale/ru';
 import { DateProvider } from '~/providers/date.provider';
-import { User } from '~/user/entities/user';
+import { User } from '~/user/entities/user.entity';
 import { Session } from '~/auth/entities/session.entity';
 
 interface SessionCache {

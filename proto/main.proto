@@ -9,3 +9,4 @@ import "category.proto";
 import "default.proto";
 import "product.proto";
 import "export.proto";
+import "user.proto";

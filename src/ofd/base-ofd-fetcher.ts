@@ -1,13 +1,13 @@
-import { Logger }         from '@nestjs/common';
-import { HTMLElement }    from 'node-html-parser';
-import { BillDto }        from '../bill/dto/bill.dto';
-import { FtsQrDto }       from '../fts/dto/fts-qr.dto';
-import { ShopDto }        from '../shop/dto/shop.dto';
-import { PurchaseDto }    from '../purchase/dto/purchase.dto';
-import { Item }           from './1-ofd.ru/interfaces';
-import { DateHelper }     from '../helpers/date.helper';
-import { RequestService } from '../proxy/dto/requestable.interface';
-import { ProviderCode }   from '../bill-provider/bill-provider.service';
+import { Logger } from '@nestjs/common';
+import { HTMLElement } from 'node-html-parser';
+import { BillDto } from '~/bill/dto/bill.dto';
+import { FtsQrDto } from '~/fts/dto/fts-qr.dto';
+import { ShopDto } from '~/shop/dto/shop.dto';
+import { PurchaseDto } from '~/purchase/dto/purchase.dto';
+import { Item } from '~/ofd/1-ofd.ru/interfaces';
+import { DateHelper } from '~/helpers/date.helper';
+import { RequestService } from '~/proxy/dto/requestable.interface';
+import { ProviderCode } from '~/bill-provider/bill-provider.service';
 
 export interface FetcherParams {
   dateHelper?: DateHelper;
@@ -50,14 +50,14 @@ export abstract class BaseOfdFetcher {
   protected abstract getPurchase(purchaseData?: PurchaseData): PurchaseDto;
 
   protected notFound() {
-    Logger.warn(`Not found data of bill with qrDto=${this.qrDtoString} in ${this.constructor.name}`, this.constructor.name);
+    Logger.warn(`Not found data of bill with qrDto=${ this.qrDtoString } in ${ this.constructor.name }`, this.constructor.name);
   }
 
   protected throwError() {
-    Logger.warn(`Was thrown an error while getting bill data with qrDto=${this.qrDtoString} in ${this.constructor.name}`, this.constructor.name);
+    Logger.warn(`Was thrown an error while getting bill data with qrDto=${ this.qrDtoString } in ${ this.constructor.name }`, this.constructor.name);
   }
 
   protected found() {
-    Logger.log(`Found bill data with qrDto=${this.qrDtoString} in ${this.constructor.name}`, this.constructor.name);
+    Logger.log(`Found bill data with qrDto=${ this.qrDtoString } in ${ this.constructor.name }`, this.constructor.name);
   }
 }

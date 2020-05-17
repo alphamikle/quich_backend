@@ -4,7 +4,7 @@ import { SignInCredentials } from '~/user/dto/sign-in-credentials.dto';
 import { Fields, PropertyError } from '~/providers/property-error';
 import { rpcJsonException } from '~/providers/rpc-json-exception';
 import { RU } from '~/locale/ru';
-import { User } from '~/user/entities/user';
+import { User } from '~/user/entities/user.entity';
 
 @Injectable()
 export class UserExistPipe implements PipeTransform {

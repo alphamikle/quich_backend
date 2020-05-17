@@ -1,34 +1,29 @@
-import { BadRequestException, Body, ForbiddenException, forwardRef, Inject, Param, Query } from '@nestjs/common';
-import { UserService } from './user.service';
-import { UserCredentialsDto } from './dto/user-credentials.dto';
-import { UserValidator } from './user.validator';
-import { User } from './entities/user';
-import {
-  BAD_FTS_SIGN_IN_DATA,
-  DUPLICATE_FTS_PHONE,
-  EMAIL_RESTORE_SUCCESS,
-  FTS_PHONE_DELETION_COMPLETE,
-  NOT_EXIST_FTS_PHONE,
-  REG_ERROR,
-  SENDING_FTS_SMS,
-  SIGN_IN_BAD_PASSWORD,
-  SIGN_IN_NO_USER,
-  SIGN_UP_SUCCESS,
-} from '../helpers/text';
-import { FtsAccount } from './entities/fts-account.entity';
-import { AuthService } from '../auth/auth.service';
-import { AuthValidator } from '../auth/auth.validator';
-import { RequestUser } from './user.decorator';
-import { FtsAccountDto } from '../fts/dto/fts-account.dto';
-import { FtsValidator } from '../fts/fts.validator';
-import { FtsAccountModifyDto } from './dto/fts-account-modify.dto';
-import { FtsService } from '../fts/fts.service';
-import { EmailService, RestoreEmailCredentials } from '../email/email.service';
-import { FtsRegistrationDto } from '../fts/dto/fts-registration.dto';
-import { GetAction, PostAction, SecureDeleteAction, SecureGetAction, SecurePatchAction, SecurePostAction, TagController } from '../helpers/decorators';
+import { BadRequestException, Controller, ForbiddenException, forwardRef, Inject } from '@nestjs/common';
+import { Metadata } from 'grpc';
+import { UserService } from '~/user/user.service';
+import { UserCredentialsDto } from '~/user/dto/user-credentials.dto';
+import { UserValidator } from '~/user/user.validator';
+import { User } from '~/user/entities/user.entity';
+import { BAD_FTS_SIGN_IN_DATA, DUPLICATE_FTS_PHONE, NOT_EXIST_FTS_PHONE, REG_ERROR, SENDING_FTS_SMS, SIGN_IN_BAD_PASSWORD, SIGN_IN_NO_USER } from '~/helpers/text';
+import { FtsAccount } from '~/user/entities/fts-account.entity';
+import { AuthService } from '~/auth/auth.service';
+import { AuthValidator } from '~/auth/auth.validator';
+import { FtsAccountDto } from '~/fts/dto/fts-account.dto';
+import { FtsValidator } from '~/fts/fts.validator';
+import { FtsAccountModifyDto } from '~/user/dto/fts-account-modify.dto';
+import { FtsService } from '~/fts/fts.service';
+import { EmailService, RestoreEmailCredentials } from '~/email/email.service';
+import { FtsRegistrationDto } from '~/fts/dto/fts-registration.dto';
+import { GRPC, securedGrpc } from '~/providers/decorators';
+import { Empty } from '~/providers/empty';
+import * as generatedUser from '~/proto-generated/user';
+import { EmailDto } from '~/user/dto/email.dto';
+import { TokenDto } from '~/user/dto/token.dto';
+import { Accounts } from '~/user/entities/accounts.dto';
+import { PhoneDto } from '~/user/dto/phone.dto';
 
-@TagController('user')
-export class UserController {
+@Controller()
+export class UserController implements generatedUser.UserController {
   constructor(
     private readonly userService: UserService,
     private readonly userValidator: UserValidator,
@@ -44,21 +39,21 @@ export class UserController {
   ) {
   }
 
-  @PostAction('Регистрация пользователя', String, 'sign-up')
-  async signUp(@Body() { email, password }: UserCredentialsDto): Promise<string> {
+  @GRPC()
+  async signUp({ email, password }: UserCredentialsDto): Promise<Empty> {
     const isUserExits = await this.userValidator.isUserExist(email);
     if (isUserExits) {
       throw new BadRequestException({ email: REG_ERROR });
     }
-    const user: User = await this.authService.signUp({
+    await this.authService.signUp({
       email,
       password,
     });
-    return SIGN_UP_SUCCESS;
+    return new Empty();
   }
 
-  @GetAction('Восстановление пароля пользователя', String, 'restore/:email')
-  async restore(@Param('email') email: string): Promise<string> {
+  @GRPC()
+  async restore({ email }: EmailDto): Promise<Empty> {
     const isUserExits = await this.userValidator.isUserExist(email);
     if (isUserExits) {
       const user = await this.userService.getUserByEmail(email);
@@ -76,11 +71,11 @@ export class UserController {
         newPassword,
       });
     }
-    return EMAIL_RESTORE_SUCCESS;
+    return new Empty();
   }
 
-  @PostAction('Авторизация пользователя', String, 'sign-in')
-  async signIn(@Body() { email, password }: UserCredentialsDto): Promise<string> {
+  @GRPC()
+  async signIn({ email, password }: UserCredentialsDto): Promise<TokenDto> {
     const isUserExits = await this.userValidator.isUserExist(email);
     if (!isUserExits) {
       throw new BadRequestException({ email: SIGN_IN_NO_USER });
@@ -93,16 +88,16 @@ export class UserController {
     if (!isPasswordValid) {
       throw new ForbiddenException({ password: SIGN_IN_BAD_PASSWORD });
     }
-    return this.authService.signIn(user);
+    return new TokenDto(await this.authService.signIn(user));
   }
 
-  @SecureGetAction('Получение списка аккаунтов ФНС', [FtsAccount], 'fts-accounts')
-  async getFtsAccountsList(@RequestUser() user: User): Promise<FtsAccount[]> {
-    return this.userService.getFtsAccountsByUserId(user.id);
+  @securedGrpc
+  async getFtsAccountsList(request: Empty, { user }: Metadata): Promise<Accounts> {
+    return new Accounts(await this.userService.getFtsAccountsByUserId(user.id));
   }
 
-  @SecurePostAction('Добавление нового аккаунта ФНС к пользователю', FtsAccount, 'fts-accounts')
-  async addFtsAccountToUser(@RequestUser() user: User, @Body() ftsAccountData: FtsAccountDto): Promise<FtsAccount> {
+  @securedGrpc
+  async addFtsAccountToUser(ftsAccountData: FtsAccountDto, { user }: Metadata): Promise<FtsAccount> {
     if (ftsAccountData.password === null || ftsAccountData.password === undefined) {
       const ftsRegistrationDto = new FtsRegistrationDto({
         email: user.email,
@@ -133,8 +128,8 @@ export class UserController {
     });
   }
 
-  @SecureDeleteAction('Удаление аккаунта ФНС из учетной записи пользователя', String, 'fts-accounts')
-  async deleteFtsAccountFromUser(@RequestUser() user: User, @Query('phone') phone: string): Promise<string> {
+  @securedGrpc
+  async deleteFtsAccountFromUser({ phone }: PhoneDto, { user }: Metadata): Promise<Empty> {
     const isAccountExist = await this.userValidator.isFtsAccountExistOnUser({
       user,
       phone,
@@ -146,11 +141,11 @@ export class UserController {
       userId: user.id,
       phone,
     });
-    return FTS_PHONE_DELETION_COMPLETE;
+    return new Empty();
   }
 
-  @SecurePatchAction('Изменение данных аккаунта ФНС', FtsAccount, 'fts-accounts')
-  async modifyFtsAccount(@RequestUser() user: User, @Body() { password, phone }: FtsAccountModifyDto): Promise<FtsAccount> {
+  @securedGrpc
+  async modifyFtsAccount({ password, phone }: FtsAccountModifyDto, { user }: Metadata): Promise<FtsAccount> {
     const isAccountExist = await this.userValidator.isFtsAccountExistOnUser({
       user,
       phone,
@@ -171,8 +166,9 @@ export class UserController {
     });
   }
 
-  @SecurePostAction('Увеличение лимита на сканирования', null, 'increase-limit')
-  async increaseQueryLimit(@RequestUser() user: User) {
+  @securedGrpc
+  async increaseQueryLimit(request: Empty, { user }: Metadata): Promise<Empty> {
     await this.userService.increaseUserQueryLimit(user.id);
+    return new Empty();
   }
 }

@@ -1,10 +1,10 @@
-import { Injectable, Logger }                       from '@nestjs/common';
-import { InjectRepository }                         from '@nestjs/typeorm';
-import { FindConditions, Repository }               from 'typeorm';
+import { Injectable, Logger } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { FindConditions, Repository } from 'typeorm';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { ProxyEntity }                              from './entity/proxy.entity';
-import { PuppeteerService }                         from '../puppeteer/puppeteer.service';
-import { RequestService }                           from './dto/requestable.interface';
+import { ProxyEntity } from '~/proxy/entity/proxy.entity';
+import { PuppeteerService } from '~/puppeteer/puppeteer.service';
+import { RequestService } from '~/proxy/dto/requestable.interface';
 
 interface ProxyIdUseDate {
   id: string;
@@ -22,7 +22,7 @@ export class ProxyService implements RequestService {
   ) {
     this.cacheUsingDates()
       .then(() =>
-        Logger.log(`${this.proxyUsingQueue.length} proxies are added to queue`),
+        Logger.log(`${ this.proxyUsingQueue.length } proxies are added to queue`),
       );
   }
 
@@ -59,7 +59,7 @@ export class ProxyService implements RequestService {
       protocol: proxy.protocol,
     };
     try {
-      Logger.log(`Proxy ${JSON.stringify(proxy)} will used in request`);
+      Logger.log(`Proxy ${ JSON.stringify(proxy) } will used in request`);
       const response = await axios.request<T>(config);
       proxy.averageTimeMs = this.compileAvarageTime(proxy, start);
       await this.incrementCompleteUses(proxy);
@@ -68,9 +68,9 @@ export class ProxyService implements RequestService {
       Logger.error(
         err.message,
         null,
-        `${ProxyService.name}:request={requestConfig:${JSON.stringify(
+        `${ ProxyService.name }:request={requestConfig:${ JSON.stringify(
           config,
-        )}}`,
+        ) }}`,
       );
       proxy.averageTimeMs = this.compileAvarageTime(proxy, start);
       proxy = this.addErrorToProxy(proxy, err);
@@ -115,20 +115,20 @@ export class ProxyService implements RequestService {
               const response = await this.request<string>(
                 {
                   method: 'GET',
-                  url: `https://i.picsum.photos/id/${value}/300/300.jpg`,
+                  url: `https://i.picsum.photos/id/${ value }/300/300.jpg`,
                 },
                 {},
               );
               Logger.log(
                 'Warming of proxy complete',
-                `${ProxyService.name}:warmProxies - ${value}`,
+                `${ ProxyService.name }:warmProxies - ${ value }`,
               );
               return response;
             } catch (err) {
               Logger.error(
                 err.message,
                 null,
-                `${ProxyService.name}:warmProxies - ${value}`,
+                `${ ProxyService.name }:warmProxies - ${ value }`,
               );
               return null;
             }
@@ -145,10 +145,10 @@ export class ProxyService implements RequestService {
       const start = Date.now();
       await Promise.all(chunk);
       Logger.log(
-        `Compete ${i} chunk of ${requests.length} in ${Date.now() - start}ms`,
+        `Compete ${ i } chunk of ${ requests.length } in ${ Date.now() - start }ms`,
       );
     }
-    Logger.log(`Complete all chunks in ${Date.now() - allStart}ms`);
+    Logger.log(`Complete all chunks in ${ Date.now() - allStart }ms`);
   }
 
   private async cacheUsingDates() {

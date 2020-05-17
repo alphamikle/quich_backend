@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { User } from '~/user/entities/user';
+import { User } from '~/user/entities/user.entity';
 import { AuthService } from '~/auth/auth.service';
 import { DateHelper } from '~/helpers/date.helper';
 

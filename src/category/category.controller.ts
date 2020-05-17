@@ -2,7 +2,7 @@ import { BadRequestException, Controller } from '@nestjs/common';
 import { Metadata } from 'grpc';
 import { CategoryService } from '~/category/category.service';
 import { RequestUser } from '~/user/user.decorator';
-import { User } from '~/user/entities/user';
+import { User } from '~/user/entities/user.entity';
 import { CategoryDto } from '~/category/dto/category.dto';
 import { CATEGORY_NOT_EXIST_ERROR, CATEGORY_TITLE_DOUBLE_ERROR } from '~/helpers/text';
 import { PurchaseService } from '~/purchase/purchase.service';

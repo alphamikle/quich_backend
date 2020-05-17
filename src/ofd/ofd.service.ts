@@ -3,15 +3,15 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { writeFileSync } from 'fs';
 import { resolve } from 'path';
-import { FtsQrDto } from '../fts/dto/fts-qr.dto';
-import { OfdFetcher } from './ofd.ru/fetcher';
-import { BillDto } from '../bill/dto/bill.dto';
-import { BillRequest } from '../bill-request/entities/bill-request.entity';
-import { DateHelper } from '../helpers/date.helper';
-import { OfdFetcherClass } from './base-ofd-fetcher';
-import { ProxyService } from '../proxy/proxy.service';
-import { FirstOfdPuppeteerFetcher } from './1-ofd.ru/puppeteer-fetcher';
-import { TaxcomFetcher } from './taxcom.ru/fetcher';
+import { FtsQrDto } from '~/fts/dto/fts-qr.dto';
+import { OfdFetcher } from '~/ofd/ofd.ru/fetcher';
+import { BillDto } from '~/bill/dto/bill.dto';
+import { BillRequest } from '~/bill-request/entities/bill-request.entity';
+import { DateHelper } from '~/helpers/date.helper';
+import { OfdFetcherClass } from '~/ofd/base-ofd-fetcher';
+import { ProxyService } from '~/proxy/proxy.service';
+import { FirstOfdPuppeteerFetcher } from '~/ofd/1-ofd.ru/puppeteer-fetcher';
+import { TaxcomFetcher } from '~/ofd/taxcom.ru/fetcher';
 
 @Injectable()
 export class OfdService {

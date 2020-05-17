@@ -1,19 +1,23 @@
-import { Module }                 from '@nestjs/common';
-import { TypeOrmModule }          from '@nestjs/typeorm';
-import { SubscriptionService }    from './subscription.service';
-import { SubscriptionEntity }     from './entities/subscription.entity';
-import { SubscriptionController } from './subscription.controller';
-import { GoogleApiService }       from './google-api.service';
-import { DateHelper }             from '../helpers/date.helper';
-import { SubscriptionValidator }  from './subscription.validator';
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { SubscriptionService } from '~/subscription/subscription.service';
+import { Subscription } from '~/subscription/entities/subscription.entity';
+import { SubscriptionController } from '~/subscription/subscription.controller';
+import { GoogleApiService } from '~/subscription/google-api.service';
+import { SubscriptionValidator } from '~/subscription/subscription.validator';
 
 @Module({
-  controllers: [SubscriptionController],
-  imports: [TypeOrmModule.forFeature([SubscriptionEntity])],
+  controllers: [
+    SubscriptionController,
+  ],
+  imports: [
+    TypeOrmModule.forFeature([
+      Subscription,
+    ]),
+  ],
   providers: [
     SubscriptionService,
     GoogleApiService,
-    DateHelper,
     SubscriptionValidator,
   ],
   exports: [

@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Shop } from '~/shop/entities/shop.entity';
-import { User } from '~/user/entities/user';
+import { User } from '~/user/entities/user.entity';
 import { Purchase } from '~/purchase/entities/purchase.entity';
 import { BillRequest } from '~/bill-request/entities/bill-request.entity';
 import * as bill from '~/proto-generated/bill';

@@ -1,6 +1,6 @@
 import { BadRequestException, Controller } from '@nestjs/common';
 import { Metadata } from 'grpc';
-import { User } from '~/user/entities/user';
+import { User } from '~/user/entities/user.entity';
 import { FtsQrDto } from '~/fts/dto/fts-qr.dto';
 import { BillRequestService } from '~/bill-request/bill-request.service';
 import { FtsService } from '~/fts/fts.service';

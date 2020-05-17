@@ -10,7 +10,7 @@ import { Product } from '~/product/entities/product.entity';
 import { Purchase } from '~/purchase/entities/purchase.entity';
 import { Shop } from '~/shop/entities/shop.entity';
 import { FtsAccount } from '~/user/entities/fts-account.entity';
-import { User } from '~/user/entities/user';
+import { User } from '~/user/entities/user.entity';
 import { ShopService } from '~/shop/shop.service';
 import { BillService } from '~/bill/bill.service';
 import { CategoryService } from '~/category/category.service';

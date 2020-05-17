@@ -4,7 +4,7 @@ import { BillService } from './bill.service';
 import { BillController } from './bill.controller';
 import { Bill } from './entities/bill.entity';
 import { Shop } from '~/shop/entities/shop.entity';
-import { User } from '~/user/entities/user';
+import { User } from '~/user/entities/user.entity';
 import { Purchase } from '~/purchase/entities/purchase.entity';
 import { BillRequest } from '~/bill-request/entities/bill-request.entity';
 import { BillRequestModule } from '~/bill-request/bill-request.module';

@@ -1,0 +1,85 @@
+syntax = "proto3";
+package quichx;
+
+import "google/protobuf/empty.proto";
+import "fts.proto";
+
+service SubscriptionController {
+  rpc AddUserToSubscriptionData (PurchaseTokenDto) returns (google.protobuf.Empty);
+  rpc GetGooglePlayProductInfo (SkuDto) returns (GooglePlayProduct);
+  rpc GetGooglePlaySubscriptionInfo (PurchaseTokenDto) returns (GooglePlaySubscriptionInfo);
+}
+
+service UserController {
+  rpc SignUp (UserCredentialsDto) returns (google.protobuf.Empty);
+  rpc Restore (EmailDto) returns (google.protobuf.Empty);
+  rpc SignIn (UserCredentialsDto) returns (TokenDto);
+  rpc GetFtsAccountsList (google.protobuf.Empty) returns (Accounts);
+  rpc AddFtsAccountToUser (FtsAccountDto) returns (FtsAccount);
+  rpc DeleteFtsAccountFromUser (PhoneDto) returns (google.protobuf.Empty);
+  rpc ModifyFtsAccount (FtsAccountModifyDto) returns (FtsAccount);
+  rpc IncreaseQueryLimit (google.protobuf.Empty) returns (google.protobuf.Empty);
+}
+
+message PurchaseTokenDto {
+  string purchaseToken = 1;
+}
+
+message SkuDto {
+  string sku = 1;
+  SkuCode skuCode = 2;
+}
+
+enum SkuCode {
+  COFFEE_CUP_SUBSCRIPTION = 0;
+  BREAKFAST_SUBSCRIPTION = 1;
+  KILO_BEEF_SUBSCRIPTION = 2;
+}
+
+message GooglePlayProduct {
+  string packageName = 1;
+  string sku = 2;
+  string status = 3;
+  string purchaseType = 4;
+  Price defaultPrice = 5;
+  map<string, Price> prices = 6;
+  map<string, LanguageContent> listings = 7;
+  string defaultLanguage = 8;
+  string subscriptionPeriod = 9;
+}
+
+message Price {
+  string priceMicros = 1;
+  string currency = 2;
+}
+
+message LanguageContent {
+  string title = 1;
+  string description = 2;
+}
+
+message GooglePlaySubscriptionInfo {
+  int32 startTimeMillis = 1;
+  int32 expiryTimeMillis = 2;
+  int32 autoResumeTimeMillis = 3;
+  bool autoRenewing = 4;
+  string priceCurrencyCode = 5;
+  float priceAmountMicros = 6;
+}
+
+message UserCredentialsDto {
+  string email = 1;
+  string password = 2;
+}
+
+message EmailDto {
+  string email = 1;
+}
+
+message PhoneDto {
+  string phone = 1;
+}
+
+message TokenDto {
+  string token = 1;
+}

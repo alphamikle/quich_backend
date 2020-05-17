@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from '../../user/entities/user';
+import { User } from '../../user/entities/user.entity';
 import { GooglePlayHookDto } from '../dto/google-play-hook.dto';
 import { GooglePlaySubscriptionInfo } from '../interface/google-api.interface';
 
@@ -43,8 +43,14 @@ export enum Sku {
   FIRST_THREE_DAYS = 'first_three_days',
 }
 
-@Entity()
-export class SubscriptionEntity {
+export enum SkuCode {
+  COFFEE_CUP_SUBSCRIPTION,
+  BREAKFAST_SUBSCRIPTION,
+  KILO_BEEF_SUBSCRIPTION,
+}
+
+@Entity('subscription_entity')
+export class Subscription {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 

@@ -15,8 +15,12 @@ import { DadataModule } from '../dadata/dadata.module';
     MapsModule,
     DadataModule,
   ],
-  providers: [ShopService],
-  exports: [ShopService],
+  providers: [
+    ShopService,
+  ],
+  exports: [
+    ShopService,
+  ],
 })
 export class ShopModule {
 }

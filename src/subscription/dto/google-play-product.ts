@@ -1,8 +1,9 @@
 // eslint-disable-next-line @typescript-eslint/camelcase
 import { androidpublisher_v3 as v3 } from 'googleapis';
-import { Sku }                       from '../entities/subscription.entity';
+import { Sku } from '../entities/subscription.entity';
+import * as user from '~/proto-generated/user';
 
-export class GooglePlayProduct {
+export class GooglePlayProduct implements user.GooglePlayProduct {
   packageName: string;
 
   sku: Sku;

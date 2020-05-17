@@ -5,3 +5,17 @@ message FtsAccount {
   string id = 1;
   string phone = 2;
 }
+
+message Accounts {
+  repeated FtsAccount accounts = 1;
+}
+
+message FtsAccountDto {
+  string phone = 1;
+  string password = 2;
+}
+
+message FtsAccountModifyDto {
+  string password = 1;
+  string phone = 2;
+}

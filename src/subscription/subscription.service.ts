@@ -1,14 +1,14 @@
-import { Injectable }                                        from '@nestjs/common';
-import { IsNull, MoreThan, Not, Repository }                 from 'typeorm';
-import { InjectRepository }                                  from '@nestjs/typeorm';
-import { Market, Platform, Sku, Status, SubscriptionEntity } from './entities/subscription.entity';
-import { GooglePlayHookDto }                                 from './dto/google-play-hook.dto';
-import { GooglePlayDataDto }                                 from './dto/google-play-data.dto';
-import { DateHelper }                                        from '../helpers/date.helper';
-import { GooglePlayProduct }                                 from './dto/google-play-product';
-import { SubscriptionInfoDto }                               from './dto/subscription-info.dto';
-import { GooglePlayMessageDto }                              from './dto/google-play-message.dto';
-import { GooglePlaySubscriptionInfo }                        from './interface/google-api.interface';
+import { Injectable } from '@nestjs/common';
+import { IsNull, MoreThan, Not, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Market, Platform, Sku, Status, Subscription } from '~/subscription/entities/subscription.entity';
+import { GooglePlayHookDto } from '~/subscription/dto/google-play-hook.dto';
+import { GooglePlayDataDto } from '~/subscription/dto/google-play-data.dto';
+import { DateHelper } from '~/helpers/date.helper';
+import { GooglePlayProduct } from '~/subscription/dto/google-play-product';
+import { SubscriptionInfoDto } from '~/subscription/dto/subscription-info.dto';
+import { GooglePlayMessageDto } from '~/subscription/dto/google-play-message.dto';
+import { GooglePlaySubscriptionInfo } from '~/subscription/interface/google-api.interface';
 
 export interface CommonSubscriptionConstructorData {
   activeFrom: Date;
@@ -19,8 +19,8 @@ export interface CommonSubscriptionConstructorData {
 @Injectable()
 export class SubscriptionService {
   constructor(
-    @InjectRepository(SubscriptionEntity)
-    private readonly subscriptionRepository: Repository<SubscriptionEntity>,
+    @InjectRepository(Subscription)
+    private readonly subscriptionRepository: Repository<Subscription>,
     private readonly dateHelper: DateHelper,
   ) {
   }
@@ -51,7 +51,7 @@ export class SubscriptionService {
     return subscription;
   }
 
-  generateTemporarySubscription({ activeFrom, activeTo }: { activeFrom: Date; activeTo: Date }): SubscriptionEntity {
+  generateTemporarySubscription({ activeFrom, activeTo }: { activeFrom: Date; activeTo: Date }): Subscription {
     const token = 'TEMP.0000-0000-0000-00000';
     const mockHookDto = new GooglePlayHookDto();
     const mockMessage = new GooglePlayMessageDto();
@@ -95,7 +95,7 @@ export class SubscriptionService {
     return subscription;
   }
 
-  async createSubscription(subscription: SubscriptionEntity): Promise<SubscriptionEntity> {
+  async createSubscription(subscription: Subscription): Promise<Subscription> {
     return this.subscriptionRepository.save(subscription);
   }
 
@@ -118,7 +118,7 @@ export class SubscriptionService {
     return count > 0;
   }
 
-  assignSubscriptionWithGooglePlaySubscriptionInfo({ subscription, subscriptionInfo }: { subscription: SubscriptionEntity, subscriptionInfo: GooglePlaySubscriptionInfo, }): SubscriptionEntity {
+  assignSubscriptionWithGooglePlaySubscriptionInfo({ subscription, subscriptionInfo }: { subscription: Subscription, subscriptionInfo: GooglePlaySubscriptionInfo, }): Subscription {
     subscription.orderId = subscriptionInfo.orderId;
     subscription.subscriptionInfoRawBody = subscriptionInfo;
     subscription.price = subscriptionInfo.priceAmountMicros;
@@ -127,7 +127,7 @@ export class SubscriptionService {
     return subscription;
   }
 
-  async getLastSubscriptionByPurchaseToken(purchaseToken: string): Promise<SubscriptionEntity> {
+  async getLastSubscriptionByPurchaseToken(purchaseToken: string): Promise<Subscription> {
     return this.subscriptionRepository.findOne({
       where: { purchaseToken },
       order: { createdAt: 'DESC' },
@@ -177,7 +177,7 @@ export class SubscriptionService {
     return subscriptionInfo;
   }
 
-  async addTemporarySubscriptionToUser({ userId, days = 3 }: { userId: string; days?: number }): Promise<SubscriptionEntity> {
+  async addTemporarySubscriptionToUser({ userId, days = 3 }: { userId: string; days?: number }): Promise<Subscription> {
     const activeFrom = new Date();
     const activeTo = this.dateHelper.addDays(activeFrom, days);
     const subscription = this.generateTemporarySubscription({
@@ -188,8 +188,8 @@ export class SubscriptionService {
     return this.subscriptionRepository.save(subscription);
   }
 
-  private generateCommonSubscription({ activeFrom, activeTo, hookRawBody }: CommonSubscriptionConstructorData): SubscriptionEntity {
-    const subscription = new SubscriptionEntity();
+  private generateCommonSubscription({ activeFrom, activeTo, hookRawBody }: CommonSubscriptionConstructorData): Subscription {
+    const subscription = new Subscription();
     subscription.price = 0;
     subscription.purchaseToken = hookRawBody.message.decodedData.subscriptionNotification.purchaseToken;
     subscription.activeFrom = activeFrom;

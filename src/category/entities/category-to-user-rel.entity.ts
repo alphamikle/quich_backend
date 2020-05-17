@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Category } from '~/category/entities/category.entity';
-import { User } from '~/user/entities/user';
+import { User } from '~/user/entities/user.entity';
 
 @Entity('category_to_user_entity')
 export class CategoryToUserRel {

@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { User } from '~/user/entities/user';
+import { User } from '~/user/entities/user.entity';
 import { Bill } from '~/bill/entities/bill.entity';
 import { BillProvider } from '~/bill-provider/entities/bill-provider.entity';
 import { FtsFetchResponseBill } from '~/fts/dto/fts-fetch-response/bill.dto';

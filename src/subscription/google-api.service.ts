@@ -1,11 +1,14 @@
-import { Injectable }                  from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+// eslint-disable-next-line @typescript-eslint/camelcase
 import { androidpublisher_v3, google } from 'googleapis';
-import { JWT, JWTInput }               from 'google-auth-library';
-import { readFileSync }                from 'fs';
-import { GooglePlayProduct }           from './dto/google-play-product';
-import { Sku }                         from './entities/subscription.entity';
-import { GooglePlaySubscriptionInfo }  from './interface/google-api.interface';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { JWT, JWTInput } from 'google-auth-library';
+import { readFileSync } from 'fs';
+import { GooglePlayProduct } from '~/subscription/dto/google-play-product';
+import { Sku } from '~/subscription/entities/subscription.entity';
+import { GooglePlaySubscriptionInfo } from '~/subscription/interface/google-api.interface';
 
+// eslint-disable-next-line @typescript-eslint/camelcase
 import AndroidPublisher = androidpublisher_v3.Androidpublisher;
 
 const { GOOGLE_API_CREDENTIALS_PATH, APP_PACKAGE_NAME } = process.env;
@@ -54,12 +57,11 @@ export class GoogleApiService {
     return this.products.get(sku);
   }
 
-  async getSubscriptionInfo({ token, sku }: { token: string, sku: Sku }): Promise<GooglePlaySubscriptionInfo> {
+  async getSubscriptionInfo({ token }: { token: string }): Promise<GooglePlaySubscriptionInfo> {
     const response = await this.publisher.purchases.subscriptions.get({
       auth: this.jwt,
       packageName: this.packageName,
       token,
-      subscriptionId: sku,
     });
     const { data } = response;
     const transformedData = data as unknown as GooglePlaySubscriptionInfo;

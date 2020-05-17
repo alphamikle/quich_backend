@@ -1,5 +1,5 @@
 import { AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from '~/user/entities/user';
+import { User } from '~/user/entities/user.entity';
 import * as fts from '~/proto-generated/fts';
 
 @Entity('fts_account_entity')

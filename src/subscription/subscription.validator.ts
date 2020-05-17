@@ -3,16 +3,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { GooglePlayHookDto } from './dto/google-play-hook.dto';
 import { INCORRECT_GOOGLE_PLAY_HOOK_DATA, SUBSCRIPTION_NOT_EXIST, UNKNOWN_ERROR, YOU_NEED_TO_BUY_SUBSCRIPTION } from '../helpers/text';
-import { Sku, SubscriptionEntity } from './entities/subscription.entity';
-import { User } from '../user/entities/user';
+import { Sku, Subscription } from './entities/subscription.entity';
+import { User } from '../user/entities/user.entity';
 
 const { GOOGLE_PLAY_HOOK_THEME } = process.env;
 
 @Injectable()
 export class SubscriptionValidator {
   constructor(
-    @InjectRepository(SubscriptionEntity)
-    private readonly subscriptionEntityRepository: Repository<SubscriptionEntity>,
+    @InjectRepository(Subscription)
+    private readonly subscriptionEntityRepository: Repository<Subscription>,
   ) {
   }
 
@@ -37,11 +37,10 @@ export class SubscriptionValidator {
     return true;
   }
 
-  async validateSubscriptionInfo({ token, sku }: { token: string; sku: Sku }): Promise<true | { push: string }> {
+  async validateSubscriptionInfo({ token }: { token: string }): Promise<true | { push: string }> {
     const error = { push: UNKNOWN_ERROR };
-    const isSkuExist = this.validateProductInfo(sku) === true;
     const isTokenExist = await this.isSubscriptionExist(token);
-    return isSkuExist && isTokenExist === true || error;
+    return isTokenExist === true || error;
   }
 
   validateUserUsingLimits(user: User): true | { push: string } {

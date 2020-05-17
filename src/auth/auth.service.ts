@@ -3,8 +3,8 @@ import { compare, hash } from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserService } from '~/user/user.service';
-import { Session } from '~/user/entities/session';
-import { User } from '~/user/entities/user';
+import { Session } from '~/user/entities/session.entity';
+import { User } from '~/user/entities/user.entity';
 import { UserCredentialsDto } from '~/user/dto/user-credentials.dto';
 
 const { ROUNDS } = process.env;

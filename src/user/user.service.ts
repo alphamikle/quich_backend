@@ -1,13 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, FindConditions, In, Not, Repository } from 'typeorm';
-import { User } from './entities/user';
-import { Session } from './entities/session';
+import { User } from './entities/user.entity';
+import { Session } from './entities/session.entity';
 import { DateHelper } from '../helpers/date.helper';
 import { FtsAccount } from './entities/fts-account.entity';
 import { FtsAccountDto } from '../fts/dto/fts-account.dto';
 import { FTS_ACCOUNTS_ALL_BUSY_ERROR } from '../helpers/text';
-import { UserQueryLimitEntity } from './entities/user-query-limit.entity';
+import { UserQueryLimit } from './entities/user-query-limit.entity';
 import { FtsQrDto } from '../fts/dto/fts-qr.dto';
 import { getHash } from '../helpers/common.helper';
 
@@ -22,8 +22,8 @@ export class UserService {
     private readonly sessionEntityRepository: Repository<Session>,
     @InjectRepository(FtsAccount)
     private readonly ftsAccountEntityRepository: Repository<FtsAccount>,
-    @InjectRepository(UserQueryLimitEntity)
-    private readonly userQueryLimitEntityRepository: Repository<UserQueryLimitEntity>,
+    @InjectRepository(UserQueryLimit)
+    private readonly userQueryLimitEntityRepository: Repository<UserQueryLimit>,
     private readonly dateHelper: DateHelper,
   ) {
   }
@@ -156,7 +156,7 @@ export class UserService {
   async incrementUserQueriesLimit({ userId, accountId, qrDto }: { userId: string; accountId: string; qrDto: FtsQrDto }): Promise<void> {
     let query = await this.getUserQueryUses(userId);
     if (query === undefined) {
-      query = new UserQueryLimitEntity();
+      query = new UserQueryLimit();
       query.usingDay = new Date();
       query.queries = 0;
       query.userId = userId;
@@ -183,7 +183,7 @@ export class UserService {
     }
   }
 
-  async getUserQueryUses(userId: string): Promise<UserQueryLimitEntity | undefined> {
+  async getUserQueryUses(userId: string): Promise<UserQueryLimit | undefined> {
     const currentDate = new Date();
     const nextDate = this.dateHelper.addDays(currentDate, 1);
     return this.userQueryLimitEntityRepository.findOne({

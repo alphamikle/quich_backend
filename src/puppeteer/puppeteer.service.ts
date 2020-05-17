@@ -1,14 +1,14 @@
-import { Injectable, Logger }                                  from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Browser, ElementHandle, launch, LaunchOptions, Page } from 'puppeteer';
-import { resolve }                                             from 'path';
-import { readdirSync, readFileSync, unlinkSync }               from 'fs';
+import { resolve } from 'path';
+import { readdirSync, readFileSync, unlinkSync } from 'fs';
 
 const isDev = process.env.NODE_ENV === 'development';
 
 const curDir = resolve(__dirname);
 
 function child(num: number): string {
-  return `:nth-child(${num})`;
+  return `:nth-child(${ num })`;
 }
 
 async function getInnerText(element: ElementHandle): Promise<string> {
@@ -199,6 +199,16 @@ export class PuppeteerService {
     return proxyParams;
   }
 
+  public async closeBrowser(): Promise<void> {
+    this.usingCounter -= 1;
+    Logger.log(`Trying to close browser with ${ this.usingCounter } operations left`, this.constructor.name);
+    if (this.usingCounter <= 0) {
+      await (await this.browser).close();
+      this.browser = null;
+      Logger.log('The browser closed', this.constructor.name);
+    }
+  }
+
   private async getFreeProxyListTableRowData(
     rows: ElementHandle[],
   ): Promise<ProxyParams[]> {
@@ -230,19 +240,9 @@ export class PuppeteerService {
     if (this.browser === null) {
       this.browser = launch(this.options);
       this.browser.then(() => {
-        Logger.log(`Browser open in ${Date.now() - beforeOpen}ms`, this.constructor.name);
+        Logger.log(`Browser open in ${ Date.now() - beforeOpen }ms`, this.constructor.name);
       });
     }
     return this.browser;
-  }
-
-  public async closeBrowser(): Promise<void> {
-    this.usingCounter -= 1;
-    Logger.log(`Trying to close browser with ${this.usingCounter} operations left`, this.constructor.name);
-    if (this.usingCounter <= 0) {
-      await (await this.browser).close();
-      this.browser = null;
-      Logger.log('The browser closed', this.constructor.name);
-    }
   }
 }

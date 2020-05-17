@@ -5,8 +5,8 @@ import { UserService } from './user.service';
 import { typeOrmOptions } from '../config';
 import { UserValidator } from './user.validator';
 import { DateHelper } from '../helpers/date.helper';
-import { User } from './entities/user';
-import { Session } from './entities/session';
+import { User } from './entities/user.entity';
+import { Session } from './entities/session.entity';
 import { FtsAccount } from './entities/fts-account.entity';
 import { Bill } from '../bill/entities/bill.entity';
 import { CategoryToUserRel } from '../category/entities/category-to-user-rel.entity';
@@ -15,7 +15,7 @@ import { AuthModule } from '../auth/auth.module';
 import { FtsModule } from '../fts/fts.module';
 import { EmailModule } from '../email/email.module';
 import { SubscriptionModule } from '../subscription/subscription.module';
-import { UserQueryLimitEntity } from './entities/user-query-limit.entity';
+import { UserQueryLimit } from './entities/user-query-limit.entity';
 
 jest.setTimeout(600000);
 
@@ -36,7 +36,7 @@ describe('user service test', () => {
           Bill,
           CategoryToUserRel,
           BillRequest,
-          UserQueryLimitEntity,
+          UserQueryLimit,
         ]),
         forwardRef(() => AuthModule),
         forwardRef(() => FtsModule),

@@ -1,12 +1,12 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { FtsAccount } from './fts-account.entity';
-import { Session } from '~/user/entities/session';
+import { Session } from '~/user/entities/session.entity';
 import { Bill } from '~/bill/entities/bill.entity';
 import { CategoryToUserRel } from '~/category/entities/category-to-user-rel.entity';
 import { BillRequest } from '~/bill-request/entities/bill-request.entity';
-import { SubscriptionEntity } from '~/subscription/entities/subscription.entity';
+import { Subscription } from '~/subscription/entities/subscription.entity';
 import { MessageEntity } from '~/message/entity/message.entity';
-import { UserQueryLimitEntity } from '~/user/entities/user-query-limit.entity';
+import { UserQueryLimit } from '~/user/entities/user-query-limit.entity';
 
 @Entity('user_entity')
 export class User {
@@ -38,14 +38,14 @@ export class User {
   @OneToMany(() => BillRequest, billRequest => billRequest.user)
   billRequests?: BillRequest[];
 
-  @OneToMany(() => SubscriptionEntity, subscription => subscription.user)
-  subscriptions?: SubscriptionEntity[];
+  @OneToMany(() => Subscription, subscription => subscription.user)
+  subscriptions?: Subscription[];
 
   @OneToMany(() => MessageEntity, message => message.user)
   messages?: MessageEntity[];
 
-  @OneToMany(() => UserQueryLimitEntity, uses => uses.user)
-  queryLimits?: UserQueryLimitEntity[];
+  @OneToMany(() => UserQueryLimit, uses => uses.user)
+  queryLimits?: UserQueryLimit[];
 
   hasPurchase!: boolean;
 

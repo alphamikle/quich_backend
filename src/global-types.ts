@@ -1,4 +1,4 @@
-import { User } from '~/user/entities/user';
+import { User } from '~/user/entities/user.entity';
 
 type DifferentKeys<First, Second> = {
   [K in keyof First]: K extends keyof Second ? First[K] extends Second[K] ? never : K : K;

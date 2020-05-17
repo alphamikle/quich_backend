@@ -1,18 +1,21 @@
-import { BadRequestException, Body, Logger, Param } from '@nestjs/common';
-import { SubscriptionService } from './subscription.service';
-import { GooglePlayHookDto } from './dto/google-play-hook.dto';
-import { GoogleApiService } from './google-api.service';
-import { Sku } from './entities/subscription.entity';
-import { SubscriptionValidator } from './subscription.validator';
-import { RequestUser } from '../user/user.decorator';
-import { User } from '../user/entities/user';
-import { UserPurchaseAssignDto } from './dto/user-purchase-assign.dto';
-import { SubscriptionInfoDto } from './dto/subscription-info.dto';
-import { INCORRECT_GOOGLE_PLAY_HOOK_DATA } from '../helpers/text';
-import { GetAction, PostAction, SecureGetAction, SecurePatchAction, TagController } from '../helpers/decorators';
+import { BadRequestException, Body, Controller, Logger, Post } from '@nestjs/common';
+import { Metadata } from 'grpc';
+import { SubscriptionService } from '~/subscription/subscription.service';
+import { GooglePlayHookDto } from '~/subscription/dto/google-play-hook.dto';
+import { GoogleApiService } from '~/subscription/google-api.service';
+import { Sku } from '~/subscription/entities/subscription.entity';
+import { SubscriptionValidator } from '~/subscription/subscription.validator';
+import { PurchaseTokenDto } from '~/subscription/dto/purchase-token.dto';
+import { INCORRECT_GOOGLE_PLAY_HOOK_DATA } from '~/helpers/text';
+import { GRPC, securedGrpc } from '~/providers/decorators';
+import { Empty } from '~/providers/empty';
+import { SkuDto } from '~/subscription/dto/sku.dto';
+import * as user from '~/proto-generated/user';
+import { GooglePlayProduct } from '~/subscription/dto/google-play-product';
+import { GooglePlaySubscriptionInfo } from '~/subscription/interface/google-api.interface';
 
-@TagController('subscription')
-export class SubscriptionController {
+@Controller('subscription')
+export class SubscriptionController implements user.SubscriptionController {
   constructor(
     private readonly subscriptionService: SubscriptionService,
     private readonly googleApiService: GoogleApiService,
@@ -20,7 +23,7 @@ export class SubscriptionController {
   ) {
   }
 
-  @PostAction('Роут для получения web-хуков о статусе платежей от Google Play', String)
+  @Post()
   async googleSubscriptionHook(@Body() hookDto: GooglePlayHookDto) {
     const validationResult = this.subscriptionValidator.validateHokDto(hookDto);
     if (validationResult !== true) {
@@ -39,7 +42,6 @@ export class SubscriptionController {
 
     const subscriptionInfo = await this.googleApiService.getSubscriptionInfo({
       token: subscription.purchaseToken,
-      sku: hookDto.sku,
     });
     subscription = this.subscriptionService.assignSubscriptionWithGooglePlaySubscriptionInfo({
       subscription,
@@ -50,46 +52,44 @@ export class SubscriptionController {
     await this.subscriptionService.setUserFromOneSubscriptionToAllByToken(subscription.purchaseToken);
   }
 
-  @SecurePatchAction('Связывание данных подписки и пользователя', String)
-  async addUserToSubscriptionData(@RequestUser() user: User, @Body() purchaseAssignDto: UserPurchaseAssignDto) {
-    const { purchaseToken } = purchaseAssignDto;
+  @securedGrpc
+  async addUserToSubscriptionData({ purchaseToken }: PurchaseTokenDto, meta: Metadata): Promise<Empty> {
     const validationResult = await this.subscriptionValidator.isSubscriptionExist(purchaseToken);
     if (validationResult !== true) {
       throw new BadRequestException(validationResult);
     }
     await this.subscriptionService.setUserIdToSubscriptionsByToken({
-      userId: user.id,
+      userId: meta.user.id,
       purchaseToken,
     });
+    return new Empty();
   }
 
-  @GetAction('Получение информации о продукте по Sku', String, 'product')
-  async getGooglePlayProductInfo(@Param('sku') sku: Sku) {
-    const validationResult = this.subscriptionValidator.validateProductInfo(sku);
+  @GRPC()
+  async getGooglePlayProductInfo({ sku }: SkuDto): Promise<GooglePlayProduct> {
+    const validationResult = this.subscriptionValidator.validateProductInfo(sku as Sku);
     if (validationResult !== true) {
       throw new BadRequestException(validationResult);
     }
-    return this.googleApiService.getProductInfoBySku(sku);
+    return this.googleApiService.getProductInfoBySku(sku as Sku);
   }
 
-  @GetAction('Получение информации о подписке', String, 'subscription/:token/:sku')
-  async getGooglePlaySubscriptionInfo(@Param('token') token: string, @Param('sku') sku: Sku) {
+  @GRPC()
+  async getGooglePlaySubscriptionInfo({ purchaseToken }: PurchaseTokenDto): Promise<GooglePlaySubscriptionInfo> {
     const validationResult = await this.subscriptionValidator.validateSubscriptionInfo({
-      token,
-      sku,
+      token: purchaseToken,
     });
     if (validationResult !== true) {
       throw new BadRequestException(validationResult);
     }
     return this.googleApiService.getSubscriptionInfo({
-      token,
-      sku,
+      token: purchaseToken,
     });
   }
 
-  @SecureGetAction('Проверка наличия у пользователя активной подписки', SubscriptionInfoDto, 'subscription/is-active')
-  async hasUserSubscriptionWithoutGooglePlay(@RequestUser() user: User) {
-    const activeSubscription = await this.subscriptionService.getUserSubscriptionInfo(user.id);
+  @securedGrpc
+  async hasUserSubscriptionWithoutGooglePlay(request: Empty, meta: Metadata) {
+    const activeSubscription = await this.subscriptionService.getUserSubscriptionInfo(meta.user.id);
     if (!activeSubscription) {
       throw new BadRequestException({ push: INCORRECT_GOOGLE_PLAY_HOOK_DATA });
     }

@@ -5,7 +5,7 @@ import { RU } from '~/locale/ru';
 import { AuthService } from '~/auth/auth.service';
 import { SignInCredentials } from '~/user/dto/sign-in-credentials.dto';
 import { UserService } from '~/user/user.service';
-import { User } from '~/user/entities/user';
+import { User } from '~/user/entities/user.entity';
 
 @Injectable()
 export class UserPasswordCorrectPipe implements PipeTransform {

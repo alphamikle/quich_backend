@@ -1,27 +1,44 @@
-export interface GooglePlaySubscriptionInfo {
+import * as user from '~/proto-generated/user';
+
+export class GooglePlaySubscriptionInfo implements user.GooglePlaySubscriptionInfo {
   startTimeMillis: number;
+
   expiryTimeMillis: number;
+
   autoResumeTimeMillis: number;
+
   autoRenewing: boolean;
+
   priceCurrencyCode: string;
+
   priceAmountMicros: number; // ? Need to divide by 10000 to get cents (89.00 === 89000000)
+
   introductoryPriceInfo?: { // ? Must been only at intro subscriptions (period with a lower price, but not free)
     introductoryPriceCurrencyCode: string;
     introductoryPriceAmountMicros: number;
     introductoryPricePeriod: string;
     introductoryPriceCycles: number;
   };
+
   countryCode: string;
+
   developerPayload: string;
+
   paymentState?: GooglePlayPurchasePaymentState;
+
   cancelReason?: GooglePlayPurchaseCancelReason;
+
   userCancellationTimeMillis: number;
+
   cancelSurveyResult?: {
     cancelSurveyReason: GooglePlayPurchaseCancelSurveyReason;
     userInputCancelReason?: string;
   };
+
   orderId: string;
+
   linkedPurchaseToken?: string;
+
   acknowledgementState: GooglePlayPurchaseAcknowledgementState;
 }
 

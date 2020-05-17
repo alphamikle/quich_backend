@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from '~/user/entities/user';
+import { User } from '~/user/entities/user.entity';
 
 export enum MessageType {
   INFO,
