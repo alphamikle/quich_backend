@@ -1,7 +1,7 @@
 import { FtsAccount } from '~/user/entities/fts-account.entity';
-import * as user from '~/proto-generated/user';
+import * as fts from '~/proto-generated/fts';
 
-export class Accounts implements user.Accounts {
+export class Accounts implements fts.Accounts {
   constructor(public accounts: FtsAccount[]) {
   }
 }

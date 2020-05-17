@@ -14,7 +14,7 @@ import { FtsAccountModifyDto } from '~/user/dto/fts-account-modify.dto';
 import { FtsService } from '~/fts/fts.service';
 import { EmailService, RestoreEmailCredentials } from '~/email/email.service';
 import { FtsRegistrationDto } from '~/fts/dto/fts-registration.dto';
-import { GRPC, securedGrpc } from '~/providers/decorators';
+import { Grpc, securedGrpc } from '~/providers/decorators';
 import { Empty } from '~/providers/empty';
 import * as generatedUser from '~/proto-generated/user';
 import { EmailDto } from '~/user/dto/email.dto';
@@ -39,7 +39,7 @@ export class UserController implements generatedUser.UserController {
   ) {
   }
 
-  @GRPC()
+  @Grpc
   async signUp({ email, password }: UserCredentialsDto): Promise<Empty> {
     const isUserExits = await this.userValidator.isUserExist(email);
     if (isUserExits) {
@@ -52,7 +52,7 @@ export class UserController implements generatedUser.UserController {
     return new Empty();
   }
 
-  @GRPC()
+  @Grpc
   async restore({ email }: EmailDto): Promise<Empty> {
     const isUserExits = await this.userValidator.isUserExist(email);
     if (isUserExits) {
@@ -74,7 +74,7 @@ export class UserController implements generatedUser.UserController {
     return new Empty();
   }
 
-  @GRPC()
+  @Grpc
   async signIn({ email, password }: UserCredentialsDto): Promise<TokenDto> {
     const isUserExits = await this.userValidator.isUserExist(email);
     if (!isUserExits) {
