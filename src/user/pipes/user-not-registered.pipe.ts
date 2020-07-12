@@ -1,4 +1,4 @@
-import {ArgumentMetadata, Injectable, PipeTransform} from '@nestjs/common';import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
+import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
 import { UserService } from '~/user/user.service';
 import { rpcJsonException } from '~/providers/rpc-json-exception';
 import { PropertyError } from '~/providers/property-error';

@@ -3,7 +3,6 @@ import { rpcJsonException } from '~/providers/rpc-json-exception';
 import { Fields, PropertyError } from '~/providers/property-error';
 import { RU } from '~/locale/ru';
 import { AuthService } from '~/auth/auth.service';
-import { SignInCredentials } from '~/user/dto/sign-in-credentials.dto';
 import { UserService } from '~/user/user.service';
 import { User } from '~/user/entities/user.entity';
 
@@ -15,15 +14,11 @@ export class UserPasswordCorrectPipe implements PipeTransform {
   ) {
   }
 
-  async transform(value: SignInCredentials | ArgumentMetadata): Promise<SignInCredentials | ArgumentMetadata> {
-    if (value instanceof SignInCredentials) {
-      let user: User;
-      if (value.email) {
-        user = await this.userService.getUserByEmail(value.email) as User;
-      } else {
-        user = await this.userService.getUserByPhone(value.phone) as User;
-      }
-      const correct = this.authService.isHashValid(user.hash, value.password);
+  async transform(value: any | ArgumentMetadata): Promise<ArgumentMetadata> {
+    let user: User;
+    if (value.email) {
+      user = await this.userService.getUserByEmail(value.email) as User;
+      const correct = this.authService.isHashValid(user.password, value.password);
       if (!correct) {
         throw rpcJsonException(PropertyError.manual(RU.incorrectPassword, Fields.PASSWORD));
       }
