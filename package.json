@@ -14,6 +14,7 @@
     "start": "ts-node -r tsconfig-paths/register src/main.ts",
     "start:dev": "tsc-watch -p tsconfig.build.json --onSuccess \"node dist/src/main.js\"",
     "tsnode:dev": "ts-node-dev src/main.ts",
+    "tsnode:prod": "ts-node src/main.ts",
     "start:debug": "tsc-watch -p tsconfig.build.json --onSuccess \"node --inspect-brk dist/src/main.js\"",
     "start:prod": "node dist/src/main.js",
     "test": "jest",
@@ -115,6 +116,6 @@
     }
   },
   "_moduleAliases": {
-    "~": "src"
+    "~": "./src"
   }
 }
