@@ -1,0 +1,9 @@
+{
+  apps: [
+    {
+      name: 'quichx',
+      script: 'npm',
+      args: 'tsnode:prod'
+    }
+  ]
+}
