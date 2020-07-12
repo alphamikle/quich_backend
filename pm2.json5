@@ -3,7 +3,12 @@
     {
       name: 'quichx',
       script: 'npm',
-      args: 'tsnode:prod'
+      args: 'run tsnode:dev',
+      env: {
+        NODE_ENV: 'production'
+      },
+      instances: 2,
+      exec_mode: 'cluster',
     }
   ]
 }
