@@ -1,10 +1,10 @@
 import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
 import { UserService } from '~/user/user.service';
-import { SignInCredentials } from '~/user/dto/sign-in-credentials.dto';
 import { Fields, PropertyError } from '~/providers/property-error';
 import { rpcJsonException } from '~/providers/rpc-json-exception';
 import { RU } from '~/locale/ru';
 import { User } from '~/user/entities/user.entity';
+import { UserCredentialsDto } from '~/user/dto/user-credentials.dto';
 
 @Injectable()
 export class UserExistPipe implements PipeTransform {
@@ -13,8 +13,8 @@ export class UserExistPipe implements PipeTransform {
   ) {
   }
 
-  async transform(value: SignInCredentials | ArgumentMetadata): Promise<SignInCredentials | ArgumentMetadata> {
-    if (value instanceof SignInCredentials) {
+  async transform(value: UserCredentialsDto | ArgumentMetadata): Promise<UserCredentialsDto | ArgumentMetadata> {
+    if (value instanceof UserCredentialsDto) {
       let user: User | null;
       if (value.email) {
         user = await this.userService.getUserByEmail(value.email);

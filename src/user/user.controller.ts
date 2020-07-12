@@ -1,4 +1,4 @@
-import { Controller, ForbiddenException, forwardRef, Inject } from '@nestjs/common';
+import { Controller, forwardRef, Inject } from '@nestjs/common';
 import { Metadata } from 'grpc';
 import { UserService } from '~/user/user.service';
 import { UserCredentialsDto } from '~/user/dto/user-credentials.dto';
@@ -88,7 +88,7 @@ export class UserController implements generatedUser.UserController {
       password,
     });
     if (!isPasswordValid) {
-      throw new ForbiddenException({ password: SIGN_IN_BAD_PASSWORD });
+      throw rpcJsonException(PropertyError.fromObject({ password: SIGN_IN_BAD_PASSWORD }));
     }
     return new TokenDto(await this.authService.signIn(user));
   }
