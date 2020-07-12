@@ -1,5 +1,6 @@
 module.exports = {
   parser: '@typescript-eslint/parser',
+  ignorePatterns: ['proto_js_client/*'],
   extends: [
     'eslint-config-typescript',
     'airbnb-base',
@@ -22,8 +23,8 @@ module.exports = {
       files: [
         '*.ts',
         '.eslintrc.js',
-      ],
-    },
+      ]
+    }
   ],
   rules: {
     'import/no-extraneous-dependencies': [

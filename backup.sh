@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 dt=$(date '+%d%m%Y%H%M%S')
 filename="backup_$dt.sql"
 cd /usr/quich

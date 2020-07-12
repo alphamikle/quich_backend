@@ -61,7 +61,9 @@
     "swagger-ui-express": "^4.1.4",
     "ts-proto": "^1.26.0",
     "typeorm": "^0.2.24",
-    "uuid": "^8.0.0"
+    "uuid": "^8.0.0",
+    "google-protobuf": "^3.12.2",
+    "grpc-web": "^1.2.0"
   },
   "devDependencies": {
     "@nestjs/testing": "^7.3.2",
