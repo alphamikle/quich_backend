@@ -1,7 +1,0 @@
-syntax = "proto3";
-package quichx;
-
-message Product {
-  string id = 1;
-  string title = 2;
-}
