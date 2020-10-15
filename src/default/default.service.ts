@@ -9,7 +9,6 @@ import { CategoryToUserRel } from '~/category/entities/category-to-user-rel.enti
 import { Product } from '~/product/entities/product.entity';
 import { Purchase } from '~/purchase/entities/purchase.entity';
 import { Shop } from '~/shop/entities/shop.entity';
-import { FtsAccount } from '~/user/entities/fts-account.entity';
 import { User } from '~/user/entities/user.entity';
 import { ShopService } from '~/shop/shop.service';
 import { BillService } from '~/bill/bill.service';
@@ -40,8 +39,6 @@ export class DefaultService {
     private readonly purchaseEntityRepository: Repository<Purchase>,
     @InjectRepository(Shop)
     private readonly shopEntityRepository: Repository<Shop>,
-    @InjectRepository(FtsAccount)
-    private readonly ftsAccountEntityRepository: Repository<FtsAccount>,
     @InjectRepository(User)
     private readonly userEntityRepository: Repository<User>,
     private readonly shopService: ShopService,
@@ -61,7 +58,6 @@ export class DefaultService {
     const shops = await this.shopService.getUserShops(userId);
     const purchases = await this.purchaseService.getUserPurchases(userId);
     const products = await this.productService.getUserProducts(userId);
-    const accounts = await this.userService.getFtsAccountsByUserId(userId);
     const billsRequests = await this.billRequestService.getUnloadedBillRequestsByUserId(userId);
     const unreadMessages = await this.messageService.getUnreadUserMessages(userId);
     const userQueries = await this.userService.getUserQueryUses(userId);
@@ -77,7 +73,6 @@ export class DefaultService {
       shops,
       purchases,
       products,
-      accounts,
       requests: billsRequests,
       messages: unreadMessages,
       queries,

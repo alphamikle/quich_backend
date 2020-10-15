@@ -10,7 +10,7 @@ export class FtsQrDto implements bill.FtsQrDto {
 
   ftsDateTime!: string;
 
-  totalSum!: number; // ? Используется не для всех запросов
+  totalSum!: string;
 
   checkType?: number;
 }

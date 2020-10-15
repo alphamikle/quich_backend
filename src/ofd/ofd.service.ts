@@ -63,7 +63,7 @@ export class OfdService {
         order by random()
         limit 100
     `);
-    Logger.log(`Found ${ billRequestEntities.length } billRequestEntities`);
+    Logger.log(`Found ${billRequestEntities.length} billRequestEntities`);
     const ftsQrDtos: FtsQrDto[] = billRequestEntities.map(billRequest => {
       const qrDto = new FtsQrDto();
       qrDto.checkType = 1;
@@ -71,7 +71,7 @@ export class OfdService {
       qrDto.fiscalDocument = billRequest.fiscalDocument;
       qrDto.fiscalNumber = billRequest.fiscalNumber;
       qrDto.fiscalProp = billRequest.fiscalProp;
-      qrDto.totalSum = billRequest.totalSum;
+      qrDto.totalSum = billRequest.totalSum.toString();
       return qrDto;
     });
     const ofds: OfdFetcherClass[] = [
@@ -94,7 +94,7 @@ export class OfdService {
           response,
         };
         data.push(info);
-        Logger.debug(`Iteration: ${ i }, Fetcher: ${ OfdClass.name }, QrDto: ${ JSON.stringify(qrDto) }, Duration: ${ Date.now() - start }ms`);
+        Logger.debug(`Iteration: ${i}, Fetcher: ${OfdClass.name}, QrDto: ${JSON.stringify(qrDto)}, Duration: ${Date.now() - start}ms`);
       }));
       i += 1;
     }));

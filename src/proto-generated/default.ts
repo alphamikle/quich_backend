@@ -5,7 +5,6 @@ import { CategoryDto } from './category';
 import { Shop } from './shop';
 import { Purchase } from './purchase';
 import { Product } from './product';
-import { FtsAccount } from './fts';
 import { BillRequest } from './bill-request';
 import { Message } from './message';
 import { Empty } from './google/protobuf/empty';
@@ -17,7 +16,6 @@ export interface AllDataDto {
   shops: Shop[];
   purchases: Purchase[];
   products: Product[];
-  accounts: FtsAccount[];
   requests: BillRequest[];
   messages: Message[];
   queries: number;

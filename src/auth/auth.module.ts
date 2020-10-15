@@ -5,7 +5,6 @@ import { Session } from '~/user/entities/session.entity';
 import { UserModule } from '~/user/user.module';
 import { SubscriptionModule } from '~/subscription/subscription.module';
 import { AuthService } from '~/auth/auth.service';
-import { AuthValidator } from '~/auth/auth.validator';
 
 @Global()
 @Module({
@@ -19,11 +18,9 @@ import { AuthValidator } from '~/auth/auth.validator';
   ],
   providers: [
     AuthService,
-    AuthValidator,
   ],
   exports: [
     AuthService,
-    AuthValidator,
   ],
 })
 export class AuthModule {

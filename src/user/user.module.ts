@@ -5,7 +5,6 @@ import { UserService } from '~/user/user.service';
 import { User } from '~/user/entities/user.entity';
 import { UserValidator } from '~/user/user.validator';
 import { Session } from '~/user/entities/session.entity';
-import { FtsAccount } from '~/user/entities/fts-account.entity';
 import { DateHelper } from '~/helpers/date.helper';
 import { AuthModule } from '~/auth/auth.module';
 import { FtsModule } from '~/fts/fts.module';
@@ -21,7 +20,6 @@ import { UserQueryLimit } from '~/user/entities/user-query-limit.entity';
     TypeOrmModule.forFeature([
       User,
       Session,
-      FtsAccount,
       Bill,
       CategoryToUserRel,
       BillRequest,

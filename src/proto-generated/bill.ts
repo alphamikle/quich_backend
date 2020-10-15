@@ -28,7 +28,7 @@ export interface FtsQrDto {
   fiscalProp: string;
   fiscalDocument: string;
   ftsDateTime: string;
-  totalSum: number;
+  totalSum: string;
 }
 
 export interface RequestIdDto {
@@ -42,10 +42,6 @@ export interface BillIdDto {
 export interface BillController {
 
   getUserBills(request: Empty, meta: Metadata): Promise<Bills>;
-
-  getBillData(request: FtsQrDto, meta: Metadata): Promise<BillDto>;
-
-  getBillDataByBillRequestId(request: RequestIdDto, meta: Metadata): Promise<BillDto>;
 
   createBill(request: BillDto, meta: Metadata): Promise<Bill>;
 

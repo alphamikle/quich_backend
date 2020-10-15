@@ -1,7 +1,6 @@
 import { Metadata } from 'grpc';
 /* eslint-disable */
 import { Empty } from './google/protobuf/empty';
-import { Accounts, FtsAccountDto, FtsAccount, FtsAccountModifyDto } from './fts';
 
 
 export interface PurchaseTokenDto {
@@ -54,21 +53,12 @@ export interface GooglePlaySubscriptionInfo {
   priceAmountMicros: number;
 }
 
-export interface UserCredentialsDto {
-  email: string;
-  password: string;
-}
-
-export interface EmailDto {
-  email: string;
-}
-
-export interface PhoneDto {
+export interface EsiaAuthDto {
+  sessionId: string;
   phone: string;
-}
-
-export interface TokenDto {
-  token: string;
+  email: string;
+  name: string;
+  lastname: string;
 }
 
 export interface SubscriptionController {
@@ -83,21 +73,9 @@ export interface SubscriptionController {
 
 export interface UserController {
 
-  signUp(request: UserCredentialsDto, meta: Metadata): Promise<Empty>;
-
-  restore(request: EmailDto, meta: Metadata): Promise<Empty>;
-
-  signIn(request: UserCredentialsDto, meta: Metadata): Promise<TokenDto>;
-
-  getFtsAccountsList(request: Empty, meta: Metadata): Promise<Accounts>;
-
-  addFtsAccountToUser(request: FtsAccountDto, meta: Metadata): Promise<FtsAccount>;
-
-  deleteFtsAccountFromUser(request: PhoneDto, meta: Metadata): Promise<Empty>;
-
-  modifyFtsAccount(request: FtsAccountModifyDto, meta: Metadata): Promise<FtsAccount>;
-
   increaseQueryLimit(request: Empty, meta: Metadata): Promise<Empty>;
+
+  authWithEsia(request: EsiaAuthDto, meta: Metadata): Promise<Empty>;
 
 }
 

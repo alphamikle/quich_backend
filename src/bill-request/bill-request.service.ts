@@ -84,7 +84,7 @@ export class BillRequestService {
       billRequest = await this.createBillRequest({
         userId,
         billDate: this.dateHelper.transformFtsDateToDate(ftsQrDto.ftsDateTime),
-        totalSum: ftsQrDto.totalSum,
+        totalSum: Number.parseFloat(ftsQrDto.totalSum),
         fiscalProp: ftsQrDto.fiscalProp,
         fiscalNumber: ftsQrDto.fiscalNumber,
         fiscalDocument: ftsQrDto.fiscalDocument,

@@ -1,6 +1,5 @@
 import 'reflect-metadata';
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { FtsAccount } from './fts-account.entity';
 import { Session } from '~/user/entities/session.entity';
 import { Bill } from '~/bill/entities/bill.entity';
 import { CategoryToUserRel } from '~/category/entities/category-to-user-rel.entity';
@@ -18,14 +17,17 @@ export class User {
   @Column()
   email!: string;
 
-  @Column()
-  password!: string;
+  @Column({ default: '' })
+  phone!: string;
+
+  @Column({ default: '' })
+  name!: string;
+
+  @Column({ default: '' })
+  lastname!: string;
 
   @CreateDateColumn()
   createdAt!: Date;
-
-  @OneToMany(() => FtsAccount, account => account.user)
-  ftsAccounts?: FtsAccount[];
 
   @OneToMany(() => Session, session => session.user)
   sessions?: Session[];
