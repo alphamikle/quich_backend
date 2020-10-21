@@ -26,7 +26,6 @@ export class UserService {
     const session = new Session();
     session.token = token;
     session.user = user;
-    session.expiredAt = this.dateHelper.addDays(new Date(), Number(365)); // TODO: Rudiment
     return this.sessionEntityRepository.save(session);
   }
 

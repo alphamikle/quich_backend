@@ -9,12 +9,6 @@ export class Session {
   @Column()
   token!: string;
 
-  @Column({ default: false })
-  isExpired!: boolean;
-
-  @Column()
-  expiredAt!: Date;
-
   @CreateDateColumn()
   createdAt!: Date;
 
