@@ -41,7 +41,7 @@
     "html-entities": "^1.2.1",
     "leven": "^3.1.0",
     "node-html-parser": "^1.1.16",
-    "nodemailer": "^6.3.1",
+    "nodemailer": "^6.4.16",
     "passport": "^0.4.0",
     "passport-http-bearer": "^1.0.1",
     "pg": "^7.14.0",
